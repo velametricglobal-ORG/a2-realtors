@@ -17,11 +17,13 @@ export type PropertyType =
 
 export type PropertyStatus = 
   | 'DRAFT'
+  | 'PENDING_APPROVAL'
   | 'AVAILABLE'
   | 'RESERVED'
   | 'UNDER_NEGOTIATION'
   | 'SOLD'
   | 'RENTED'
+  | 'REJECTED'
   | 'INACTIVE';
 
 export interface PropertyImage {
@@ -71,6 +73,14 @@ export interface Property {
   featured: boolean;
   verified: boolean;
   published: boolean;
+  approvalStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  rejectionReason?: string;
+  submittedBy?: {
+    name: string;
+    phone: string;
+    email?: string;
+    submittedAt: string;
+  };
   images: PropertyImage[];
   documents?: PropertyDocument[];
   videoUrl?: string;
@@ -287,7 +297,27 @@ export type UserRole =
   | 'TELECALLER'
   | 'MARKETING_MANAGER'
   | 'CONTENT_MANAGER'
-  | 'VIEWER';
+  | 'VIEWER'
+  | string;
+
+export interface RolePermissions {
+  viewLeads: boolean;
+  editLeads: boolean;
+  deleteLeads: boolean;
+  manageProperties: boolean;
+  viewFinances: boolean;
+  editCMS: boolean;
+  manageStaff: boolean;
+}
+
+export interface UserRoleDefinition {
+  id: string;
+  name: string;
+  roleKey: string;
+  description: string;
+  permissions: RolePermissions;
+  isSystem?: boolean;
+}
 
 export interface UserProfile {
   id: string;
@@ -295,9 +325,11 @@ export interface UserProfile {
   email: string;
   phone: string;
   role: UserRole;
+  password?: string;
   avatar: string;
   rating: number;
   dealsClosed: number;
+  createdAt?: string;
 }
 
 export interface HomepageSettings {

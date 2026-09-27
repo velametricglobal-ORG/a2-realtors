@@ -45,8 +45,8 @@ export const LocalityPage: React.FC = () => {
 
           <div className="flex flex-wrap gap-4">
             <div className="card" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF', padding: '0.75rem 1.25rem', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <div style={{ fontSize: '0.75rem', color: '#CBD5E1' }}>Average Market Benchmark</div>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FEF3C7' }}>₹{locality.avgPricePerSqft.toLocaleString('en-IN')}/sq.ft</div>
+              <div style={{ fontSize: '0.75rem', color: '#CBD5E1' }}>Locality Status</div>
+              <div style={{ fontSize: '1.3rem', fontWeight: 800, color: '#FEF3C7' }}>Prime Sector</div>
             </div>
             <div className="card" style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFF', padding: '0.75rem 1.25rem', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.2)' }}>
               <div style={{ fontSize: '0.75rem', color: '#CBD5E1' }}>Active Verified Listings</div>

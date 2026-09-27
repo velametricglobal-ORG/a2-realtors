@@ -36,24 +36,26 @@ export const PropertyCompare: React.FC = () => {
         </div>
 
         {/* Comparison Matrix Table */}
-        <div style={{ overflowX: 'auto', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+        <div style={{ overflowX: 'auto', backgroundColor: '#FFFFFF', borderRadius: 20, border: '1px solid #E2E8F0', boxShadow: '0 4px 15px rgba(0,0,0,0.04)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC' }}>
-                <th style={{ padding: '1.25rem', width: 220, color: '#475569', fontSize: '0.9rem' }}>Feature / Spec</th>
+                <th style={{ padding: '1.5rem', width: 220, color: '#475569', fontSize: '0.88rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Property Specifications
+                </th>
                 {compareProperties.map(p => (
-                  <th key={p.id} style={{ padding: '1.25rem', minWidth: 260, position: 'relative' }}>
+                  <th key={p.id} style={{ padding: '1.5rem', minWidth: 260, position: 'relative', verticalAlign: 'top' }}>
                     <button
                       onClick={() => toggleCompare(p.id)}
-                      style={{ position: 'absolute', top: 12, right: 12, width: 26, height: 26, borderRadius: '50%', backgroundColor: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      title="Remove"
+                      style={{ position: 'absolute', top: 12, right: 12, width: 26, height: 26, borderRadius: '50%', backgroundColor: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none' }}
+                      title="Remove from comparison"
                     >
                       <X size={14} />
                     </button>
-                    <img src={p.images[0]?.url} alt={p.title} style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8, marginBottom: '0.75rem' }} />
-                    <div style={{ fontSize: '0.8rem', color: '#D97706', fontWeight: 700 }}>{p.propertyCode}</div>
-                    <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A', lineHeight: 1.25 }}>{p.title}</div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#D97706', marginTop: 4 }}>{p.priceDisplay}</div>
+                    <img src={p.images[0]?.url} alt={p.title} style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 12, marginBottom: '0.85rem' }} />
+                    <div style={{ fontSize: '0.78rem', color: '#386635', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{p.propertyCode}</div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.3, marginTop: 2, minHeight: '2.6rem' }}>{p.title}</div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#386635', marginTop: 4 }}>Price on Request</div>
                   </th>
                 ))}
               </tr>

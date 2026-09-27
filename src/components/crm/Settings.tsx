@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Settings as SettingsIcon, Shield, Database, Palette, CheckCircle2 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 
@@ -91,7 +92,7 @@ export const Settings: React.FC = () => {
             <Shield size={18} style={{ color: '#D97706' }} /> Granular Role Access Control Matrix
           </h3>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div style={{ overflowX: 'auto', marginBottom: '1.25rem' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', color: '#475569' }}>
@@ -115,6 +116,14 @@ export const Settings: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          <Link 
+            to="/admin/staff"
+            className="btn btn-primary w-full flex items-center justify-center gap-2"
+            style={{ width: '100%', textDecoration: 'none', display: 'flex' }}
+          >
+            <span>Manage Staff Logins, Passwords & Custom Roles →</span>
+          </Link>
         </div>
 
       </div>

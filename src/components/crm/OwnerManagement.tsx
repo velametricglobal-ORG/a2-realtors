@@ -77,8 +77,16 @@ export const OwnerManagement: React.FC = () => {
                         <span style={{ color: '#94A3B8', fontSize: '0.8rem' }}>No properties linked</span>
                       ) : (
                         ownedProps.map(p => (
-                          <div key={p.id} className="flex items-center gap-1" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#D97706' }}>
-                            <Home size={12} /> {p.propertyCode} ({p.title.slice(0, 24)}...)
+                          <div key={p.id} className="flex items-center gap-1.5" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
+                            <Home size={12} style={{ color: '#386635' }} /> 
+                            <span>{p.propertyCode}</span>
+                            {p.status === 'PENDING_APPROVAL' ? (
+                              <span style={{ backgroundColor: '#FEF3C7', color: '#92400E', fontSize: '0.68rem', padding: '0.1rem 0.4rem', borderRadius: 10, fontWeight: 700 }}>Pending Approval</span>
+                            ) : p.published ? (
+                              <span style={{ backgroundColor: '#EBF4EC', color: '#386635', fontSize: '0.68rem', padding: '0.1rem 0.4rem', borderRadius: 10, fontWeight: 700 }}>Live</span>
+                            ) : (
+                              <span style={{ backgroundColor: '#F1F5F9', color: '#64748B', fontSize: '0.68rem', padding: '0.1rem 0.4rem', borderRadius: 10, fontWeight: 700 }}>Draft</span>
+                            )}
                           </div>
                         ))
                       )}
@@ -89,13 +97,13 @@ export const OwnerManagement: React.FC = () => {
                     </td>
 
                     <td style={{ padding: '1rem' }}>
-                      <span className="badge badge-verified flex items-center gap-1">
+                      <span className={`badge ${owner.verificationStatus === 'VERIFIED' ? 'badge-verified' : 'badge-hot'} flex items-center gap-1`}>
                         <CheckCircle2 size={12} /> {owner.verificationStatus}
                       </span>
                     </td>
 
                     <td style={{ padding: '1rem', fontSize: '0.82rem', color: '#475569' }}>
-                      {owner.assignedAgentName || 'Priya Verma'}
+                      {owner.assignedAgentName || 'Central Desk'}
                     </td>
 
                   </tr>

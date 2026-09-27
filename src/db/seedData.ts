@@ -1,15 +1,100 @@
-import { Property, Lead, Owner, Customer, SiteVisit, FollowUpTask, Deal, MarketingCampaign, BlogPost, ConstructionProject, LocationInfo, UserProfile } from '../types';
+import { Property, Lead, Owner, Customer, SiteVisit, FollowUpTask, Deal, MarketingCampaign, BlogPost, ConstructionProject, LocationInfo, UserProfile, UserRoleDefinition } from '../types';
+
+export const initialRoles: UserRoleDefinition[] = [
+  {
+    id: 'role-1',
+    name: 'Super Admin',
+    roleKey: 'SUPER_ADMIN',
+    description: 'Unrestricted master access across all CRM records, staff accounts, finances, and system settings.',
+    permissions: {
+      viewLeads: true,
+      editLeads: true,
+      deleteLeads: true,
+      manageProperties: true,
+      viewFinances: true,
+      editCMS: true,
+      manageStaff: true
+    },
+    isSystem: true
+  },
+  {
+    id: 'role-2',
+    name: 'Operations Admin',
+    roleKey: 'ADMIN',
+    description: 'Full management of properties, inventory approvals, lead workflows, and CMS content.',
+    permissions: {
+      viewLeads: true,
+      editLeads: true,
+      deleteLeads: true,
+      manageProperties: true,
+      viewFinances: true,
+      editCMS: true,
+      manageStaff: false
+    },
+    isSystem: true
+  },
+  {
+    id: 'role-3',
+    name: 'Sales Manager',
+    roleKey: 'SALES_MANAGER',
+    description: 'Team performance monitoring, lead assignment, deal closures, and commission reports.',
+    permissions: {
+      viewLeads: true,
+      editLeads: true,
+      deleteLeads: false,
+      manageProperties: true,
+      viewFinances: true,
+      editCMS: false,
+      manageStaff: false
+    },
+    isSystem: true
+  },
+  {
+    id: 'role-4',
+    name: 'Property Sales Agent',
+    roleKey: 'AGENT',
+    description: 'Assigned customer inquiries, chauffeured site visit execution, and property matching.',
+    permissions: {
+      viewLeads: true,
+      editLeads: true,
+      deleteLeads: false,
+      manageProperties: false,
+      viewFinances: false,
+      editCMS: false,
+      manageStaff: false
+    },
+    isSystem: true
+  },
+  {
+    id: 'role-5',
+    name: 'Telecaller & Lead Ingestion',
+    roleKey: 'TELECALLER',
+    description: 'Primary customer intake, WhatsApp messaging, and scheduling callback tasks.',
+    permissions: {
+      viewLeads: true,
+      editLeads: true,
+      deleteLeads: false,
+      manageProperties: false,
+      viewFinances: false,
+      editCMS: false,
+      manageStaff: false
+    },
+    isSystem: true
+  }
+];
 
 export const initialStaff: UserProfile[] = [
   {
     id: 'u-1',
-    name: 'Vikram Anand',
-    email: 'vikram@a2realtors.in',
+    name: 'Vikram Anand (Admin)',
+    email: 'admin@a2realtors.in',
     phone: '+91 84451 90135',
     role: 'SUPER_ADMIN',
+    password: 'admin123',
     avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200',
     rating: 4.95,
-    dealsClosed: 42
+    dealsClosed: 42,
+    createdAt: '2024-01-15'
   },
   {
     id: 'u-2',
@@ -17,9 +102,11 @@ export const initialStaff: UserProfile[] = [
     email: 'rajesh@a2realtors.in',
     phone: '+91 98970 11223',
     role: 'SALES_MANAGER',
+    password: 'admin123',
     avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=200',
     rating: 4.9,
-    dealsClosed: 38
+    dealsClosed: 38,
+    createdAt: '2024-02-10'
   },
   {
     id: 'u-3',
@@ -27,9 +114,11 @@ export const initialStaff: UserProfile[] = [
     email: 'priya@a2realtors.in',
     phone: '+91 94120 55443',
     role: 'AGENT',
+    password: 'admin123',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
     rating: 4.88,
-    dealsClosed: 26
+    dealsClosed: 26,
+    createdAt: '2024-03-01'
   },
   {
     id: 'u-4',
@@ -37,9 +126,11 @@ export const initialStaff: UserProfile[] = [
     email: 'amit@a2realtors.in',
     phone: '+91 81260 77889',
     role: 'AGENT',
+    password: 'admin123',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
     rating: 4.85,
-    dealsClosed: 19
+    dealsClosed: 19,
+    createdAt: '2024-03-15'
   },
   {
     id: 'u-5',
@@ -47,9 +138,11 @@ export const initialStaff: UserProfile[] = [
     email: 'neha@a2realtors.in',
     phone: '+91 70170 33445',
     role: 'TELECALLER',
+    password: 'admin123',
     avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200',
     rating: 4.75,
-    dealsClosed: 0
+    dealsClosed: 0,
+    createdAt: '2024-04-05'
   }
 ];
 

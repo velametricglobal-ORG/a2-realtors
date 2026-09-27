@@ -16,11 +16,8 @@ export const PropertyMatcher: React.FC = () => {
       
       {/* Header */}
       <div>
-        <div className="badge badge-featured" style={{ marginBottom: '0.5rem', display: 'inline-flex' }}>
-          🎯 Automated PropTech Intelligence
-        </div>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0F172A' }}>Automated Property Matcher</h1>
-        <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
+        <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>Automated Property Matcher</h1>
+        <p style={{ color: '#64748B', fontSize: '0.92rem' }}>
           Identifies properties matching buyer budget, location, bedrooms, and specs with algorithmic percentage confidence.
         </p>
       </div>

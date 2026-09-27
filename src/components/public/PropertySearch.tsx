@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Filter, RotateCcw, Search, Grid, List } from 'lucide-react';
+import { Filter, RotateCcw, Search, Grid, List, MapPin, Sparkles, SlidersHorizontal, Check } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { PropertyCard } from './PropertyCard';
 
@@ -11,14 +11,24 @@ export const PropertySearch: React.FC = () => {
   // Filter States initialized from URL params if available
   const [transactionType, setTransactionType] = useState<string>(searchParams.get('type') || 'ALL');
   const [propertyType, setPropertyType] = useState<string>(searchParams.get('category') || 'ALL');
-  const [selectedLocation, setSelectedLocation] = useState<string>(searchParams.get('location') || 'ALL');
+  const [selectedLocation, setSelectedLocation] = useState<string>(searchParams.get('locality') || searchParams.get('location') || 'ALL');
   const [budgetMax, setBudgetMax] = useState<number>(searchParams.get('budget') ? Number(searchParams.get('budget')) : 100000000);
   const [bedrooms, setBedrooms] = useState<string>(searchParams.get('beds') || 'ALL');
+
+  // Synchronize filter states when URL search parameters change
+  useEffect(() => {
+    setTransactionType(searchParams.get('type') || 'ALL');
+    setPropertyType(searchParams.get('category') || 'ALL');
+    setSelectedLocation(searchParams.get('locality') || searchParams.get('location') || 'ALL');
+    setBudgetMax(searchParams.get('budget') ? Number(searchParams.get('budget')) : 100000000);
+    setBedrooms(searchParams.get('beds') || 'ALL');
+  }, [searchParams]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [featuredOnly, setFeaturedOnly] = useState<boolean>(false);
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>('FEATURED');
+  const [viewMode, setViewMode] = useState<'GRID' | 'LIST'>('GRID');
 
   const amenityOptions = [
     'Parking', 'Garden', 'Balcony', 'Lift', 'Security Guard', 
@@ -55,14 +65,23 @@ export const PropertySearch: React.FC = () => {
         const matchesTitle = p.title.toLowerCase().includes(query);
         const matchesCode = p.propertyCode.toLowerCase().includes(query);
         const matchesLoc = p.location.toLowerCase().includes(query);
-        if (!matchesTitle && !matchesCode && !matchesLoc) return false;
+        const matchesAddr = p.address?.toLowerCase().includes(query);
+        if (!matchesTitle && !matchesCode && !matchesLoc && !matchesAddr) return false;
       }
 
       // Transaction Type
       if (transactionType !== 'ALL' && p.transactionType !== transactionType) return false;
 
       // Property Type
-      if (propertyType !== 'ALL' && p.propertyType !== propertyType) return false;
+      if (propertyType !== 'ALL') {
+        if (propertyType === 'VILLAS_FLATS' || propertyType === 'RESIDENTIAL') {
+          if (p.propertyType !== 'INDEPENDENT_HOUSE' && p.propertyType !== 'APARTMENT' && p.propertyType !== 'VILLA' && p.propertyType !== 'FARMHOUSE') {
+            return false;
+          }
+        } else if (p.propertyType !== propertyType) {
+          return false;
+        }
+      }
 
       // Location
       if (selectedLocation !== 'ALL' && !p.location.toLowerCase().includes(selectedLocation.toLowerCase())) return false;
@@ -96,199 +115,258 @@ export const PropertySearch: React.FC = () => {
   }, [properties, searchTerm, transactionType, propertyType, selectedLocation, budgetMax, bedrooms, selectedAmenities, featuredOnly, verifiedOnly, sortBy]);
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '80vh', paddingTop: '2.5rem', paddingBottom: '5rem' }}>
-      <div className="container">
-        
-        {/* Page Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4" style={{ marginBottom: '2rem' }}>
-          <div>
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#0F172A' }}>Explore Properties in Dehradun</h1>
-            <p style={{ color: '#64748B', fontSize: '0.95rem' }}>
-              Showing {filteredProperties.length} verified residential & commercial properties
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="form-group" style={{ margin: 0 }}>
-              <select 
-                value={sortBy} 
-                onChange={(e) => setSortBy(e.target.value)}
-                className="form-select"
-                style={{ backgroundColor: '#FFFFFF', padding: '0.5rem 1rem', fontSize: '0.85rem' }}
-              >
-                <option value="FEATURED">Sort: Featured First</option>
-                <option value="PRICE_LOW">Price: Low to High</option>
-                <option value="PRICE_HIGH">Price: High to Low</option>
-                <option value="NEWEST">Newest Listings</option>
-              </select>
+    <div style={{ backgroundColor: '#F8FAFC', minHeight: '85vh', paddingBottom: '6rem' }}>
+      
+      {/* Header Banner */}
+      <div style={{ backgroundColor: '#0B1120', color: '#FFFFFF', padding: '4.5rem 0 3.5rem 0', borderBottom: '1px solid #1E2E4F', position: 'relative' }}>
+        <div className="container">
+          <div className="flex flex-wrap items-center justify-between gap-6">
+            <div>
+              <h1 style={{ fontSize: 'clamp(2.2rem, 3.8vw, 2.8rem)', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+                Explore Verified Properties in Dehradun
+              </h1>
+              <p style={{ color: '#94A3B8', fontSize: '1.05rem', marginTop: '0.4rem' }}>
+                Showing <strong>{filteredProperties.length}</strong> authenticated luxury listings with 100% legal title clearance
+              </p>
             </div>
-            <button onClick={resetFilters} className="btn btn-outline btn-sm flex items-center gap-1">
-              <RotateCcw size={14} /> Reset
-            </button>
+
+            {/* View Switcher & Clear Filters */}
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={resetFilters} 
+                className="btn-outline-gray btn-sm flex items-center gap-1.5"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.2)' }}
+              >
+                <RotateCcw size={14} /> Reset Filters
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
+      <div className="container" style={{ marginTop: '2.5rem' }}>
+        
         {/* Main Content Layout: Left Sidebar + Right Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* LEFT SIDEBAR: FILTERS */}
-          <div className="card" style={{ padding: '1.5rem', alignSelf: 'start', backgroundColor: '#FFFFFF', borderRadius: 16 }}>
-            <div className="flex items-center justify-between" style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
-              <div className="flex items-center gap-2" style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A' }}>
-                <Filter size={18} style={{ color: '#D97706' }} /> Filter Options
+          {/* LEFT SIDEBAR: FILTERS (4 Cols) */}
+          <div className="lg:col-span-4 flex flex-col gap-6" style={{ alignSelf: 'start', position: 'sticky', top: 90 }}>
+            
+            <div className="card-luxury" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF', borderRadius: 20 }}>
+              
+              <div className="flex items-center justify-between" style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '0.85rem', marginBottom: '1.25rem' }}>
+                <div className="flex items-center gap-2" style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0F172A' }}>
+                  <SlidersHorizontal size={18} style={{ color: '#386635' }} /> Filter Criteria
+                </div>
+                <button 
+                  onClick={resetFilters} 
+                  style={{ fontSize: '0.78rem', color: '#64748B', cursor: 'pointer', fontWeight: 600 }}
+                  onMouseOver={e => e.currentTarget.style.color = '#386635'}
+                  onMouseOut={e => e.currentTarget.style.color = '#64748B'}
+                >
+                  Reset
+                </button>
               </div>
-              <button onClick={resetFilters} style={{ fontSize: '0.75rem', color: '#64748B', cursor: 'pointer' }}>Clear</button>
-            </div>
 
-            {/* Keyword Search */}
-            <div className="form-group">
-              <label className="form-label">Search Keyword / Property ID</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="text"
-                  placeholder="e.g. A2-1024, Dalanwala..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="form-input"
-                  style={{ paddingLeft: '2.2rem' }}
-                />
-                <Search size={15} style={{ position: 'absolute', left: 10, top: 12, color: '#94A3B8' }} />
+              {/* Keyword Search */}
+              <div className="form-group">
+                <label className="form-label">Search Keyword / Property ID</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    placeholder="e.g. A2-1024, Dalanwala, Villa..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="form-input"
+                    style={{ paddingLeft: '2.4rem', fontSize: '0.88rem' }}
+                  />
+                  <Search size={16} style={{ position: 'absolute', left: 12, top: 12, color: '#94A3B8' }} />
+                </div>
               </div>
-            </div>
 
-            {/* Transaction Type */}
-            <div className="form-group">
-              <label className="form-label">Transaction Type</label>
-              <select value={transactionType} onChange={(e) => setTransactionType(e.target.value)} className="form-select">
-                <option value="ALL">All (Buy & Rent)</option>
-                <option value="BUY">Buy Property</option>
-                <option value="RENT">Rent / Lease</option>
-              </select>
-            </div>
-
-            {/* Property Type */}
-            <div className="form-group">
-              <label className="form-label">Property Type</label>
-              <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} className="form-select">
-                <option value="ALL">All Categories</option>
-                <option value="INDEPENDENT_HOUSE">Independent House / Bungalow</option>
-                <option value="APARTMENT">Flat / Penthouse</option>
-                <option value="PLOT">Residential Plot / Land</option>
-                <option value="COMMERCIAL">Commercial / Office</option>
-                <option value="FARMHOUSE">Farmhouse & Hill Estate</option>
-              </select>
-            </div>
-
-            {/* Locality */}
-            <div className="form-group">
-              <label className="form-label">Dehradun Locality</label>
-              <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)} className="form-select">
-                <option value="ALL">All Localities</option>
-                {locations.map(loc => (
-                  <option key={loc.id} value={loc.name}>{loc.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Max Budget Slider */}
-            <div className="form-group">
-              <div className="flex justify-between items-center">
-                <label className="form-label">Max Budget</label>
-                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#D97706' }}>
-                  {budgetMax >= 100000000 ? 'Any' : `₹${(budgetMax / 10000000).toFixed(2)} Cr`}
-                </span>
+              {/* Transaction Type */}
+              <div className="form-group">
+                <label className="form-label">Transaction Type</label>
+                <div className="flex gap-2">
+                  {[
+                    { id: 'ALL', label: 'All' },
+                    { id: 'BUY', label: 'Buy' },
+                    { id: 'RENT', label: 'Rent' }
+                  ].map(t => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setTransactionType(t.id)}
+                      style={{
+                        flex: 1,
+                        padding: '0.5rem',
+                        borderRadius: 8,
+                        fontSize: '0.82rem',
+                        fontWeight: 700,
+                        border: '1px solid',
+                        borderColor: transactionType === t.id ? '#386635' : '#E2E8F0',
+                        backgroundColor: transactionType === t.id ? '#386635' : '#FFFFFF',
+                        color: transactionType === t.id ? '#FFFFFF' : '#475569',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <input
-                type="range"
-                min="5000000"
-                max="100000000"
-                step="5000000"
-                value={budgetMax}
-                onChange={(e) => setBudgetMax(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#D97706', margin: '0.5rem 0' }}
-              />
-            </div>
 
-            {/* Bedrooms */}
-            <div className="form-group">
-              <label className="form-label">Bedrooms</label>
-              <div className="flex gap-1" style={{ flexWrap: 'wrap' }}>
-                {['ALL', '1', '2', '3', '4', '5+'].map(b => (
-                  <button
-                    key={b}
-                    onClick={() => setBedrooms(b)}
-                    style={{
-                      padding: '0.35rem 0.65rem',
-                      borderRadius: 6,
-                      fontSize: '0.8rem',
-                      fontWeight: 600,
-                      border: bedrooms === b ? '1px solid #D97706' : '1px solid #E2E8F0',
-                      backgroundColor: bedrooms === b ? '#FEF3C7' : '#FFFFFF',
-                      color: bedrooms === b ? '#B45309' : '#475569'
-                    }}
-                  >
-                    {b === 'ALL' ? 'Any' : b}
-                  </button>
-                ))}
+              {/* Property Category */}
+              <div className="form-group">
+                <label className="form-label">Property Category</label>
+                <select 
+                  value={propertyType} 
+                  onChange={(e) => setPropertyType(e.target.value)} 
+                  className="form-select"
+                  style={{ fontSize: '0.88rem' }}
+                >
+                  <option value="ALL">All Categories</option>
+                  <option value="VILLAS_FLATS">Villas & Flats</option>
+                  <option value="INDEPENDENT_HOUSE">Independent Villa / Kothi</option>
+                  <option value="APARTMENT">Apartment / Penthouse</option>
+                  <option value="PLOT">Residential Land & Plot</option>
+                  <option value="COMMERCIAL">Commercial & Retail</option>
+                  <option value="FARMHOUSE">Farmhouse & Hill Estate</option>
+                </select>
               </div>
-            </div>
 
-            {/* Amenities Checkboxes */}
-            <div className="form-group" style={{ marginTop: '1rem' }}>
-              <label className="form-label">Amenities</label>
-              <div className="flex flex-col gap-2" style={{ maxHeight: 180, overflowY: 'auto', paddingRight: 4 }}>
-                {amenityOptions.map(amenity => (
-                  <label key={amenity} className="flex items-center gap-2" style={{ fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={selectedAmenities.includes(amenity)}
-                      onChange={() => handleAmenityToggle(amenity)}
-                      style={{ accentColor: '#D97706' }}
-                    />
-                    {amenity}
-                  </label>
-                ))}
+              {/* Locality */}
+              <div className="form-group">
+                <label className="form-label">Dehradun Locality</label>
+                <select 
+                  value={selectedLocation} 
+                  onChange={(e) => setSelectedLocation(e.target.value)} 
+                  className="form-select"
+                  style={{ fontSize: '0.88rem' }}
+                >
+                  <option value="ALL">All Dehradun Corridors</option>
+                  {locations.map(loc => (
+                    <option key={loc.id} value={loc.name}>{loc.name}</option>
+                  ))}
+                </select>
               </div>
-            </div>
 
-            {/* Quick Filters */}
-            <div className="flex flex-col gap-2" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem', marginTop: '1rem' }}>
-              <label className="flex items-center gap-2" style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A', cursor: 'pointer' }}>
-                <input type="checkbox" checked={featuredOnly} onChange={(e) => setFeaturedOnly(e.target.checked)} style={{ accentColor: '#D97706' }} />
-                Featured Listings Only
-              </label>
-              <label className="flex items-center gap-2" style={{ fontSize: '0.85rem', fontWeight: 600, color: '#0F172A', cursor: 'pointer' }}>
-                <input type="checkbox" checked={verifiedOnly} onChange={(e) => setVerifiedOnly(e.target.checked)} style={{ accentColor: '#D97706' }} />
-                Verified Title Deeds Only
-              </label>
+
+              {/* Bedrooms */}
+              <div className="form-group">
+                <label className="form-label">Bedrooms (BHK)</label>
+                <div className="flex gap-1.5" style={{ flexWrap: 'wrap' }}>
+                  {['ALL', '1', '2', '3', '4', '5+'].map(b => (
+                    <button
+                      key={b}
+                      type="button"
+                      onClick={() => setBedrooms(b)}
+                      style={{
+                        padding: '0.35rem 0.65rem',
+                        borderRadius: 8,
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        border: '1px solid',
+                        borderColor: bedrooms === b ? '#386635' : '#E2E8F0',
+                        backgroundColor: bedrooms === b ? '#EBF4EC' : '#FFFFFF',
+                        color: bedrooms === b ? '#1B4332' : '#475569',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {b === 'ALL' ? 'Any' : `${b} BHK`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Amenities Filter */}
+              <div className="form-group" style={{ marginTop: '0.5rem' }}>
+                <label className="form-label">Amenities & Features</label>
+                <div className="flex flex-col gap-2" style={{ maxHeight: 160, overflowY: 'auto', paddingRight: 4 }}>
+                  {amenityOptions.map(amenity => (
+                    <label key={amenity} className="flex items-center gap-2" style={{ fontSize: '0.82rem', color: '#334155', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedAmenities.includes(amenity)}
+                        onChange={() => handleAmenityToggle(amenity)}
+                        style={{ accentColor: '#386635' }}
+                      />
+                      <span>{amenity}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
             </div>
 
           </div>
 
-          {/* RIGHT SIDE: PROPERTY RESULTS GRID */}
-          <div className="lg:col-span-3">
-            {filteredProperties.length === 0 ? (
-              <div className="card" style={{ padding: '4rem 2rem', textAlign: 'center', backgroundColor: '#FFFFFF' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏡</div>
-                <h3 style={{ fontSize: '1.4rem', color: '#0F172A', marginBottom: '0.5rem' }}>No properties match your current filters</h3>
-                <p style={{ color: '#64748B', maxWidth: 460, margin: '0 auto 1.5rem auto' }}>
-                  Try resetting your price range, location or bedroom criteria to explore available listings across Dehradun.
-                </p>
-                <button onClick={resetFilters} className="btn btn-primary">
-                  <RotateCcw size={16} /> Reset All Filters
-                </button>
+          {/* RIGHT COLUMN: SEARCH RESULTS (8 Cols) */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
+            
+            {/* Sort & Results Bar */}
+            <div className="card" style={{ padding: '0.85rem 1.25rem', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                
+                <div style={{ fontSize: '0.88rem', color: '#475569' }}>
+                  Showing <strong style={{ color: '#0F172A' }}>{filteredProperties.length}</strong> matching properties
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: 600 }}>Sort by:</span>
+                  <select 
+                    value={sortBy} 
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="form-select"
+                    style={{ backgroundColor: '#F8FAFC', padding: '0.4rem 0.85rem', fontSize: '0.82rem', borderRadius: 8, width: 'auto' }}
+                  >
+                    <option value="FEATURED">Featured First</option>
+                    <option value="NEWEST">Newest Listings</option>
+                  </select>
+                </div>
+
               </div>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            </div>
+
+            {/* Properties Grid */}
+            {filteredProperties.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filteredProperties.map(property => (
                   <PropertyCard key={property.id} property={property} />
                 ))}
               </div>
+            ) : (
+              <div 
+                className="card" 
+                style={{ 
+                  padding: '4rem 2rem', 
+                  textAlign: 'center', 
+                  backgroundColor: '#FFFFFF', 
+                  borderRadius: 20,
+                  border: '1px dashed #CBD5E1' 
+                }}
+              >
+                <div style={{ width: 64, height: 64, borderRadius: '50%', backgroundColor: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem auto' }}>
+                  <Search size={28} />
+                </div>
+                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem' }}>
+                  No Exact Match Found
+                </h3>
+                <p style={{ color: '#64748B', maxWidth: 460, margin: '0 auto 1.5rem auto', fontSize: '0.92rem' }}>
+                  We couldn't find properties matching all selected filters. Try broadening your budget range or resetting filters.
+                </p>
+                <button onClick={resetFilters} className="btn-green btn-pill">
+                  <RotateCcw size={15} /> Reset All Filters
+                </button>
+              </div>
             )}
+
           </div>
 
         </div>
+
       </div>
+
     </div>
   );
 };

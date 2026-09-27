@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Phone, Mail, Menu, X, LayoutDashboard, Scale, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { 
+  Phone, Mail, Menu, X, LayoutDashboard, Scale, Plus, 
+  Shield, MapPin, Sparkles, MessageSquare, ChevronRight, Lock, Building, Home, Landmark
+} from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { Logo } from '../common/Logo';
 
@@ -10,117 +13,259 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onSwitchToCRM }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { compareList } = useStore();
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname, location.search]);
+
+  // Exact Requested Essential Menu Links Only
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'All Listings', path: '/search' },
-    { name: 'Service', path: '/construction' },
-    { name: 'Blog', path: '/insights' },
-    { name: 'Contact', path: '/contact' }
+    { name: 'Properties', path: '/search' },
+    { name: 'Plots & Land', path: '/search?category=PLOT' },
+    { name: 'Villas & Flats', path: '/search?category=VILLAS_FLATS' },
+    { name: 'About Us', path: '/about' },
+    { name: 'Contact Us', path: '/contact' }
   ];
 
   return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 50, backgroundColor: '#FFFFFF', boxShadow: '0 2px 12px rgba(0,0,0,0.06)' }}>
+    <header 
+      style={{ 
+        position: 'sticky', 
+        top: 0, 
+        zIndex: 100, 
+        backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.98)' : '#FFFFFF', 
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        boxShadow: scrolled ? '0 10px 30px rgba(11, 17, 32, 0.08)' : '0 1px 4px rgba(0, 0, 0, 0.04)',
+        borderBottom: '1px solid rgba(226, 232, 240, 0.85)',
+        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+      }}
+    >
       
       {/* 1. Micro Top Bar — DESKTOP ONLY */}
-      <div className="top-bar-desktop" style={{ backgroundColor: '#FAFAFA', borderBottom: '1px solid #EEEEEE', fontSize: '0.78rem', color: '#666666', padding: '0.35rem 0' }}>
+      <div 
+        className="top-bar-desktop" 
+        style={{ 
+          backgroundColor: '#0B1120', 
+          color: '#CBD5E1', 
+          fontSize: '0.78rem', 
+          padding: '0.45rem 0',
+          borderBottom: '1px solid #1E2E4F'
+        }}
+      >
         <div className="container flex items-center justify-between">
+          
+          {/* Left: Live Status & RERA Credentials */}
           <div className="flex items-center gap-4">
-            <a href="mailto:info@a2realtors.in" className="flex items-center gap-1" style={{ color: '#386635', fontWeight: 600 }}>
-              <Mail size={12} /> info@a2realtors.in
-            </a>
-            <span style={{ color: '#DDDDDD' }}>|</span>
-            <a href="tel:+918445190135" className="flex items-center gap-1" style={{ color: '#386635', fontWeight: 600 }}>
-              <Phone size={12} /> +91 84451 90135
-            </a>
+            <span className="flex items-center gap-1.5" style={{ color: '#A7F3D0', fontWeight: 700 }}>
+              <span className="pulse-dot"></span> 🌲 Dehradun Valley Market Live
+            </span>
+            <span style={{ color: '#334155' }}>•</span>
+            <span className="flex items-center gap-1" style={{ color: '#DFB76C', fontWeight: 600 }}>
+              <Shield size={13} /> Certified Real Estate Advisory
+            </span>
           </div>
 
+          {/* Right: Hotline & WhatsApp & Staff Login */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <a href="#" style={{ color: '#666666' }} title="Facebook">
-                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              </a>
-              <a href="#" style={{ color: '#666666' }} title="Twitter">
-                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.936 9.936 0 0024 4.59z"/></svg>
-              </a>
-              <a href="#" style={{ color: '#666666' }} title="Instagram">
-                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-              </a>
-            </div>
-            <span style={{ color: '#DDDDDD' }}>|</span>
+            <a 
+              href="tel:+918445190135" 
+              className="flex items-center gap-1.5" 
+              style={{ color: '#FFFFFF', fontWeight: 700 }}
+            >
+              <Phone size={13} style={{ color: '#DFB76C' }} /> +91 84451 90135
+            </a>
+            
+            <span style={{ color: '#334155' }}>|</span>
+
+            <a
+              href="https://wa.me/918445190135?text=Hello%20A2%20Realtors%2C%20I%20am%20looking%20for%20property%20in%20Dehradun"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1"
+              style={{ color: '#25D366', fontWeight: 700 }}
+            >
+              <MessageSquare size={13} /> WhatsApp Advisory
+            </a>
+
+            <span style={{ color: '#334155' }}>|</span>
+
             <button 
               onClick={onSwitchToCRM}
-              style={{ backgroundColor: '#111827', color: '#FFFFFF', border: 'none', padding: '0.2rem 0.65rem', fontSize: '0.72rem', borderRadius: 4, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}
+              style={{ 
+                backgroundColor: 'rgba(223, 183, 108, 0.15)', 
+                color: '#DFB76C', 
+                border: '1px solid rgba(223, 183, 108, 0.35)', 
+                padding: '0.2rem 0.65rem', 
+                fontSize: '0.72rem', 
+                borderRadius: 20, 
+                cursor: 'pointer', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: 5, 
+                fontWeight: 700,
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#DFB76C';
+                e.currentTarget.style.color = '#0B1120';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(223, 183, 108, 0.15)';
+                e.currentTarget.style.color = '#DFB76C';
+              }}
             >
-              <LayoutDashboard size={12} /> Staff CRM
+              <Lock size={11} /> Staff CRM
             </button>
           </div>
+
         </div>
       </div>
 
-      {/* 2. Main Navigation Bar */}
+      {/* 2. Main Navigation Bar Header */}
       <div className="container flex items-center justify-between navbar-container">
         
-        {/* Official Brand Logo */}
-        <Link to="/">
+        {/* Recreated Brand Logo */}
+        <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <Logo size="md" />
         </Link>
 
-        {/* Center Nav Links (Desktop Only) */}
+        {/* Center Nav Links (ONLY REQUESTED 5 ITEMS, Desktop PC) */}
         <nav className="desktop-nav-links items-center gap-7">
           {navLinks.map((link) => {
-            const isActive = location.pathname === link.path;
+            const isActive = location.pathname === link.path || (link.path.includes('?') && location.search === link.path.split('?')[1]);
             return (
               <Link
-                key={link.path}
+                key={link.name}
                 to={link.path}
                 style={{
-                  fontSize: '0.92rem',
-                  fontWeight: isActive ? 700 : 500,
-                  color: isActive ? '#386635' : '#374151',
-                  transition: 'color 0.15s ease'
+                  fontSize: '0.95rem',
+                  fontWeight: isActive ? 800 : 600,
+                  color: isActive ? '#386635' : '#1E293B',
+                  padding: '0.5rem 0.95rem',
+                  borderRadius: 10,
+                  backgroundColor: isActive ? '#EBF4EC' : 'transparent',
+                  transition: 'all 0.15s ease',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseOver={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#386635';
+                    e.currentTarget.style.backgroundColor = '#F8FAFC';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.color = '#1E293B';
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
                 }}
               >
-                {link.name}
+                <span>{link.name}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Right Action Utilities */}
+        {/* Right Action Suite (PC & Mobile) */}
         <div className="flex items-center gap-2.5">
+          
+          {/* Compare Counter (Desktop) */}
           {compareList.length > 0 && (
-            <Link to="/compare" className="btn-outline-gray flex items-center gap-1 desktop-only">
-              <Scale size={14} /> Compare ({compareList.length})
+            <Link 
+              to="/compare" 
+              className="btn-outline-gray flex items-center gap-1.5 desktop-only"
+              style={{ padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: 20 }}
+            >
+              <Scale size={14} style={{ color: '#386635' }} />
+              <span>Compare</span>
+              <span style={{ backgroundColor: '#386635', color: '#FFFFFF', fontSize: '0.68rem', fontWeight: 800, padding: '0.1rem 0.45rem', borderRadius: 10 }}>
+                {compareList.length}
+              </span>
             </Link>
           )}
 
+          {/* Quick Call Icon (Mobile Only) */}
+          <a
+            href="tel:+918445190135"
+            className="mobile-only-icon-btn"
+            title="Call Hotline"
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: '50%',
+              backgroundColor: '#EBF4EC',
+              color: '#386635',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid rgba(56, 102, 53, 0.2)'
+            }}
+          >
+            <Phone size={17} />
+          </a>
+
+          {/* Quick WhatsApp Icon (Mobile Only) */}
+          <a
+            href="https://wa.me/918445190135"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mobile-only-icon-btn"
+            title="WhatsApp Advisory"
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: '50%',
+              backgroundColor: '#25D366',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <MessageSquare size={17} />
+          </a>
+
           {/* Green List Property Button */}
-          <Link to="/sell" className="btn-green btn-green-pill list-property-btn" style={{ backgroundColor: '#386635' }}>
-            <Plus size={14} className="mobile-only-icon" />
-            <span>List Property</span>
+          <Link 
+            to="/sell" 
+            className="btn-green btn-pill list-property-btn"
+          >
+            <Plus size={15} />
+            <span className="list-property-label">List Property</span>
           </Link>
 
-          {/* Hamburger Menu Icon */}
+          {/* Hamburger Menu Toggle (Mobile) */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Navigation Menu"
             style={{ 
-              width: 42, 
-              height: 42, 
-              borderRadius: '50%', 
-              backgroundColor: mobileMenuOpen ? '#EBF4EC' : '#F3F4F6', 
-              color: mobileMenuOpen ? '#386635' : '#111827',
+              width: 40, 
+              height: 40, 
+              borderRadius: 12, 
+              backgroundColor: mobileMenuOpen ? '#EBF4EC' : '#F1F5F9', 
+              color: mobileMenuOpen ? '#386635' : '#0F172A',
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
-              border: 'none',
               cursor: 'pointer',
-              transition: 'all 0.2s ease'
+              border: '1px solid',
+              borderColor: mobileMenuOpen ? 'rgba(56, 102, 53, 0.3)' : '#E2E8F0'
             }}
+            className="mobile-menu-trigger"
           >
             {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -128,96 +273,142 @@ export const Navbar: React.FC<NavbarProps> = ({ onSwitchToCRM }) => {
 
       </div>
 
-      {/* 3. Mobile Slide-Down Menu Drawer */}
+      {/* 3. Mobile Slide-In Essential Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="mobile-drawer-overlay" style={{ backgroundColor: '#FFFFFF', borderTop: '1px solid #E5E7EB', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.85rem', boxShadow: '0 20px 30px rgba(0,0,0,0.1)' }}>
+        <div 
+          className="mobile-drawer"
+          style={{ 
+            backgroundColor: '#FFFFFF', 
+            borderTop: '1px solid #E2E8F0', 
+            padding: '1.25rem 1.5rem 2rem 1.5rem', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '1.25rem', 
+            boxShadow: '0 30px 60px rgba(0, 0, 0, 0.2)',
+            maxHeight: 'calc(100vh - 70px)',
+            overflowY: 'auto'
+          }}
+        >
           
-          <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#9CA3AF', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-            Navigation Menu
+
+          {/* Requested 5 Menu Items Only */}
+          <div>
+            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+              Navigation Menu
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    padding: '0.75rem 0.95rem',
+                    borderRadius: 10,
+                    fontSize: '0.98rem',
+                    fontWeight: 700,
+                    color: location.pathname === link.path || (link.path.includes('?') && location.search === link.path.split('?')[1]) ? '#386635' : '#1E293B',
+                    backgroundColor: location.pathname === link.path || (link.path.includes('?') && location.search === link.path.split('?')[1]) ? '#EBF4EC' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <span>{link.name}</span>
+                  <ChevronRight size={16} style={{ color: '#94A3B8' }} />
+                </Link>
+              ))}
+            </div>
           </div>
 
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              onClick={() => setMobileMenuOpen(false)}
-              style={{
-                fontSize: '1.05rem',
-                fontWeight: location.pathname === link.path ? 800 : 600,
-                color: location.pathname === link.path ? '#386635' : '#111827',
-                padding: '0.6rem 0.75rem',
-                borderRadius: 8,
-                backgroundColor: location.pathname === link.path ? '#EBF4EC' : 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <span>{link.name}</span>
-              {location.pathname === link.path && <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#386635' }}></span>}
-            </Link>
-          ))}
-
-          {/* Quick Contact & Staff CRM Action Block */}
-          <div style={{ marginTop: '1rem', paddingTop: '1.25rem', borderTop: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {/* Action CTAs */}
+          <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div className="flex gap-2">
-              <a href="tel:+918445190135" className="btn-outline-gray flex-1 flex items-center justify-center gap-1" style={{ padding: '0.65rem', fontSize: '0.85rem' }}>
-                <Phone size={14} style={{ color: '#386635' }} /> Call Us
+              <a 
+                href="tel:+918445190135" 
+                className="btn-outline-gray flex-1 flex items-center justify-center gap-1.5" 
+                style={{ padding: '0.75rem', borderRadius: 12, fontSize: '0.88rem', fontWeight: 700 }}
+              >
+                <Phone size={15} style={{ color: '#386635' }} /> Call Hotline
               </a>
-              <a href="mailto:info@a2realtors.in" className="btn-outline-gray flex-1 flex items-center justify-center gap-1" style={{ padding: '0.65rem', fontSize: '0.85rem' }}>
-                <Mail size={14} style={{ color: '#386635' }} /> Email
+              <a 
+                href="https://wa.me/918445190135" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="btn-whatsapp flex-1 flex items-center justify-center gap-1.5" 
+                style={{ padding: '0.75rem', borderRadius: 12, fontSize: '0.88rem', fontWeight: 700 }}
+              >
+                <MessageSquare size={15} /> WhatsApp
               </a>
             </div>
 
+            {/* Staff CRM Portal Login Access */}
             <button 
               onClick={() => { setMobileMenuOpen(false); onSwitchToCRM && onSwitchToCRM(); }} 
-              className="btn-green w-full flex items-center justify-center gap-2" 
-              style={{ backgroundColor: '#111827', padding: '0.75rem', borderRadius: 10, fontSize: '0.9rem' }}
+              className="btn-dark w-full flex items-center justify-center gap-2" 
+              style={{ padding: '0.85rem', borderRadius: 12, fontSize: '0.92rem', width: '100%' }}
             >
-              <LayoutDashboard size={16} /> Open Staff CRM Portal
+              <Lock size={16} style={{ color: '#DFB76C' }} />
+              <span>Staff CRM Portal</span>
             </button>
+          </div>
+
+          {/* Footer */}
+          <div style={{ textAlign: 'center', fontSize: '0.72rem', color: '#94A3B8' }}>
+            © {new Date().getFullYear()} A2 Realtors • Premium Real Estate Advisory
           </div>
 
         </div>
       )}
 
-      {/* Inline Scoped Styles */}
+      {/* Scoped CSS for Header Alignment in Mobile & PC */}
       <style>{`
         .top-bar-desktop {
           display: block;
         }
-
         .navbar-container {
-          height: 76px;
+          height: 74px;
         }
-
         .desktop-nav-links {
           display: none;
         }
-
-        .list-property-btn {
-          padding: 0.55rem 1.25rem;
-          font-size: 0.85rem;
-          white-space: nowrap;
-        }
-
-        .mobile-only-icon {
-          display: none;
-        }
-
         .desktop-only {
           display: none;
         }
+        .mobile-only-icon-btn {
+          display: flex;
+        }
+        .list-property-btn {
+          padding: 0.55rem 1.3rem;
+          font-size: 0.86rem;
+          white-space: nowrap;
+        }
+        .mobile-menu-trigger {
+          display: flex;
+        }
 
+        /* Large Screens (PC / Desktop >= 1024px) */
         @media (min-width: 1024px) {
           .desktop-nav-links {
             display: flex !important;
           }
           .desktop-only {
-            display: inline-flex !important;
+            display: flex !important;
+          }
+          .mobile-only-icon-btn {
+            display: none !important;
+          }
+          .mobile-menu-trigger {
+            display: none !important;
+          }
+          .list-property-btn {
+            padding: 0.55rem 1.4rem;
+            font-size: 0.88rem;
           }
         }
 
+        /* Small Screens (Mobile < 1024px) */
         @media (max-width: 1023px) {
           .top-bar-desktop {
             display: none !important;
@@ -227,9 +418,19 @@ export const Navbar: React.FC<NavbarProps> = ({ onSwitchToCRM }) => {
             padding-left: 1rem;
             padding-right: 1rem;
           }
+          .list-property-label {
+            display: none;
+          }
           .list-property-btn {
-            padding: 0.45rem 0.85rem;
-            font-size: 0.78rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 50px !important;
+          }
+        }
+
+        @media (min-width: 480px) and (max-width: 1023px) {
+          .list-property-label {
+            display: inline;
           }
         }
       `}</style>

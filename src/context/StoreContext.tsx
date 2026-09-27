@@ -13,6 +13,7 @@ import {
   LocationInfo,
   UserProfile,
   UserRole,
+  UserRoleDefinition,
   LeadStatus,
   DealStage
 } from '../types';
@@ -28,7 +29,8 @@ import {
   initialBlogPosts,
   initialProjects,
   initialLocations,
-  initialStaff
+  initialStaff,
+  initialRoles
 } from '../db/seedData';
 
 interface StoreContextType {
@@ -44,6 +46,7 @@ interface StoreContextType {
   projects: ConstructionProject[];
   locations: LocationInfo[];
   staff: UserProfile[];
+  roles: UserRoleDefinition[];
   
   activeUser: UserProfile;
   activeRole: UserRole;
@@ -53,6 +56,15 @@ interface StoreContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string, role?: UserRole) => boolean;
   logout: () => void;
+  
+  // Staff & RBAC Management
+  addStaff: (staffData: { name: string; email: string; phone: string; role: UserRole; password?: string; avatar?: string }) => UserProfile;
+  updateStaff: (id: string, updates: Partial<UserProfile>) => void;
+  changeStaffPassword: (id: string, newPassword: string) => void;
+  removeStaff: (id: string) => boolean;
+  addRole: (roleData: Omit<UserRoleDefinition, 'id'>) => UserRoleDefinition;
+  updateRole: (roleKey: string, updates: Partial<UserRoleDefinition>) => void;
+  removeRole: (roleKey: string) => boolean;
   
   favorites: string[];
   toggleFavorite: (propertyId: string) => void;
@@ -69,6 +81,8 @@ interface StoreContextType {
   addProperty: (property: Partial<Property>) => Property;
   updateProperty: (id: string, updates: Partial<Property>) => void;
   deleteProperty: (id: string) => void;
+  approveProperty: (id: string) => void;
+  rejectProperty: (id: string, reason?: string) => void;
   
   addLead: (leadData: Partial<Lead>) => Lead;
   updateLead: (id: string, updates: Partial<Lead>) => void;
@@ -86,8 +100,17 @@ interface StoreContextType {
   createDeal: (dealData: Partial<Deal>) => Deal;
   updateDealStage: (id: string, stage: DealStage) => void;
   
-  addBlogPost: (post: Partial<BlogPost>) => void;
-  addProject: (project: Partial<ConstructionProject>) => void;
+  addBlogPost: (post: Partial<BlogPost>) => BlogPost;
+  updateBlogPost: (id: string, updates: Partial<BlogPost>) => void;
+  deleteBlogPost: (id: string) => void;
+  
+  addProject: (project: Partial<ConstructionProject>) => ConstructionProject;
+  updateProject: (id: string, updates: Partial<ConstructionProject>) => void;
+  deleteProject: (id: string) => void;
+  
+  addLocation: (loc: Partial<LocationInfo>) => LocationInfo;
+  updateLocation: (id: string, updates: Partial<LocationInfo>) => void;
+  deleteLocation: (id: string) => void;
   
   // Intelligence Engine
   calculateLeadScore: (lead: Partial<Lead>) => number;
@@ -138,118 +161,247 @@ interface StoreContextType {
   updateHomepageSettings: (settingsUpdates: Partial<StoreContextType['homepageSettings']>) => void;
 }
 
+// Input Sanitization Helper against XSS and Script Injection
+export const sanitizeText = (input: string | undefined | null): string => {
+  if (!input) return '';
+  return String(input)
+    .replace(/<[^>]*>/g, '') // Strip HTML tags
+    .replace(/javascript:/gi, '') // Strip javascript pseudo-protocol
+    .replace(/vbscript:/gi, '')
+    .replace(/on\w+=/gi, '') // Strip inline event handlers
+    .trim();
+};
+
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [properties, setProperties] = useState<Property[]>(() => {
     const saved = localStorage.getItem('a2_properties');
-    return saved ? JSON.parse(saved) : initialProperties;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing properties from localStorage', e);
+      }
+    }
+    return initialProperties;
   });
 
   const [leads, setLeads] = useState<Lead[]>(() => {
     const saved = localStorage.getItem('a2_leads');
-    return saved ? JSON.parse(saved) : initialLeads;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing leads from localStorage', e);
+      }
+    }
+    return initialLeads;
   });
 
   const [owners, setOwners] = useState<Owner[]>(() => {
     const saved = localStorage.getItem('a2_owners');
-    return saved ? JSON.parse(saved) : initialOwners;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing owners from localStorage', e);
+      }
+    }
+    return initialOwners;
   });
 
   const [customers, setCustomers] = useState<Customer[]>(() => {
     const saved = localStorage.getItem('a2_customers');
-    return saved ? JSON.parse(saved) : initialCustomers;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing customers from localStorage', e);
+      }
+    }
+    return initialCustomers;
   });
 
   const [siteVisits, setSiteVisits] = useState<SiteVisit[]>(() => {
     const saved = localStorage.getItem('a2_site_visits');
-    return saved ? JSON.parse(saved) : initialSiteVisits;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing site visits from localStorage', e);
+      }
+    }
+    return initialSiteVisits;
   });
 
   const [followUps, setFollowUps] = useState<FollowUpTask[]>(() => {
     const saved = localStorage.getItem('a2_follow_ups');
-    return saved ? JSON.parse(saved) : initialFollowUps;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing follow ups from localStorage', e);
+      }
+    }
+    return initialFollowUps;
   });
 
   const [deals, setDeals] = useState<Deal[]>(() => {
     const saved = localStorage.getItem('a2_deals');
-    return saved ? JSON.parse(saved) : initialDeals;
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing deals from localStorage', e);
+      }
+    }
+    return initialDeals;
   });
 
   const [campaigns] = useState<MarketingCampaign[]>(initialCampaigns);
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(initialBlogPosts);
-  const [projects, setProjects] = useState<ConstructionProject[]>(initialProjects);
-  const [locations] = useState<LocationInfo[]>(initialLocations);
-  const [staff] = useState<UserProfile[]>(initialStaff);
 
-  const [activeRole, setActiveRole] = useState<UserRole>('SUPER_ADMIN');
-  const [activeUser, setActiveUser] = useState<UserProfile>(initialStaff[0]);
-
-  // Auth State for Private CRM
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    const saved = localStorage.getItem('a2_auth');
-    return saved !== 'false';
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() => {
+    const saved = localStorage.getItem('a2_blog_posts');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing blog posts from localStorage', e);
+      }
+    }
+    return initialBlogPosts;
   });
 
-  const login = (email: string, password: string, role?: UserRole): boolean => {
-    const foundStaff = staff.find(s => s.email.toLowerCase() === email.toLowerCase()) || staff[0];
-    const targetRole = role || foundStaff.role;
-    setActiveRole(targetRole);
-    setActiveUser(foundStaff);
-    setIsAuthenticated(true);
-    localStorage.setItem('a2_auth', 'true');
-    return true;
-  };
+  const [projects, setProjects] = useState<ConstructionProject[]>(() => {
+    const saved = localStorage.getItem('a2_projects');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing projects from localStorage', e);
+      }
+    }
+    return initialProjects;
+  });
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.setItem('a2_auth', 'false');
-  };
+  const [locations, setLocations] = useState<LocationInfo[]>(() => {
+    const saved = localStorage.getItem('a2_locations');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing locations from localStorage', e);
+      }
+    }
+    return initialLocations;
+  });
+  
+  const [staff, setStaff] = useState<UserProfile[]>(() => {
+    const saved = localStorage.getItem('a2_staff');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing staff from localStorage', e);
+      }
+    }
+    return initialStaff;
+  });
+
+  const [roles, setRoles] = useState<UserRoleDefinition[]>(() => {
+    const saved = localStorage.getItem('a2_roles');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing roles from localStorage', e);
+      }
+    }
+    return initialRoles;
+  });
+
+  const [activeRole, setActiveRole] = useState<UserRole>('SUPER_ADMIN');
+  const [activeUser, setActiveUser] = useState<UserProfile>(() => staff[0] || initialStaff[0]);
+
+  // Auth State for Private CRM — default to false for unauthenticated visitors
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    const saved = localStorage.getItem('a2_auth');
+    return saved === 'true';
+  });
 
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem('a2_favorites');
-    return saved ? JSON.parse(saved) : ['prop-1'];
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing favorites from localStorage', e);
+      }
+    }
+    return ['prop-1'];
   });
 
   const [compareList, setCompareList] = useState<string[]>([]);
 
-  const [brandTheme, setBrandTheme] = useState({
-    primaryColor: '#386635',
-    secondaryColor: '#111827',
-    accentColor: '#457B43',
-    websiteName: 'A2 Realtors',
-    phone: '+91 84451 90135',
-    address: '25 B, Inder Road, Dalanwala, Dehradun, Uttarakhand 248001'
+  const [brandTheme, setBrandTheme] = useState(() => {
+    const saved = localStorage.getItem('a2_brand_theme');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing brand theme from localStorage', e);
+      }
+    }
+    return {
+      primaryColor: '#386635',
+      secondaryColor: '#111827',
+      accentColor: '#457B43',
+      websiteName: 'A2 Realtors',
+      phone: '+91 84451 90135',
+      address: '25 B, Inder Road, Dalanwala, Dehradun, Uttarakhand 248001'
+    };
   });
 
-  const [homepageSettings, setHomepageSettings] = useState({
-    heroHeadline: 'Your Trusted Real Estate Partner in Dehradun',
-    heroSubheadline: 'From luxury apartments to commercial spaces, we help you find the property that fits your lifestyle and investment goals.',
-    heroButtonText: 'Explore Property',
-    categoriesTitle: 'Choose Your Property Type',
-    popularPropertiesTitle: 'Best Properties Sale',
-    whatWeDoTitle: 'See how A2 Realtors can Help',
-    testimonialsTitle: 'What Clients Say About Pillar',
-    contactTitle: "Let's Talk Your Property Goal",
-    articlesTitle: 'Helpful Real Estate Articles',
-    
-    showHeroSearch: true,
-    showPartnerLogos: true,
-    showCategories: true,
-    showPopularProperties: true,
-    showWhatWeDo: true,
-    showTestimonials: true,
-    showContactForm: true,
-    showLatestArticles: true,
+  const [homepageSettings, setHomepageSettings] = useState(() => {
+    const saved = localStorage.getItem('a2_homepage_settings');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing homepage settings from localStorage', e);
+      }
+    }
+    return {
+      heroHeadline: 'Your Trusted Real Estate Partner in Dehradun',
+      heroSubheadline: 'From luxury apartments to commercial spaces, we help you find the property that fits your lifestyle and investment goals.',
+      heroButtonText: 'Explore Property',
+      categoriesTitle: 'Choose Your Property Type',
+      popularPropertiesTitle: 'Best Properties Sale',
+      whatWeDoTitle: 'See how A2 Realtors can Help',
+      testimonialsTitle: 'What Clients Say About Pillar',
+      contactTitle: "Let's Talk Your Property Goal",
+      articlesTitle: 'Helpful Real Estate Articles',
+      
+      showHeroSearch: true,
+      showPartnerLogos: true,
+      showCategories: true,
+      showPopularProperties: true,
+      showWhatWeDo: true,
+      showTestimonials: true,
+      showContactForm: true,
+      showLatestArticles: true,
 
-    // Property Display Grid, Columns, Rows & Spacing Controls
-    propertyGridCols: 4,
-    maxPropertiesCount: 8,
-    sectionPaddingY: '4.5rem',
-    gridGap: '1.5rem',
-    cardPadding: '1rem'
+      // Property Display Grid, Columns, Rows & Spacing Controls
+      propertyGridCols: 4,
+      maxPropertiesCount: 8,
+      sectionPaddingY: '4.5rem',
+      gridGap: '1.5rem',
+      cardPadding: '1rem'
+    };
   });
 
+  // Local Storage Sync Effects
   useEffect(() => {
     localStorage.setItem('a2_properties', JSON.stringify(properties));
   }, [properties]);
@@ -283,8 +435,141 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [favorites]);
 
   useEffect(() => {
+    localStorage.setItem('a2_staff', JSON.stringify(staff));
+  }, [staff]);
+
+  useEffect(() => {
+    localStorage.setItem('a2_roles', JSON.stringify(roles));
+  }, [roles]);
+
+  useEffect(() => {
+    localStorage.setItem('a2_blog_posts', JSON.stringify(blogPosts));
+  }, [blogPosts]);
+
+  useEffect(() => {
+    localStorage.setItem('a2_projects', JSON.stringify(projects));
+  }, [projects]);
+
+  useEffect(() => {
+    localStorage.setItem('a2_locations', JSON.stringify(locations));
+  }, [locations]);
+
+  useEffect(() => {
+    localStorage.setItem('a2_brand_theme', JSON.stringify(brandTheme));
+  }, [brandTheme]);
+
+  useEffect(() => {
+    localStorage.setItem('a2_homepage_settings', JSON.stringify(homepageSettings));
+  }, [homepageSettings]);
+
+  const login = (emailInput: string, passwordInput: string, roleOverride?: UserRole): boolean => {
+    const cleanEmail = sanitizeText(emailInput).toLowerCase();
+    const cleanPass = passwordInput.trim();
+
+    // Find staff member by email (or username "admin" maps to admin@a2realtors.in)
+    const foundStaff = staff.find(s => {
+      const sEmail = s.email.toLowerCase();
+      if (cleanEmail === 'admin' && sEmail === 'admin@a2realtors.in') return true;
+      return sEmail === cleanEmail;
+    });
+
+    if (!foundStaff) {
+      // Allow master admin login if matching admin credentials
+      if ((cleanEmail === 'admin@a2realtors.in' || cleanEmail === 'admin') && cleanPass === 'admin123') {
+        const fallbackAdmin = staff[0] || initialStaff[0];
+        setActiveRole('SUPER_ADMIN');
+        setActiveUser(fallbackAdmin);
+        setIsAuthenticated(true);
+        localStorage.setItem('a2_auth', 'true');
+        return true;
+      }
+      return false;
+    }
+
+    // Verify Password strictly against staff profile
+    const expectedPassword = foundStaff.password || 'admin123';
+    if (cleanPass === expectedPassword) {
+      const targetRole = roleOverride || foundStaff.role;
+      setActiveRole(targetRole);
+      setActiveUser(foundStaff);
+      setIsAuthenticated(true);
+      localStorage.setItem('a2_auth', 'true');
+      return true;
+    }
+
+    return false;
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    localStorage.setItem('a2_auth', 'false');
+  };
+
+  // Staff & Role Actions
+  const addStaff = (staffData: { name: string; email: string; phone: string; role: UserRole; password?: string; avatar?: string }): UserProfile => {
+    const newStaffMember: UserProfile = {
+      id: `u-${Date.now()}`,
+      name: staffData.name,
+      email: staffData.email.trim().toLowerCase(),
+      phone: staffData.phone,
+      role: staffData.role,
+      password: staffData.password || 'admin123',
+      avatar: staffData.avatar || `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200`,
+      rating: 5.0,
+      dealsClosed: 0,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    setStaff(prev => [...prev, newStaffMember]);
+    return newStaffMember;
+  };
+
+  const updateStaff = (id: string, updates: Partial<UserProfile>) => {
+    setStaff(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+    if (activeUser.id === id) {
+      setActiveUser(prev => ({ ...prev, ...updates }));
+    }
+  };
+
+  const changeStaffPassword = (id: string, newPassword: string) => {
+    setStaff(prev => prev.map(s => s.id === id ? { ...s, password: newPassword } : s));
+    if (activeUser.id === id) {
+      setActiveUser(prev => ({ ...prev, password: newPassword }));
+    }
+  };
+
+  const removeStaff = (id: string): boolean => {
+    if (staff.length <= 1) {
+      return false; // Prevent removing last remaining staff member
+    }
+    setStaff(prev => prev.filter(s => s.id !== id));
+    return true;
+  };
+
+  const addRole = (roleData: Omit<UserRoleDefinition, 'id'>): UserRoleDefinition => {
+    const newRole: UserRoleDefinition = {
+      id: `role-${Date.now()}`,
+      ...roleData
+    };
+    setRoles(prev => [...prev, newRole]);
+    return newRole;
+  };
+
+  const updateRole = (roleKey: string, updates: Partial<UserRoleDefinition>) => {
+    setRoles(prev => prev.map(r => r.roleKey === roleKey ? { ...r, ...updates } : r));
+  };
+
+  const removeRole = (roleKey: string): boolean => {
+    const isSystemRole = ['SUPER_ADMIN', 'ADMIN', 'SALES_MANAGER', 'AGENT', 'TELECALLER'].includes(roleKey);
+    if (isSystemRole) return false;
+    setRoles(prev => prev.filter(r => r.roleKey !== roleKey));
+    return true;
+  };
+
+  useEffect(() => {
     const foundUser = staff.find(s => s.role === activeRole) || staff[0];
-    setActiveUser(foundUser);
+    if (foundUser) {
+      setActiveUser(foundUser);
+    }
   }, [activeRole, staff]);
 
   const toggleFavorite = (propertyId: string) => {
@@ -381,17 +666,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // PUBLIC FORM SUBMISSIONS
   const submitPropertyEnquiry = (data: { propertyId: string; name: string; phone: string; email?: string; requirement?: string }) => {
+    const cleanName = sanitizeText(data.name);
+    const cleanPhone = sanitizeText(data.phone);
+    const cleanEmail = data.email ? sanitizeText(data.email) : undefined;
+    const cleanReq = data.requirement ? sanitizeText(data.requirement) : undefined;
     const prop = properties.find(p => p.id === data.propertyId);
     
     // Create Customer if not exists
-    let existingCust = customers.find(c => c.phone === data.phone);
+    let existingCust = customers.find(c => c.phone === cleanPhone);
     if (!existingCust) {
       existingCust = {
         id: `cust-${Date.now()}`,
-        fullName: data.name,
-        phone: data.phone,
-        whatsapp: data.phone,
-        email: data.email,
+        fullName: cleanName,
+        phone: cleanPhone,
+        whatsapp: cleanPhone,
+        email: cleanEmail,
         customerType: 'BUYER',
         assignedAgentId: prop?.assignedAgentId || staff[2].id,
         assignedAgentName: prop?.assignedAgentName || staff[2].name,
@@ -408,15 +697,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const newLead: Lead = {
       id: `lead-${Date.now()}`,
       leadCode: newLeadCode,
-      customerName: data.name,
-      phone: data.phone,
-      whatsapp: data.phone,
-      email: data.email,
+      customerName: cleanName,
+      phone: cleanPhone,
+      whatsapp: cleanPhone,
+      email: cleanEmail,
       source: 'WEBSITE',
       leadType: prop?.transactionType || 'BUY',
-      requirementSummary: data.requirement || `Enquiry for ${prop?.title || 'Property'} (${prop?.propertyCode || ''})`,
-      minBudget: prop ? prop.price * 0.8 : 5000000,
-      maxBudget: prop ? prop.price * 1.2 : 20000000,
+      requirementSummary: cleanReq || `Enquiry for ${prop?.title || 'Property'} (${prop?.propertyCode || ''})`,
+      minBudget: prop ? Math.max(0, prop.price * 0.8) : 5000000,
+      maxBudget: prop ? Math.max(0, prop.price * 1.2) : 20000000,
       preferredLocation: prop?.location || 'Dehradun',
       preferredPropertyType: prop?.propertyType || 'INDEPENDENT_HOUSE',
       preferredBedrooms: prop?.bedrooms || 3,
@@ -442,8 +731,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       id: `fu-${Date.now()}`,
       leadId: newLead.id,
       leadCode: newLeadCode,
-      customerName: data.name,
-      customerPhone: data.phone,
+      customerName: cleanName,
+      customerPhone: cleanPhone,
       assignedUserId: newLead.assignedAgentId,
       assignedUserName: newLead.assignedAgentName,
       type: 'CALL',
@@ -461,45 +750,64 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const submitOwnerPropertyListing = (data: { ownerName: string; phone: string; email?: string; propertyType: any; location: string; areaSqft: number; expectedPrice: number; description: string }) => {
+    const cleanOwnerName = sanitizeText(data.ownerName);
+    const cleanPhone = sanitizeText(data.phone);
+    const cleanEmail = data.email ? sanitizeText(data.email) : undefined;
+    const cleanLocation = sanitizeText(data.location);
+    const cleanDesc = sanitizeText(data.description);
+    const validArea = Math.max(10, Number(data.areaSqft) || 1000);
+    const validPrice = Math.max(1000, Number(data.expectedPrice) || 1000000);
+
     // 1. Create Owner Record
     const newOwner: Owner = {
       id: `own-${Date.now()}`,
-      fullName: data.ownerName,
-      phone: data.phone,
-      email: data.email,
-      address: data.location,
+      fullName: cleanOwnerName,
+      phone: cleanPhone,
+      email: cleanEmail,
+      address: cleanLocation,
       preferredCommunication: 'WhatsApp',
       propertiesOwned: [],
-      askingPriceNotes: `Expected price: ₹${(data.expectedPrice / 100000).toFixed(2)} Lakhs`,
+      askingPriceNotes: `Expected price: ₹${(validPrice / 100000).toFixed(2)} Lakhs`,
       verificationStatus: 'PENDING',
       assignedAgentId: staff[1].id,
       assignedAgentName: staff[1].name,
       createdAt: new Date().toISOString().split('T')[0]
     };
 
-    // 2. Create Property Draft
+    // 2. Create Property in PENDING_APPROVAL status (Awaiting Admin Approval)
     const newPropCode = `A2-${1150 + properties.length + 1}`;
+    const priceDisplayVal = validPrice >= 10000000 
+      ? `₹${(validPrice / 10000000).toFixed(2)} Cr` 
+      : `₹${(validPrice / 100000).toFixed(2)} Lakhs`;
+
     const newProperty: Property = {
       id: `prop-${Date.now()}`,
       propertyCode: newPropCode,
-      title: `${data.propertyType.replace('_', ' ')} for Sale — ${data.location}`,
+      title: `${String(data.propertyType).replace('_', ' ')} for Sale — ${cleanLocation}`,
       slug: `property-${newPropCode.toLowerCase()}`,
-      description: data.description || `Property submitted by owner ${data.ownerName}. Pending verification.`,
+      description: cleanDesc || `Property listed by owner ${cleanOwnerName}. Awaiting Admin Review & Approval.`,
       transactionType: 'BUY',
       propertyType: data.propertyType,
-      status: 'DRAFT',
-      price: data.expectedPrice,
-      priceDisplay: `₹${(data.expectedPrice / 100000).toFixed(2)} Lakhs`,
-      location: data.location,
-      address: `${data.location}, Dehradun`,
-      areaSqft: data.areaSqft,
+      status: 'PENDING_APPROVAL',
+      approvalStatus: 'PENDING',
+      price: validPrice,
+      priceDisplay: priceDisplayVal,
+      location: cleanLocation,
+      address: `${cleanLocation}, Dehradun`,
+      areaSqft: validArea,
       constructionStatus: 'READY_TO_MOVE',
       amenities: ['Power Backup', 'Water Supply'],
       featured: false,
       verified: false,
       published: false,
+      submittedBy: {
+        name: cleanOwnerName,
+        phone: cleanPhone,
+        email: cleanEmail,
+        submittedAt: new Date().toISOString()
+      },
       images: [
-        { id: `img-${Date.now()}`, url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Submitted Photo' }
+        { id: `img-${Date.now()}`, url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Submitted Owner Photo' }
       ],
       ownerId: newOwner.id,
       assignedAgentId: staff[1].id,
@@ -517,16 +825,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const newLead: Lead = {
       id: `lead-${Date.now()}`,
       leadCode: newLeadCode,
-      customerName: data.ownerName,
-      phone: data.phone,
-      whatsapp: data.phone,
-      email: data.email,
+      customerName: cleanOwnerName,
+      phone: cleanPhone,
+      whatsapp: cleanPhone,
+      email: cleanEmail,
       source: 'WEBSITE',
       leadType: 'SELL' as any,
-      requirementSummary: `SELLER LEAD: Wants to sell ${data.propertyType} in ${data.location}. Expected Price: ₹${data.expectedPrice}`,
-      minBudget: data.expectedPrice,
-      maxBudget: data.expectedPrice,
-      preferredLocation: data.location,
+      requirementSummary: `SELLER LEAD: Wants to sell ${data.propertyType} in ${cleanLocation}. Expected Price: ₹${validPrice}`,
+      minBudget: validPrice,
+      maxBudget: validPrice,
+      preferredLocation: cleanLocation,
       preferredPropertyType: data.propertyType,
       score: 90,
       temperature: 'HOT',
@@ -535,7 +843,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       assignedAgentName: staff[1].name,
       createdAt: new Date().toISOString().split('T')[0],
       history: [
-        { id: `act-${Date.now()}`, timestamp: new Date().toLocaleString(), type: 'OWNER_LISTING_SUBMITTED', description: `Owner submitted property listing for ${data.location}`, user: 'Property Owner' }
+        { id: `act-${Date.now()}`, timestamp: new Date().toLocaleString(), type: 'OWNER_LISTING_SUBMITTED', description: `Owner submitted property listing for ${cleanLocation}`, user: 'Property Owner' }
       ]
     };
 
@@ -549,32 +857,37 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         id: `fu-${Date.now()}`,
         leadId: newLead.id,
         leadCode: newLeadCode,
-        customerName: data.ownerName,
-        customerPhone: data.phone,
+        customerName: cleanOwnerName,
+        customerPhone: cleanPhone,
         assignedUserId: staff[1].id,
         assignedUserName: staff[1].name,
         type: 'CALL',
         scheduledAt: new Date(Date.now() + 3600000).toISOString().slice(0, 16),
         priority: 'HIGH',
         status: 'PENDING',
-        notes: `Verify new owner property listing (${newPropCode}) in ${data.location}.`
+        notes: `Verify new owner property listing (${newPropCode}) in ${cleanLocation}.`
       },
       ...prev
     ]);
   };
 
   const submitGeneralContact = (data: { name: string; phone: string; email?: string; message: string; requirement?: string }) => {
+    const cleanName = sanitizeText(data.name);
+    const cleanPhone = sanitizeText(data.phone);
+    const cleanEmail = data.email ? sanitizeText(data.email) : undefined;
+    const cleanMessage = sanitizeText(data.message || data.requirement);
+
     const newLeadCode = `L-${1000 + leads.length + 1}`;
     const newLead: Lead = {
       id: `lead-${Date.now()}`,
       leadCode: newLeadCode,
-      customerName: data.name,
-      phone: data.phone,
-      whatsapp: data.phone,
-      email: data.email,
+      customerName: cleanName,
+      phone: cleanPhone,
+      whatsapp: cleanPhone,
+      email: cleanEmail,
       source: 'WEBSITE',
       leadType: 'BUY',
-      requirementSummary: data.message || data.requirement || 'General contact enquiry from website',
+      requirementSummary: cleanMessage || 'General contact enquiry from website',
       minBudget: 5000000,
       maxBudget: 15000000,
       preferredLocation: 'Dehradun',
@@ -594,34 +907,44 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // CRM CRUD METHODS
   const addProperty = (propertyData: Partial<Property>) => {
-    const code = `A2-${1150 + properties.length + 1}`;
+    const code = sanitizeText(propertyData.propertyCode) || `A2-${1150 + properties.length + 1}`;
+    const priceVal = Math.max(0, Number(propertyData.price) || 10000000);
+    const priceDisplayVal = propertyData.priceDisplay || (priceVal >= 10000000 
+      ? `₹${(priceVal / 10000000).toFixed(2)} Cr` 
+      : `₹${(priceVal / 100000).toFixed(2)} Lakhs`);
+    
+    const cleanTitle = sanitizeText(propertyData.title) || 'New Property Listing';
+    const cleanLocation = sanitizeText(propertyData.location) || 'Dehradun';
+    const cleanAddress = sanitizeText(propertyData.address) || `${cleanLocation}, Uttarakhand`;
+    const cleanDesc = sanitizeText(propertyData.description) || '';
+
     const newProp: Property = {
-      id: `prop-${Date.now()}`,
+      id: propertyData.id || `prop-${Date.now()}`,
       propertyCode: code,
-      title: propertyData.title || 'New Property Listing',
-      slug: (propertyData.title || 'new-property').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      description: propertyData.description || '',
+      title: cleanTitle,
+      slug: propertyData.slug || cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString().slice(-4),
+      description: cleanDesc,
       transactionType: propertyData.transactionType || 'BUY',
       propertyType: propertyData.propertyType || 'INDEPENDENT_HOUSE',
       status: propertyData.status || 'AVAILABLE',
-      price: propertyData.price || 10000000,
-      priceDisplay: propertyData.priceDisplay || `₹${((propertyData.price || 10000000) / 100000).toFixed(2)} Lakhs`,
-      location: propertyData.location || 'Dehradun',
-      address: propertyData.address || 'Dehradun, Uttarakhand',
-      areaSqft: propertyData.areaSqft || 1500,
-      bedrooms: propertyData.bedrooms || 3,
-      bathrooms: propertyData.bathrooms || 3,
+      price: priceVal,
+      priceDisplay: priceDisplayVal,
+      location: cleanLocation,
+      address: cleanAddress,
+      areaSqft: Math.max(10, Number(propertyData.areaSqft) || 1500),
+      bedrooms: Math.max(0, Number(propertyData.bedrooms) || 3),
+      bathrooms: Math.max(0, Number(propertyData.bathrooms) || 3),
       constructionStatus: propertyData.constructionStatus || 'READY_TO_MOVE',
-      amenities: propertyData.amenities || ['Parking', 'Power Backup', 'Security'],
-      featured: propertyData.featured || false,
-      verified: true,
-      published: true,
+      amenities: propertyData.amenities && propertyData.amenities.length > 0 ? propertyData.amenities : ['Parking', 'Power Backup', 'Security', 'Water Supply'],
+      featured: propertyData.featured !== undefined ? propertyData.featured : false,
+      verified: propertyData.verified !== undefined ? propertyData.verified : true,
+      published: propertyData.published !== undefined ? propertyData.published : true,
       images: propertyData.images && propertyData.images.length > 0 ? propertyData.images : [
-        { id: 'img-new', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Main Elevation' }
+        { id: `img-${Date.now()}`, url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Main Elevation' }
       ],
-      assignedAgentId: activeUser.id,
-      assignedAgentName: activeUser.name,
-      assignedAgentPhone: activeUser.phone,
+      assignedAgentId: propertyData.assignedAgentId || activeUser.id,
+      assignedAgentName: propertyData.assignedAgentName || activeUser.name,
+      assignedAgentPhone: propertyData.assignedAgentPhone || activeUser.phone,
       viewCount: 0,
       enquiryCount: 0,
       createdAt: new Date().toISOString().split('T')[0]
@@ -632,30 +955,92 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const updateProperty = (id: string, updates: Partial<Property>) => {
-    setProperties(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+    setProperties(prev => prev.map(p => {
+      if (p.id === id) {
+        let priceDisplay = updates.priceDisplay || p.priceDisplay;
+        if (updates.price !== undefined && !updates.priceDisplay) {
+          const numPrice = Math.max(0, Number(updates.price) || 0);
+          priceDisplay = numPrice >= 10000000 
+            ? `₹${(numPrice / 10000000).toFixed(2)} Cr` 
+            : `₹${(numPrice / 100000).toFixed(2)} Lakhs`;
+        }
+        return {
+          ...p,
+          ...updates,
+          title: updates.title !== undefined ? sanitizeText(updates.title) : p.title,
+          location: updates.location !== undefined ? sanitizeText(updates.location) : p.location,
+          address: updates.address !== undefined ? sanitizeText(updates.address) : p.address,
+          description: updates.description !== undefined ? sanitizeText(updates.description) : p.description,
+          priceDisplay
+        };
+      }
+      return p;
+    }));
   };
 
   const deleteProperty = (id: string) => {
     setProperties(prev => prev.filter(p => p.id !== id));
   };
 
+  const approveProperty = (id: string) => {
+    setProperties(prev => prev.map(p => {
+      if (p.id === id) {
+        return {
+          ...p,
+          status: 'AVAILABLE',
+          published: true,
+          verified: true,
+          approvalStatus: 'APPROVED'
+        };
+      }
+      return p;
+    }));
+
+    // Also mark owner as verified if associated
+    const targetProp = properties.find(p => p.id === id);
+    if (targetProp && targetProp.ownerId) {
+      setOwners(prev => prev.map(o => o.id === targetProp.ownerId ? { ...o, verificationStatus: 'VERIFIED' } : o));
+    }
+  };
+
+  const rejectProperty = (id: string, reason?: string) => {
+    setProperties(prev => prev.map(p => {
+      if (p.id === id) {
+        return {
+          ...p,
+          status: 'REJECTED',
+          published: false,
+          approvalStatus: 'REJECTED',
+          rejectionReason: sanitizeText(reason) || 'Listing submission did not meet verification criteria'
+        };
+      }
+      return p;
+    }));
+  };
+
   const addLead = (leadData: Partial<Lead>) => {
     const code = `L-${1000 + leads.length + 1}`;
+    const cleanCustName = sanitizeText(leadData.customerName) || 'New Client';
+    const cleanPhone = sanitizeText(leadData.phone) || '+91 90000 00000';
+    const cleanEmail = leadData.email ? sanitizeText(leadData.email) : undefined;
+    const cleanLoc = sanitizeText(leadData.preferredLocation) || 'Dehradun';
+    const cleanReq = sanitizeText(leadData.requirementSummary) || 'Requirement intake';
+
     const newLead: Lead = {
       id: `lead-${Date.now()}`,
       leadCode: code,
-      customerName: leadData.customerName || 'New Client',
-      phone: leadData.phone || '+91 90000 00000',
-      whatsapp: leadData.whatsapp || leadData.phone || '+91 90000 00000',
-      email: leadData.email,
+      customerName: cleanCustName,
+      phone: cleanPhone,
+      whatsapp: leadData.whatsapp ? sanitizeText(leadData.whatsapp) : cleanPhone,
+      email: cleanEmail,
       source: leadData.source || 'PHONE',
       leadType: leadData.leadType || 'BUY',
-      requirementSummary: leadData.requirementSummary || 'Requirement intake',
-      minBudget: leadData.minBudget || 5000000,
-      maxBudget: leadData.maxBudget || 15000000,
-      preferredLocation: leadData.preferredLocation || 'Dehradun',
+      requirementSummary: cleanReq,
+      minBudget: Math.max(0, Number(leadData.minBudget) || 5000000),
+      maxBudget: Math.max(0, Number(leadData.maxBudget) || 15000000),
+      preferredLocation: cleanLoc,
       preferredPropertyType: leadData.preferredPropertyType || 'INDEPENDENT_HOUSE',
-      preferredBedrooms: leadData.preferredBedrooms || 3,
+      preferredBedrooms: Math.max(1, Number(leadData.preferredBedrooms) || 3),
       score: calculateLeadScore(leadData),
       temperature: leadData.temperature || 'WARM',
       status: leadData.status || 'NEW',
@@ -801,8 +1186,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const createDeal = (dealData: Partial<Deal>) => {
-    const val = dealData.dealValue || 10000000;
-    const commPct = dealData.commissionPercentage || 2.0;
+    const val = Math.max(0, Number(dealData.dealValue) || 10000000);
+    const commPct = Math.max(0, Math.min(100, Number(dealData.commissionPercentage) || 2.0));
     const totComm = (val * commPct) / 100;
     const agentSplit = totComm * 0.5;
 
@@ -810,18 +1195,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       id: `deal-${Date.now()}`,
       dealCode: `D-2026-${deals.length + 1}`,
       leadId: dealData.leadId || '',
-      customerName: dealData.customerName || 'Buyer Client',
-      ownerName: dealData.ownerName || 'Property Owner',
+      customerName: sanitizeText(dealData.customerName) || 'Buyer Client',
+      ownerName: sanitizeText(dealData.ownerName) || 'Property Owner',
       propertyId: dealData.propertyId || '',
-      propertyTitle: dealData.propertyTitle || 'Dehradun Property',
+      propertyTitle: sanitizeText(dealData.propertyTitle) || 'Dehradun Property',
       agentId: activeUser.id,
       agentName: activeUser.name,
       dealValue: val,
-      bookingAmount: dealData.bookingAmount || 500000,
+      bookingAmount: Math.max(0, Number(dealData.bookingAmount) || 500000),
       commissionPercentage: commPct,
       totalCommission: totComm,
       agentCommissionSplit: agentSplit,
-      companyCommissionSplit: totComm - agentSplit,
+      companyCommissionSplit: Math.max(0, totComm - agentSplit),
       stage: dealData.stage || 'NEGOTIATION',
       paymentStatus: 'PENDING',
       closingDate: dealData.closingDate || new Date(Date.now() + 86400000 * 30).toISOString().split('T')[0],
@@ -837,35 +1222,84 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addBlogPost = (post: Partial<BlogPost>) => {
+    const cleanTitle = sanitizeText(post.title) || 'New Real Estate Article';
     const newPost: BlogPost = {
-      id: `post-${Date.now()}`,
-      title: post.title || 'New Real Estate Article',
-      slug: (post.title || 'article').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      category: post.category || 'Dehradun Real Estate',
-      author: activeUser.name,
-      excerpt: post.excerpt || '',
-      content: post.content || '',
+      id: post.id || `post-${Date.now()}`,
+      title: cleanTitle,
+      slug: post.slug || cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      category: sanitizeText(post.category) || 'Dehradun Real Estate',
+      author: sanitizeText(post.author) || activeUser.name,
+      excerpt: sanitizeText(post.excerpt) || '',
+      content: sanitizeText(post.content) || '',
       coverImage: post.coverImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1000',
-      published: true,
-      views: 0,
-      createdAt: new Date().toISOString().split('T')[0]
+      published: post.published !== undefined ? post.published : true,
+      views: Math.max(0, Number(post.views) || 0),
+      createdAt: post.createdAt || new Date().toISOString().split('T')[0]
     };
     setBlogPosts(prev => [newPost, ...prev]);
+    return newPost;
+  };
+
+  const updateBlogPost = (id: string, updates: Partial<BlogPost>) => {
+    setBlogPosts(prev => prev.map(p => p.id === id ? { 
+      ...p, 
+      ...updates,
+      title: updates.title !== undefined ? sanitizeText(updates.title) : p.title,
+      category: updates.category !== undefined ? sanitizeText(updates.category) : p.category,
+      excerpt: updates.excerpt !== undefined ? sanitizeText(updates.excerpt) : p.excerpt,
+      content: updates.content !== undefined ? sanitizeText(updates.content) : p.content
+    } : p));
+  };
+
+  const deleteBlogPost = (id: string) => {
+    setBlogPosts(prev => prev.filter(p => p.id !== id));
   };
 
   const addProject = (project: Partial<ConstructionProject>) => {
+    const cleanTitle = sanitizeText(project.title) || 'New Construction Project';
     const newProj: ConstructionProject = {
-      id: `proj-${Date.now()}`,
-      title: project.title || 'New Construction Project',
-      category: project.category || 'Construction',
-      location: project.location || 'Dehradun',
-      completionYear: project.completionYear || 2024,
+      id: project.id || `proj-${Date.now()}`,
+      title: cleanTitle,
+      category: sanitizeText(project.category) || 'Construction',
+      location: sanitizeText(project.location) || 'Dehradun',
+      completionYear: Math.max(1900, Number(project.completionYear) || 2024),
       status: project.status || 'Completed',
       imageUrl: project.imageUrl || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=1000',
-      description: project.description || '',
-      scope: project.scope || 'Turnkey Execution'
+      description: sanitizeText(project.description) || '',
+      scope: sanitizeText(project.scope) || 'Turnkey Execution'
     };
     setProjects(prev => [newProj, ...prev]);
+    return newProj;
+  };
+
+  const updateProject = (id: string, updates: Partial<ConstructionProject>) => {
+    setProjects(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+  };
+
+  const deleteProject = (id: string) => {
+    setProjects(prev => prev.filter(p => p.id !== id));
+  };
+
+  const addLocation = (loc: Partial<LocationInfo>) => {
+    const newLoc: LocationInfo = {
+      id: loc.id || `loc-${Date.now()}`,
+      name: loc.name || 'New Locality',
+      slug: loc.slug || (loc.name || 'locality').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      coverImage: loc.coverImage || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=800',
+      avgPricePerSqft: loc.avgPricePerSqft || 6500,
+      description: loc.description || '',
+      highlights: loc.highlights || []
+    };
+    setLocations(prev => [...prev, newLoc]);
+    return newLoc;
+  };
+
+  const updateLocation = (id: string, updates: Partial<LocationInfo>) => {
+    setLocations(prev => prev.map(l => l.id === id ? { ...l, ...updates } : l));
+  };
+
+  const deleteLocation = (id: string) => {
+    setLocations(prev => prev.filter(l => l.id !== id));
   };
 
   const updateBrandTheme = (themeUpdates: Partial<StoreContextType['brandTheme']>) => {
@@ -890,12 +1324,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       projects,
       locations,
       staff,
+      roles,
       activeUser,
       activeRole,
       setActiveRole,
       isAuthenticated,
       login,
       logout,
+      addStaff,
+      updateStaff,
+      changeStaffPassword,
+      removeStaff,
+      addRole,
+      updateRole,
+      removeRole,
       favorites,
       toggleFavorite,
       compareList,
@@ -907,6 +1349,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       addProperty,
       updateProperty,
       deleteProperty,
+      approveProperty,
+      rejectProperty,
       addLead,
       updateLead,
       updateLeadStatus,
@@ -919,7 +1363,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       createDeal,
       updateDealStage,
       addBlogPost,
+      updateBlogPost,
+      deleteBlogPost,
       addProject,
+      updateProject,
+      deleteProject,
+      addLocation,
+      updateLocation,
+      deleteLocation,
       calculateLeadScore,
       matchPropertiesForLead,
       generateAIDescription,

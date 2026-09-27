@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building2, Phone, CheckCircle2, ShieldCheck, ArrowRight, Upload, MessageSquare } from 'lucide-react';
+import { Building2, Phone, CheckCircle2, ShieldCheck, ArrowRight, Upload, MessageSquare, Clock, Check, Sparkles, MapPin } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 
 export const SellPage: React.FC = () => {
@@ -11,8 +11,12 @@ export const SellPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [propertyType, setPropertyType] = useState('INDEPENDENT_HOUSE');
   const [location, setLocation] = useState('Dalanwala');
+  const [address, setAddress] = useState('Dalanwala, Dehradun');
   const [areaSqft, setAreaSqft] = useState<number | ''>(2400);
+  const [bedrooms, setBedrooms] = useState<number | ''>(3);
+  const [bathrooms, setBathrooms] = useState<number | ''>(3);
   const [expectedPrice, setExpectedPrice] = useState<number | ''>(18500000);
+  const [imageUrl, setImageUrl] = useState('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200');
   const [description, setDescription] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,7 +31,7 @@ export const SellPage: React.FC = () => {
       location,
       areaSqft: Number(areaSqft),
       expectedPrice: Number(expectedPrice),
-      description
+      description: description || `${propertyType.replace('_', ' ')} in ${location}. Area: ${areaSqft} sq.ft.`
     });
 
     setSubmitted(true);
@@ -37,16 +41,16 @@ export const SellPage: React.FC = () => {
     <div style={{ backgroundColor: '#F8FAFC', paddingBottom: '6rem' }}>
       
       {/* Hero Header */}
-      <div style={{ backgroundColor: '#0F172A', color: '#FFFFFF', padding: '4.5rem 0', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div className="container" style={{ position: 'relative', zIndex: 2, maxWidth: 800 }}>
-          <div className="badge badge-featured" style={{ marginBottom: '1rem', display: 'inline-flex' }}>
-            🏡 For Dehradun Property Owners
+      <div style={{ backgroundColor: '#0B1120', color: '#FFFFFF', padding: '6rem 0 5rem 0', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div className="container" style={{ position: 'relative', zIndex: 2, maxWidth: 840 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, backgroundColor: 'rgba(56,102,53,0.3)', border: '1px solid rgba(56,102,53,0.6)', padding: '0.35rem 1rem', borderRadius: 20, fontSize: '0.8rem', fontWeight: 700, color: '#A7F3D0', marginBottom: '1.25rem' }}>
+            <Sparkles size={14} /> Verified Direct Buyer Network
           </div>
-          <h1 style={{ fontSize: 'clamp(2.2rem, 4vw, 3.4rem)', fontWeight: 800, color: '#FFFFFF', marginBottom: '1rem', lineHeight: 1.2 }}>
-            Thinking About <span style={{ color: '#D97706', fontFamily: 'Playfair Display', fontStyle: 'italic' }}>Selling Your Property?</span>
+          <h1 style={{ fontSize: 'clamp(2.4rem, 4.5vw, 3.6rem)', fontWeight: 800, color: '#FFFFFF', marginBottom: '1.25rem', lineHeight: 1.2, letterSpacing: '-0.02em' }}>
+            Thinking About <span style={{ color: '#DFB76C', fontFamily: 'Playfair Display, serif', fontStyle: 'italic' }}>Selling Your Property?</span>
           </h1>
-          <p style={{ fontSize: '1.15rem', color: '#CBD5E1', lineHeight: 1.6 }}>
-            A2 Realtors helps property owners showcase their residential houses, plots, flats, and commercial assets to verified serious buyers with total privacy and professional guidance.
+          <p style={{ fontSize: '1.15rem', color: '#94A3B8', lineHeight: 1.7, maxWidth: 760, margin: '0 auto' }}>
+            List your residential villa, luxury flat, plot, or commercial space with A2 Realtors. All listings go through swift administrative review before going live to thousands of pre-qualified buyers.
           </p>
         </div>
       </div>
@@ -55,52 +59,67 @@ export const SellPage: React.FC = () => {
         
         {/* Process Highlights */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" style={{ marginBottom: '3rem' }}>
-          <div className="card" style={{ padding: '1.5rem', backgroundColor: '#FFFFFF' }}>
-            <div style={{ width: 42, height: 42, borderRadius: '50%', backgroundColor: '#FEF3C7', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.75rem' }}>1</div>
-            <h3 style={{ fontSize: '1.1rem', color: '#0F172A', marginBottom: '0.35rem' }}>Verified Buyer Matching</h3>
-            <p style={{ fontSize: '0.88rem', color: '#64748B' }}>We connect your property directly with pre-qualified buyers seeking inventory in your exact locality.</p>
+          <div className="card flex flex-col justify-between" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+            <div>
+              <div style={{ width: 42, height: 42, borderRadius: '50%', backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.85rem' }}>1</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.45rem', lineHeight: 1.3 }}>Submit Property Details</h3>
+              <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6 }}>Share your property specifications, photos, and expected valuation securely through our portal.</p>
+            </div>
           </div>
-          <div className="card" style={{ padding: '1.5rem', backgroundColor: '#FFFFFF' }}>
-            <div style={{ width: 42, height: 42, borderRadius: '50%', backgroundColor: '#FEF3C7', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.75rem' }}>2</div>
-            <h3 style={{ fontSize: '1.1rem', color: '#0F172A', marginBottom: '0.35rem' }}>Transparent Valuation</h3>
-            <p style={{ fontSize: '0.88rem', color: '#64748B' }}>Get genuine Dehradun market price recommendations based on real transactional benchmarks.</p>
+          <div className="card flex flex-col justify-between" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+            <div>
+              <div style={{ width: 42, height: 42, borderRadius: '50%', backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.85rem' }}>2</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.45rem', lineHeight: 1.3 }}>Admin Title Verification</h3>
+              <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6 }}>Our compliance desk verifies ownership papers and approves the listing for high-intent buyers.</p>
+            </div>
           </div>
-          <div className="card" style={{ padding: '1.5rem', backgroundColor: '#FFFFFF' }}>
-            <div style={{ width: 42, height: 42, borderRadius: '50%', backgroundColor: '#FEF3C7', color: '#B45309', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.75rem' }}>3</div>
-            <h3 style={{ fontSize: '1.1rem', color: '#0F172A', marginBottom: '0.35rem' }}>End-to-End Assistance</h3>
-            <p style={{ fontSize: '0.88rem', color: '#64748B' }}>Our staff manages site visits, buyer negotiations, title verification, and deal closing documentation.</p>
+          <div className="card flex flex-col justify-between" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+            <div>
+              <div style={{ width: 42, height: 42, borderRadius: '50%', backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem', marginBottom: '0.85rem' }}>3</div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.45rem', lineHeight: 1.3 }}>Goes Live & Matched</h3>
+              <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.6 }}>Once approved, your property is published on our public website and shared with VIP NRI investors.</p>
+            </div>
           </div>
         </div>
 
         {/* Form Container */}
-        <div className="card" style={{ maxWidth: 840, margin: '0 auto', padding: '2.5rem', backgroundColor: '#FFFFFF', borderRadius: 20, boxShadow: '0 20px 40px rgba(0,0,0,0.08)' }}>
+        <div className="card" style={{ maxWidth: 840, margin: '0 auto', padding: '2.5rem', backgroundColor: '#FFFFFF', borderRadius: 20, boxShadow: '0 20px 40px rgba(0,0,0,0.08)', border: '1px solid #E2E8F0' }}>
           
           {submitted ? (
             <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-              <CheckCircle2 size={54} style={{ color: '#10B981', margin: '0 auto 1rem auto' }} />
-              <h2 style={{ fontSize: '1.8rem', color: '#0F172A', marginBottom: '0.5rem' }}>Property Submitted Successfully!</h2>
-              <p style={{ color: '#64748B', maxWidth: 520, margin: '0 auto 1.5rem auto', lineHeight: 1.6 }}>
-                Thank you <strong>{ownerName}</strong>. Our senior property acquisition manager will review your submission and contact you at <strong>{phone}</strong> to verify title details and schedule an intake visit.
+              <div style={{ width: 72, height: 72, borderRadius: '50%', backgroundColor: '#D1FAE5', color: '#065F46', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem auto' }}>
+                <CheckCircle2 size={44} />
+              </div>
+              <div style={{ display: 'inline-block', backgroundColor: '#FEF3C7', color: '#92400E', padding: '0.35rem 0.9rem', borderRadius: 20, fontSize: '0.82rem', fontWeight: 800, marginBottom: '0.75rem' }}>
+                <Clock size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} /> Submitted for Admin Approval
+              </div>
+              <h2 style={{ fontSize: '1.8rem', color: '#0F172A', fontWeight: 800, marginBottom: '0.5rem' }}>Property Submitted Successfully!</h2>
+              <p style={{ color: '#64748B', maxWidth: 560, margin: '0 auto 1.5rem auto', lineHeight: 1.7, fontSize: '0.95rem' }}>
+                Thank you <strong>{ownerName}</strong>. Your property listing is now pending administrative approval in our CRM review desk. Our team will verify your submission and approve it to go live on the public website.
               </p>
 
               <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 12, padding: '1.25rem', maxWidth: 460, margin: '0 auto 2rem auto', textAlign: 'left', fontSize: '0.9rem' }}>
                 <div className="flex justify-between" style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
-                  <span style={{ color: '#64748B' }}>Owner Name:</span>
-                  <strong>{ownerName}</strong>
+                  <span style={{ color: '#64748B' }}>Owner / Contact:</span>
+                  <strong>{ownerName} ({phone})</strong>
                 </div>
                 <div className="flex justify-between" style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
                   <span style={{ color: '#64748B' }}>Locality:</span>
                   <strong>{location}</strong>
                 </div>
+                <div className="flex justify-between" style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '0.5rem', marginBottom: '0.5rem' }}>
+                  <span style={{ color: '#64748B' }}>Status:</span>
+                  <strong style={{ color: '#D97706' }}>Pending Admin Review</strong>
+                </div>
                 <div className="flex justify-between">
-                  <span style={{ color: '#64748B' }}>Expected Price:</span>
-                  <strong style={{ color: '#D97706' }}>₹{(Number(expectedPrice) / 100000).toFixed(2)} Lakhs</strong>
+                  <span style={{ color: '#64748B' }}>Asking Valuation:</span>
+                  <strong style={{ color: '#386635' }}>₹{(Number(expectedPrice) / 100000).toFixed(2)} Lakhs</strong>
                 </div>
               </div>
 
-              <div className="flex justify-center gap-3">
-                <a href="tel:+918445190135" className="btn btn-primary">
-                  <Phone size={16} /> Speak to Sales Manager Now
+              <div className="flex flex-wrap justify-center gap-3">
+                <a href="tel:+918445190135" className="btn btn-primary" style={{ backgroundColor: '#386635' }}>
+                  <Phone size={16} /> Contact Approval Desk (+91 84451 90135)
                 </a>
                 <button onClick={() => setSubmitted(false)} className="btn btn-outline">
                   Submit Another Property
@@ -109,11 +128,11 @@ export const SellPage: React.FC = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <h2 style={{ fontSize: '1.5rem', color: '#0F172A', marginBottom: '0.5rem', textAlign: 'center' }}>
+              <h2 style={{ fontSize: '1.6rem', color: '#0F172A', fontWeight: 800, marginBottom: '0.5rem', textAlign: 'center' }}>
                 List Your Dehradun Property with A2 Realtors
               </h2>
               <p style={{ fontSize: '0.92rem', color: '#64748B', textAlign: 'center', marginBottom: '2rem' }}>
-                Enter your property specs below. Our team will verify ownership and connect with serious prospects.
+                Submissions are sent directly to the Admin Approval Panel for verification before appearing live on the public site.
               </p>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -160,10 +179,10 @@ export const SellPage: React.FC = () => {
                 <div className="form-group">
                   <label className="form-label">Property Category *</label>
                   <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)} className="form-select">
-                    <option value="INDEPENDENT_HOUSE">Independent House / Bungalow</option>
+                    <option value="INDEPENDENT_HOUSE">Independent House / Luxury Villa</option>
                     <option value="APARTMENT">Flat / Penthouse</option>
                     <option value="PLOT">Residential Plot / Land</option>
-                    <option value="COMMERCIAL">Commercial Office / Shop</option>
+                    <option value="COMMERCIAL">Commercial Office / Showroom</option>
                     <option value="FARMHOUSE">Farmhouse & Hill Estate</option>
                   </select>
                 </div>
@@ -171,14 +190,14 @@ export const SellPage: React.FC = () => {
                 {/* Locality */}
                 <div className="form-group">
                   <label className="form-label">Locality in Dehradun *</label>
-                  <select value={location} onChange={(e) => setLocation(e.target.value)} className="form-select">
+                  <select value={location} onChange={(e) => { setLocation(e.target.value); setAddress(`${e.target.value}, Dehradun`); }} className="form-select">
                     {locations.map(loc => (
                       <option key={loc.id} value={loc.name}>{loc.name}</option>
                     ))}
                   </select>
                 </div>
 
-                {/* Area Sq.ft */}
+                {/* Total Area */}
                 <div className="form-group">
                   <label className="form-label">Total Area (sq.ft / sq.yards) *</label>
                   <input
@@ -191,6 +210,35 @@ export const SellPage: React.FC = () => {
                   />
                 </div>
 
+                {/* Bedrooms & Bathrooms if not Plot */}
+                {propertyType !== 'PLOT' && (
+                  <>
+                    <div className="form-group">
+                      <label className="form-label">Bedrooms (BHK)</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={bedrooms}
+                        onChange={(e) => setBedrooms(e.target.value ? Number(e.target.value) : '')}
+                        className="form-input"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Bathrooms</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={bathrooms}
+                        onChange={(e) => setBathrooms(e.target.value ? Number(e.target.value) : '')}
+                        className="form-input"
+                      />
+                    </div>
+                  </>
+                )}
+
                 {/* Expected Price */}
                 <div className="form-group lg:col-span-2">
                   <label className="form-label">Expected Asking Price (₹) *</label>
@@ -202,10 +250,27 @@ export const SellPage: React.FC = () => {
                     onChange={(e) => setExpectedPrice(e.target.value ? Number(e.target.value) : '')}
                     className="form-input"
                   />
-                  {expectedPrice !== '' && expectedPrice > 0 && (
-                    <span style={{ fontSize: '0.8rem', color: '#D97706', marginTop: 2, fontWeight: 600 }}>
-                      Formatted: ₹{(Number(expectedPrice) / 100000).toFixed(2)} Lakhs
+                  {expectedPrice !== '' && Number(expectedPrice) > 0 && (
+                    <span style={{ fontSize: '0.8rem', color: '#386635', marginTop: 4, fontWeight: 700, display: 'block' }}>
+                      Valuation: {Number(expectedPrice) >= 10000000 ? `₹${(Number(expectedPrice) / 10000000).toFixed(2)} Cr` : `₹${(Number(expectedPrice) / 100000).toFixed(2)} Lakhs`}
                     </span>
+                  )}
+                </div>
+
+                {/* Image URL */}
+                <div className="form-group lg:col-span-2">
+                  <label className="form-label">Property Photo URL (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="https://images.unsplash.com/..."
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    className="form-input"
+                  />
+                  {imageUrl && (
+                    <div style={{ marginTop: 8 }}>
+                      <img src={imageUrl} alt="Property Preview" style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 10, border: '1px solid #E2E8F0' }} />
+                    </div>
                   )}
                 </div>
 
@@ -214,7 +279,7 @@ export const SellPage: React.FC = () => {
                   <label className="form-label">Key Highlights / Description</label>
                   <textarea
                     rows={3}
-                    placeholder="e.g. Corner property facing 40ft road, freehold title deed..."
+                    placeholder="e.g. 40ft road frontage, east facing, freehold title deed, mountain views..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="form-textarea"
@@ -223,12 +288,12 @@ export const SellPage: React.FC = () => {
 
               </div>
 
-              <div style={{ backgroundColor: '#F8FAFC', padding: '1rem', borderRadius: 10, marginTop: '1rem', marginBottom: '1.5rem', fontSize: '0.82rem', color: '#64748B' }}>
-                🔒 <strong>Privacy Assurance:</strong> Your contact details and property documents remain strictly private. We never publish owner numbers publicly.
+              <div style={{ backgroundColor: '#F8FAFC', padding: '1rem', borderRadius: 10, marginTop: '1rem', marginBottom: '1.5rem', fontSize: '0.82rem', color: '#64748B', border: '1px solid #F1F5F9' }}>
+                🛡️ <strong>Admin Approval Gate:</strong> Submitted listings are routed directly to the CRM Approval Desk for quality check. Once approved, they will appear automatically on the public website.
               </div>
 
-              <button type="submit" className="btn btn-primary btn-lg w-full" style={{ width: '100%' }}>
-                Submit Property for Valuation & Listing <ArrowRight size={18} />
+              <button type="submit" className="btn btn-primary btn-lg w-full" style={{ width: '100%', backgroundColor: '#386635', fontWeight: 700 }}>
+                Submit Property for Admin Approval <ArrowRight size={18} />
               </button>
 
             </form>

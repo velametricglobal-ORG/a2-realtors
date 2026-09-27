@@ -81,11 +81,8 @@ export const AISalesAssistant: React.FC = () => {
       
       {/* Header */}
       <div>
-        <div className="badge badge-featured" style={{ marginBottom: '0.5rem', display: 'inline-flex' }}>
-          ✨ Real Estate Natural Language Assistant
-        </div>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0F172A' }}>AI Sales Assistant & Copilot</h1>
-        <p style={{ color: '#64748B', fontSize: '0.9rem' }}>
+        <h1 style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', marginBottom: '0.35rem' }}>AI Sales Assistant & Copilot</h1>
+        <p style={{ color: '#64748B', fontSize: '0.92rem' }}>
           Query your CRM database in natural English or Hindi to extract hot leads, agent performance, or draft client communications.
         </p>
       </div>

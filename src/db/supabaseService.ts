@@ -7,11 +7,27 @@ import {
 
 /**
  * Supabase Storage Image Upload Helper
- * Uploads a File object or Base64/Blob to 'property-images' bucket
+ * Validates MIME type, enforces 10MB limit, and sanitizes filenames
  */
 export async function uploadPropertyImageToSupabase(file: File | Blob, fileName: string): Promise<string | null> {
   try {
-    const filePath = `properties/${Date.now()}_${fileName.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+    // 1. Validate MIME type
+    const validMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+    if (file.type && !validMimes.includes(file.type.toLowerCase())) {
+      console.warn('Invalid file MIME type for property image:', file.type);
+      return null;
+    }
+
+    // 2. Validate maximum file size (10 MB)
+    if (file.size && file.size > 10 * 1024 * 1024) {
+      console.warn('File size exceeds 10MB threshold');
+      return null;
+    }
+
+    // 3. Sanitize filename against directory traversal & injection
+    const cleanFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_').toLowerCase();
+    const filePath = `properties/${Date.now()}_${cleanFileName}`;
+
     const { data, error } = await supabase.storage
       .from('property-images')
       .upload(filePath, file, { cacheControl: '3600', upsert: true });

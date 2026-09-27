@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { StoreProvider } from './context/StoreContext';
+import { ScrollToTop } from './components/common/ScrollToTop';
 
 // Public Components
 import { Navbar } from './components/public/Navbar';
@@ -34,13 +35,26 @@ import { CMSManager } from './components/crm/CMSManager';
 import { HomepageCustomizer } from './components/crm/HomepageCustomizer';
 import { ReportsAnalytics } from './components/crm/ReportsAnalytics';
 import { Settings } from './components/crm/Settings';
+import { StaffManagement } from './components/crm/StaffManagement';
 import { Login } from './components/crm/Login';
 import { useStore } from './context/StoreContext';
 
 function AppContent() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useStore();
-  const [viewMode, setViewMode] = useState<'PUBLIC' | 'CRM'>('PUBLIC');
+  const [viewMode, setViewMode] = useState<'PUBLIC' | 'CRM'>(() => {
+    return window.location.pathname.startsWith('/admin') ? 'CRM' : 'PUBLIC';
+  });
+
+  // Keep viewMode synchronized with URL pathname
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin')) {
+      setViewMode('CRM');
+    } else {
+      setViewMode('PUBLIC');
+    }
+  }, [location.pathname]);
 
   const handleSwitchToCRM = () => {
     setViewMode('CRM');
@@ -54,7 +68,7 @@ function AppContent() {
 
   // Render Login portal if accessing CRM while unauthenticated
   if (viewMode === 'CRM' && !isAuthenticated) {
-    return <Login />;
+    return <Login onSwitchToPublic={handleSwitchToPublic} />;
   }
 
   return (
@@ -80,7 +94,7 @@ function AppContent() {
               <Route path="/property/:id" element={<PropertyDetail />} />
               <Route path="/compare" element={<PropertyCompare />} />
               <Route path="/properties/dehradun/:localitySlug" element={<LocalityPage />} />
-              <Route path="/admin/login" element={<Login />} />
+              <Route path="/admin/login" element={<Login onSwitchToPublic={handleSwitchToPublic} />} />
               <Route path="*" element={<HomePage />} />
             </Routes>
           </main>
@@ -104,8 +118,9 @@ function AppContent() {
             <Route path="/admin/cms" element={<CMSManager />} />
             <Route path="/admin/homepage-customizer" element={<HomepageCustomizer />} />
             <Route path="/admin/reports" element={<ReportsAnalytics />} />
+            <Route path="/admin/staff" element={<StaffManagement />} />
             <Route path="/admin/settings" element={<Settings />} />
-            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin/login" element={<Login onSwitchToPublic={handleSwitchToPublic} />} />
             <Route path="*" element={<CRMDashboard />} />
           </Routes>
         </CRMLayout>
@@ -118,6 +133,7 @@ export function App() {
   return (
     <StoreProvider>
       <Router>
+        <ScrollToTop />
         <AppContent />
       </Router>
     </StoreProvider>
