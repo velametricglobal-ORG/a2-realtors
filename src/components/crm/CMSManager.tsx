@@ -140,10 +140,10 @@ export const CMSManager: React.FC = () => {
 
     addProject({
       title: projTitle,
-      category: projCategory,
+      category: projCategory as any,
       location: projLocation,
       completionYear: projYear,
-      status: projStatus,
+      status: projStatus as any,
       imageUrl: projImage,
       description: projDescription,
       scope: projScope
@@ -161,10 +161,10 @@ export const CMSManager: React.FC = () => {
 
     updateProject(editingProjectId, {
       title: projTitle,
-      category: projCategory,
+      category: projCategory as any,
       location: projLocation,
       completionYear: projYear,
-      status: projStatus,
+      status: projStatus as any,
       imageUrl: projImage,
       description: projDescription,
       scope: projScope

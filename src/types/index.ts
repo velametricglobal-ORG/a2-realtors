@@ -287,6 +287,7 @@ export interface LocationInfo {
   coverImage: string;
   description: string;
   isFeatured: boolean;
+  highlights?: string[];
 }
 
 export type UserRole = 
@@ -347,6 +348,9 @@ export interface HomepageSettings {
   showPartnerLogos: boolean;
   showCategories: boolean;
   showPopularProperties: boolean;
+  showAboutSection?: boolean;
+  showDirectorMessage?: boolean;
+  showWhyChooseUs?: boolean;
   showWhatWeDo: boolean;
   showTestimonials: boolean;
   showContactForm: boolean;
@@ -358,4 +362,12 @@ export interface HomepageSettings {
   sectionPaddingY: string; // '2.5rem' | '4.5rem' | '6.5rem'
   gridGap: string; // '1rem' | '1.5rem' | '2rem'
   cardPadding: string; // '0.75rem' | '1rem' | '1.25rem'
+
+  // Director Information
+  directorName?: string;
+  directorRole?: string;
+  directorPhoto?: string;
+  directorQuote?: string;
+  directorVision?: string;
 }
+

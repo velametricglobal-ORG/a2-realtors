@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   Building2, Home, Landmark, Briefcase, FileCheck, ShieldCheck, 
   MapPin, Phone, Mail, ArrowRight, ArrowLeft, Star, Calendar, User, 
-  CheckCircle2, ChevronLeft, ChevronRight, Sparkles, Trees, Hammer
+  CheckCircle2, ChevronLeft, ChevronRight, Sparkles, Trees, Hammer,
+  Award, Check, Clock, TrendingUp, Compass, HeartHandshake, Quote, BadgeCheck,
+  ExternalLink, X, Info, Layers
 } from 'lucide-react';
 import { Hero } from './Hero';
 import { TrustStatsBar } from './TrustStatsBar';
@@ -17,6 +19,8 @@ export const HomePage: React.FC = () => {
   const { properties, blogPosts, submitGeneralContact, homepageSettings } = useStore();
 
   const [activePropertyTab, setActivePropertyTab] = useState<string>('ALL');
+  const [selectedPartnerModal, setSelectedPartnerModal] = useState<any | null>(null);
+  const [partnerFilter, setPartnerFilter] = useState<string>('ALL');
 
   // Contact Form states
   const [formName, setFormName] = useState('');
@@ -67,16 +71,177 @@ export const HomePage: React.FC = () => {
     { icon: Hammer, name: 'Bespoke Construction', count: 'Turnkey Execution', type: 'CONSTRUCTION', desc: 'Architectural Design & Build' }
   ];
 
-  // Developer partner logos
-  const partnerLogos = [
-    { name: 'DLF India' },
-    { name: 'Godrej Properties' },
-    { name: 'M3M Luxury' },
-    { name: 'Signature Global' },
-    { name: 'Pacific Development' },
-    { name: 'Eldeco Group' },
-    { name: 'Sobha Developers' },
-    { name: 'Ashiana Housing' }
+  // 6 Flagship Partner Townships & Approved Developments in Dehradun
+  const partnerDevelopments = [
+    {
+      id: 'dev-ats',
+      name: 'ATS Heavenly Foothills',
+      shortName: 'ATS',
+      developer: 'ATS Infrastructure Ltd (ATS Greens)',
+      location: 'Sahastradhara Road (Near IT Park), Dehradun',
+      belt: 'SAHASTRADHARA',
+      type: 'Plotted Township & Bespoke Luxury Villas',
+      scale: '29 Acres • ~300 Units',
+      priceGuide: 'Plots from ₹1.45 Cr',
+      approval: 'MDDA & RERA Approved',
+      reraNumber: 'UKREP09170000028',
+      tagline: 'Dehradun’s premier foothill plotted sanctuary with panoramic mountain horizons',
+      description: 'ATS Heavenly Foothills is one of Dehradun’s most prestigious gated townships, situated directly at the green foothill reserves along Sahastradhara Road. Spanning nearly 29 acres, the development features wide 40 to 60-ft internal avenues, a modern clubhouse with swimming pool, underground electrical cablings, and fully serviced freehold plots ready for luxury villa construction.',
+      highlights: [
+        '40 to 60-ft wide concrete internal arterial roads',
+        'State-of-the-art clubhouse with swimming pool & gym',
+        '100% Freehold MDDA Approved title with bank loan approvals',
+        'Multi-tier 24/7 security with perimeter CCTV surveillance'
+      ],
+      landmarks: [
+        '400 meters from Doon IT Park & Software Hub',
+        '15 minutes to Rajpur Road & Pacific Mall',
+        '25 minutes to Dehradun Railway Station',
+        'Direct connectivity to Jolly Grant Airport bypass'
+      ],
+      searchQuery: 'ATS',
+      coverImage: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=900'
+    },
+    {
+      id: 'dev-panache',
+      name: 'Panache Valley',
+      shortName: 'Panache Valley',
+      developer: 'Adarsh Buildestate Ltd (ABL)',
+      location: 'Village Chalang, Sahastradhara Road, Dehradun',
+      belt: 'SAHASTRADHARA',
+      type: 'Eco-Luxury Hillside Villas & Land',
+      scale: '37+ Acres Scenic Gated Township',
+      priceGuide: 'From ₹95 Lakhs',
+      approval: 'MDDA Approved Master Plan',
+      tagline: 'Resort-style luxury living enveloped by pristine Shivalik greenery',
+      description: 'Panache Valley in Village Chalang (Sahastradhara corridor) spans over 37 acres of gently undulating hillside terrain. Designed as an eco-conscious luxury retreat, it offers both custom residential plots and ready-to-move 3 & 4 BHK independent villas that capture breathtaking 360-degree mountain vistas with unpolluted mountain breezes.',
+      highlights: [
+        'Unobstructed panoramic views of Himalayan foothills',
+        '37+ acres integrated township with dense green cover',
+        'MDDA approved layout with clear mutation & registry',
+        'Resident clubhouse, jogging tracks & landscaped parks'
+      ],
+      landmarks: [
+        'Direct approach from Sahastradhara Road corridor',
+        '10 minutes to Helipad & IT Park',
+        '18 minutes to Max Super Speciality Hospital',
+        '20 minutes to Clock Tower & Central Dehradun'
+      ],
+      searchQuery: 'Panache Valley',
+      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=900'
+    },
+    {
+      id: 'dev-silver',
+      name: 'Silver Heights',
+      shortName: 'Silver Heights',
+      developer: 'GLF Builders / Silver Heights',
+      location: 'Pondha, Prem Nagar (Near IMA), Dehradun',
+      belt: 'PREMNAGAR',
+      type: 'Gated Plotted Enclave & Builder Floors',
+      scale: 'Spacious Low-Density Colony',
+      priceGuide: 'Plots from ₹65 Lakhs',
+      approval: 'MDDA Compliant Master Plan',
+      tagline: 'Tranquil defense & civil plotted enclave in pristine western Dehradun',
+      description: 'Silver Heights is an established gated residential community situated in Pondha near Prem Nagar, merely 5 km from the prestigious Indian Military Academy (IMA). Surrounded by lush green nature buffers away from metropolitan congestion, it features earthquake-resistant engineering, wide tree-lined internal streets, and freehold plots.',
+      highlights: [
+        'Just 5 km from Indian Military Academy (IMA) & NH-72',
+        'Earthquake-resistant layout with wide metalled roads',
+        '100% Freehold clear titles with instant registry',
+        'Peaceful community with dedicated parks & green belts'
+      ],
+      landmarks: [
+        '5 km to Indian Military Academy (IMA)',
+        '10 minutes to UPES Energy Acres Campus',
+        '20 minutes to Ballupur Chowk & FRI',
+        '25 minutes to Dehradun ISBT Bus Terminal'
+      ],
+      searchQuery: 'Silver Heights',
+      coverImage: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=900'
+    },
+    {
+      id: 'dev-mayfair',
+      name: 'Mayfair Highlands',
+      shortName: 'Mayfair',
+      developer: 'Presidency Builders & Developers',
+      location: 'Purukul, Mussoorie Road Corridor, Dehradun',
+      belt: 'MUSSOORIE',
+      type: 'MIST Luxury Suites & Hillside Plots',
+      scale: '20 Acres Riverfront Sanctuary',
+      priceGuide: 'Suites from ₹1.85 Cr',
+      approval: 'MDDA & RERA Approved',
+      tagline: 'Ultra-luxury riverside residences on the direct gateway to Mussoorie',
+      description: 'Mayfair Highlands is an iconic 20-acre ultra-luxury residential township nestled along Mussoorie Road in Purukul. Flanked by two perennial mountain rivers, it presents a bespoke collection of mid-rise MIST penthouses/suites and private hillside villa plots equipped with 5-star club amenities, infinity swimming pools, and riverfront trails.',
+      highlights: [
+        'Bordered by two natural perennial mountain rivers',
+        '5-star clubhouse with infinity pool, spa & wellness center',
+        'Prime Mussoorie Road corridor near top international schools',
+        'High-yielding luxury second home & holiday rental asset'
+      ],
+      landmarks: [
+        '5 minutes to DIT University & IMS Unison',
+        '10 minutes to Mussoorie Diversion & Pacific Mall',
+        '20 minutes to Rajpur Road fine dining & cafes',
+        '25 minutes to Mussoorie Mall Road'
+      ],
+      searchQuery: 'Mayfair',
+      coverImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=900'
+    },
+    {
+      id: 'dev-zodiac',
+      name: 'Zodiac Greens',
+      shortName: 'Zodiac Green',
+      developer: 'Zodiac Securities & Developers',
+      location: 'Kirsali Gaon / Sahastradhara Road, Dehradun',
+      belt: 'SAHASTRADHARA',
+      type: 'Boutique MDDA Plotted Community',
+      scale: 'Premium Plotted Enclave',
+      priceGuide: 'Plots from ₹85 Lakhs',
+      approval: 'MDDA & RERA Approved',
+      tagline: 'Modern infrastructure with dual connectivity to Sahastradhara & Rajpur Road',
+      description: 'Zodiac Greens at Kirsali Gaon is an elite, fully approved gated plotted enclave designed for discerning homebuilders. It offers superior civic infrastructure including 30-ft wide concrete roads, underground power grid, modern sewage treatment plant (STP), and seamless connectivity linking Sahastradhara Road to Rajpur Road.',
+      highlights: [
+        'MDDA & RERA approved layout with immediate bank financing',
+        '30-ft wide concrete internal road network with drainage',
+        'Underground electrical lines & eco Sewage Treatment Plant',
+        'Dual arterial access to both Sahastradhara & Rajpur Road'
+      ],
+      landmarks: [
+        '3 minutes to Sahastradhara arterial corridor',
+        '8 minutes to Doon IT Park campus',
+        '12 minutes to Silver City Mall & Rajpur Road',
+        '20 minutes to Max Super Speciality Hospital'
+      ],
+      searchQuery: 'Zodiac Green',
+      coverImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=900'
+    },
+    {
+      id: 'dev-ghati',
+      name: 'Doon Ghati River Valley',
+      shortName: 'Ghati River Valley',
+      developer: 'Doon Ghati Infrastructure',
+      location: 'Canal Road / Dhoran Road (Near IT Park), Dehradun',
+      belt: 'CANAL',
+      type: 'Scenic Riverfront Enclave & Duplexes',
+      scale: '23+ Acres Integrated Township',
+      priceGuide: 'From ₹75 Lakhs',
+      approval: 'MDDA Approved Layout',
+      tagline: 'Pristine mountain stream backdrop in the rapidly appreciating Canal Road belt',
+      description: 'Doon Ghati River Valley along Canal Road and Dhoran Road represents an exceptional blend of natural beauty and urban accessibility. Enclosed by fresh mountain streams and pine-clad hills adjacent to the Doon IT Park, this 23+ acre gated colony provides freehold residential plots and independent duplex homes with strong capital growth.',
+      highlights: [
+        'Perennial mountain stream running along township perimeter',
+        'Ready-to-build freehold plots with all civic connections',
+        'Direct proximity to Canal Road lifestyle hubs & IT Park',
+        'Gated entrance, round-the-clock security & children’s parks'
+      ],
+      landmarks: [
+        '2 minutes to Canal Road main crossing',
+        '5 minutes to Doon IT Park software hub',
+        '15 minutes to Dalanwala & Welham Schools',
+        '18 minutes to Clock Tower & Rajpur Road'
+      ],
+      searchQuery: 'Ghati River Valley',
+      coverImage: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&q=80&w=900'
+    }
   ];
 
   const testimonials = [
@@ -112,46 +277,969 @@ export const HomePage: React.FC = () => {
       {/* 2. TRUST & MARKET STATS COUNTER BAR */}
       <TrustStatsBar />
 
-      {/* 3. DEVELOPER PARTNER LOGOS BAR */}
-      {homepageSettings.showPartnerLogos && (
-        <div style={{ backgroundColor: '#FAFAFA', padding: '2rem 0', borderBottom: '1px solid #E2E8F0' }}>
-          <div className="container">
-            <div style={{ textAlign: 'center', fontSize: '0.75rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1.25rem' }}>
-              Trusted Advisory Partners & Approved Developers
-            </div>
+      {/* 2.5. ABOUT US & DIRECTOR'S MESSAGE SECTION */}
+      {homepageSettings.showAboutSection !== false && (
+        <section style={{ padding: '6.5rem 0', backgroundColor: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
+          {/* Subtle decorative background gradient */}
+          <div 
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '100%',
+              backgroundImage: 'radial-gradient(circle at 10% 20%, rgba(235, 244, 236, 0.6) 0%, transparent 45%), radial-gradient(circle at 90% 80%, rgba(253, 250, 243, 0.8) 0%, transparent 45%)',
+              pointerEvents: 'none'
+            }}
+          />
+
+          <div className="container" style={{ position: 'relative', zIndex: 2 }}>
             
-            <div className="flex items-center justify-between gap-6" style={{ overflowX: 'auto', paddingBottom: '0.5rem' }}>
-              {partnerLogos.map((brand, idx) => (
+            {/* Section Tagline */}
+            <div className="flex items-center justify-center gap-2" style={{ marginBottom: '1rem' }}>
+              <span className="badge badge-verified" style={{ fontSize: '0.8rem', padding: '0.35rem 0.9rem', borderRadius: 20 }}>
+                <Sparkles size={13} style={{ color: '#386635' }} /> Heritage of Trust & Excellence
+              </span>
+            </div>
+
+            <div style={{ textAlign: 'center', maxWidth: 740, margin: '0 auto 3.5rem auto' }}>
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
+                Rooted in Dehradun, Built on <span style={{ color: '#386635', fontFamily: 'Outfit, sans-serif' }}>Integrity & Local Mastery</span>
+              </h2>
+              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.85rem', lineHeight: 1.7 }}>
+                Established in the heart of Dalanwala, A2 Realtors is Uttarakhand’s leading real estate advisory and development firm. We curate premier residential kothis, hill-view apartments, approved freehold plots, and turnkey architectural spaces with unmatched legal transparency.
+              </p>
+            </div>
+
+            {/* 2-Column Grid: Company Story / Pillars + Director's Message Card */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
+              
+              {/* Left Column: Company Story & Highlights (7 Cols) */}
+              <div className="lg:col-span-7 flex flex-col justify-between" style={{ gap: '2rem' }}>
+                <div style={{ backgroundColor: '#F8FAFC', borderRadius: 24, padding: '2.5rem', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                  <div className="flex items-center gap-3" style={{ marginBottom: '1.25rem' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#EBF4EC', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#386635' }}>
+                      <Building2 size={24} />
+                    </div>
+                    <div>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Our Identity</span>
+                      <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A' }}>Who We Are at A2 Realtors</h3>
+                    </div>
+                  </div>
+
+                  <p style={{ fontSize: '0.96rem', color: '#334155', lineHeight: 1.75, marginBottom: '1.25rem' }}>
+                    For over 15 years, A2 Realtors has championed safe, high-yield property transactions across Dehradun, Mussoorie, and the Doon Valley. In a market where title ambiguities and unapproved layouts cause investor hesitation, we pioneered a rigorous <strong>zero-compromise legal vetting process</strong> before introducing any property to our clientele.
+                  </p>
+
+                  <p style={{ fontSize: '0.96rem', color: '#64748B', lineHeight: 1.75, marginBottom: '1.75rem' }}>
+                    Whether you are an NRI securing a mountain retreat, an established family seeking a legacy villa along Rajpur Road, or an astute investor acquiring prime commercial assets, our certified advisors provide end-to-end guidance from preliminary due diligence through registry and possession.
+                  </p>
+
+                  {/* 3 Core Value Stats */}
+                  <div className="grid grid-cols-3 gap-3" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.5rem' }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.55rem', color: '#386635' }}>15+</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Years in Valley</div>
+                    </div>
+                    <div style={{ textAlign: 'center', borderLeft: '1px solid #E2E8F0', borderRight: '1px solid #E2E8F0' }}>
+                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.55rem', color: '#C5A059' }}>100%</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Clear Titles</div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.55rem', color: '#0F172A' }}>₹650 Cr+</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Delivered Value</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Company Highlights Strip */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1.25rem', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <Compass size={20} />
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>Hyper-Local Expertise</h4>
+                      <p style={{ fontSize: '0.82rem', color: '#64748B', lineHeight: 1.5 }}>Unmatched ground intelligence in Dalanwala, Rajpur Rd, Mussoorie & Sahastradhara corridor.</p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1.25rem', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <HeartHandshake size={20} />
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>Client-First Fiduciary Care</h4>
+                      <p style={{ fontSize: '0.82rem', color: '#64748B', lineHeight: 1.5 }}>Transparent commission structures, zero hidden costs, and honest property valuations.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: Director's Message (5 Cols) */}
+              <div className="lg:col-span-5 flex flex-col">
                 <div 
-                  key={idx} 
-                  className="flex items-center justify-center" 
+                  className="card-luxury"
                   style={{ 
-                    minWidth: 130, 
-                    height: 48, 
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: 10,
-                    border: '1px solid #E2E8F0',
-                    padding: '0.5rem 1rem',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.borderColor = '#386635';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderColor = '#E2E8F0';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    height: '100%',
+                    backgroundColor: '#0B1120', 
+                    borderRadius: 24, 
+                    padding: '2.5rem', 
+                    color: '#FFFFFF',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 20px 45px rgba(11, 17, 32, 0.25)',
+                    border: '1px solid #1E2E4F'
                   }}
                 >
-                  <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: 800, fontSize: '0.95rem', color: '#334155' }}>
-                    {brand.name}
-                  </span>
+                  {/* Atmospheric Glow */}
+                  <div 
+                    style={{
+                      position: 'absolute',
+                      top: '-15%',
+                      right: '-15%',
+                      width: 250,
+                      height: 250,
+                      borderRadius: '50%',
+                      background: 'radial-gradient(circle, rgba(197, 160, 89, 0.22) 0%, transparent 70%)',
+                      filter: 'blur(40px)',
+                      pointerEvents: 'none'
+                    }}
+                  />
+
+                  {/* Header Badge & Quote Icon */}
+                  <div>
+                    <div className="flex items-center justify-between" style={{ marginBottom: '1.5rem' }}>
+                      <span style={{ 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        gap: 6, 
+                        fontSize: '0.72rem', 
+                        fontWeight: 800, 
+                        letterSpacing: '0.1em', 
+                        textTransform: 'uppercase', 
+                        backgroundColor: 'rgba(197, 160, 89, 0.18)', 
+                        color: '#DFB76C', 
+                        padding: '0.35rem 0.75rem', 
+                        borderRadius: 20,
+                        border: '1px solid rgba(197, 160, 89, 0.35)'
+                      }}>
+                        <Award size={13} /> Director's Vision & Note
+                      </span>
+
+                      <Quote size={32} style={{ color: 'rgba(197, 160, 89, 0.35)' }} />
+                    </div>
+
+                    <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.4, marginBottom: '1.25rem', fontFamily: 'Outfit, sans-serif' }}>
+                      "{homepageSettings.directorQuote || 'Real estate is not merely land and brick; it is a sacred foundation for family legacies and hard-earned wealth.'}"
+                    </h3>
+
+                    <p style={{ fontSize: '0.92rem', color: '#94A3B8', lineHeight: 1.75, fontStyle: 'italic', marginBottom: '1.25rem' }}>
+                      "When we founded A2 Realtors in Dalanwala, our mission was clear: eradicate the uncertainty, legal ambiguity, and stress from buying property in Uttarakhand. 
+                    </p>
+
+                    <p style={{ fontSize: '0.92rem', color: '#94A3B8', lineHeight: 1.75, fontStyle: 'italic', marginBottom: '1.5rem' }}>
+                      Every property we present has been scrutinized as if we were purchasing it for our own kin. Our relationship with our clients begins before the sale and endures for generations."
+                    </p>
+                  </div>
+
+                  {/* Director Signature & Profile */}
+                  <div style={{ borderTop: '1px solid #1E2E4F', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
+                    <div className="flex items-center gap-4">
+                      <img 
+                        src={homepageSettings.directorPhoto || '/director-punit-tyagi.jpg'} 
+                        alt={`${homepageSettings.directorName || 'Punit Tyagi'} - ${homepageSettings.directorRole || 'Founder & Managing Director'}, A2 Realtors`} 
+                        style={{ 
+                          width: 68, 
+                          height: 68, 
+                          borderRadius: '50%', 
+                          objectFit: 'cover', 
+                          objectPosition: 'center 20%',
+                          border: '2px solid #C5A059',
+                          boxShadow: '0 4px 14px rgba(0,0,0,0.4)'
+                        }} 
+                      />
+                      <div>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                          {homepageSettings.directorName || 'Punit Tyagi'}
+                        </div>
+                        <div style={{ fontSize: '0.82rem', color: '#DFB76C', fontWeight: 700 }}>
+                          {homepageSettings.directorRole || 'Founder & Managing Director'}
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: 2 }}>
+                          A2 Realtors • 25 B Inder Road, Dalanwala, Dehradun
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3" style={{ marginTop: '1.25rem' }}>
+                      <Link 
+                        to="/contact" 
+                        className="btn-green"
+                        style={{ padding: '0.55rem 1.25rem', fontSize: '0.82rem', borderRadius: 10, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                      >
+                        <Mail size={14} /> Schedule Director Consultation
+                      </Link>
+                      <a 
+                        href="tel:+918445190135" 
+                        className="btn-outline-gray"
+                        style={{ padding: '0.55rem 1rem', fontSize: '0.82rem', borderRadius: 10, borderColor: '#1E2E4F', color: '#E2E8F0', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                      >
+                        <Phone size={14} style={{ color: '#DFB76C' }} /> Call Office
+                      </a>
+                    </div>
+                  </div>
+
                 </div>
-              ))}
+              </div>
+
             </div>
+
           </div>
-        </div>
+        </section>
+      )}
+
+      {/* 2.6. WHY CHOOSE US (KEY PILLARS OF EXCELLENCE) */}
+      {homepageSettings.showWhyChooseUs !== false && (
+        <section style={{ padding: '6.5rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0', position: 'relative' }}>
+          <div className="container">
+            
+            {/* Header */}
+            <div style={{ textAlign: 'center', maxWidth: 740, margin: '0 auto 4rem auto' }}>
+              <span className="badge badge-verified" style={{ fontSize: '0.8rem', padding: '0.35rem 0.9rem', borderRadius: 20, marginBottom: '0.85rem' }}>
+                <ShieldCheck size={13} style={{ color: '#386635' }} /> Dehradun's Benchmark Advisory
+              </span>
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
+                Why Discerning Buyers & Investors Choose A2 Realtors
+              </h2>
+              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.85rem' }}>
+                We combine uncompromising integrity, forensic title due diligence, and exclusive valley inventory to ensure every investment delivers absolute peace of mind.
+              </p>
+            </div>
+
+            {/* 6 Feature Pillars Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+              
+              {/* Feature 1 */}
+              <div 
+                className="card-luxury" 
+                style={{ 
+                  padding: '2.25rem', 
+                  borderRadius: 20, 
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <ShieldCheck size={28} />
+                  </div>
+                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                    100% Verified Legal Due Diligence
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                    Every listing undergoes a 30-year registrar title search, mutation verification, and MDDA approval confirmation before being listed. Zero legal ambiguities.
+                  </p>
+                </div>
+                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#386635', fontWeight: 700 }}>
+                  <CheckCircle2 size={15} /> 100% Registry Ready Inventory
+                </div>
+              </div>
+
+              {/* Feature 2 */}
+              <div 
+                className="card-luxury" 
+                style={{ 
+                  padding: '2.25rem', 
+                  borderRadius: 20, 
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <Landmark size={28} />
+                  </div>
+                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                    Off-Market & Exclusive Valley Inventory
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                    Direct access to private ancestral kothis in Dalanwala, hillside estates in Mussoorie Foothills, and prime commercial retail frontage before public release.
+                  </p>
+                </div>
+                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#C5A059', fontWeight: 700 }}>
+                  <CheckCircle2 size={15} /> Exclusive Owner Direct Mandates
+                </div>
+              </div>
+
+              {/* Feature 3 */}
+              <div 
+                className="card-luxury" 
+                style={{ 
+                  padding: '2.25rem', 
+                  borderRadius: 20, 
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <TrendingUp size={28} />
+                  </div>
+                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                    High Capital Appreciation Analysis
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                    Our research team maps infrastructural growth—including the Delhi-Dehradun Expressway, Sahastradhara smart corridor, and ring roads—for targeted ROI.
+                  </p>
+                </div>
+                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#386635', fontWeight: 700 }}>
+                  <CheckCircle2 size={15} /> Verified Historical Price Benchmarks
+                </div>
+              </div>
+
+              {/* Feature 4 */}
+              <div 
+                className="card-luxury" 
+                style={{ 
+                  padding: '2.25rem', 
+                  borderRadius: 20, 
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <Hammer size={28} />
+                  </div>
+                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                    Turnkey Architectural & Build Services
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                    From raw plot acquisition to custom villa architecture, MDDA layout sanctions, structural construction, and smart interiors—executed under single point accountability.
+                  </p>
+                </div>
+                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#C5A059', fontWeight: 700 }}>
+                  <CheckCircle2 size={15} /> In-House Civil Engineers & Architects
+                </div>
+              </div>
+
+              {/* Feature 5 */}
+              <div 
+                className="card-luxury" 
+                style={{ 
+                  padding: '2.25rem', 
+                  borderRadius: 20, 
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <HeartHandshake size={28} />
+                  </div>
+                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                    NRI & Outstation Concierge Support
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                    Remote video walkthroughs, digital documentation, Power of Attorney assistance, chauffeured valley inspection tours, and bank liaison for overseas Indians.
+                  </p>
+                </div>
+                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#386635', fontWeight: 700 }}>
+                  <CheckCircle2 size={15} /> 450+ NRIs Successfully Settled
+                </div>
+              </div>
+
+              {/* Feature 6 */}
+              <div 
+                className="card-luxury" 
+                style={{ 
+                  padding: '2.25rem', 
+                  borderRadius: 20, 
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div>
+                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
+                    <Award size={28} />
+                  </div>
+                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                    Zero Hidden Costs & Ethical Pricing
+                  </h3>
+                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                    Crystal clear fee structures, direct seller negotiations with no inflated middleman markups, and transparent breakdown of stamp duty and registry costs.
+                  </p>
+                </div>
+                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#C5A059', fontWeight: 700 }}>
+                  <CheckCircle2 size={15} /> 4.9 / 5.0 Star Rated Trust Index
+                </div>
+              </div>
+
+            </div>
+
+            {/* Bottom Call to Action Banner inside Why Choose Us */}
+            <div 
+              style={{ 
+                marginTop: '4rem', 
+                backgroundColor: '#FFFFFF', 
+                borderRadius: 20, 
+                padding: '2.5rem', 
+                border: '1px solid #E2E8F0',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.04)',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '1.5rem'
+              }}
+            >
+              <div style={{ maxWidth: 600 }}>
+                <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
+                  Ready to Experience the A2 Realtors Advantage?
+                </div>
+                <p style={{ fontSize: '0.92rem', color: '#64748B' }}>
+                  Speak directly with our senior advisory team or visit our flagship office at Inder Road, Dalanwala.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Link to="/contact" className="btn-green btn-pill" style={{ padding: '0.85rem 1.85rem', fontSize: '0.95rem' }}>
+                  <span>Book Private Consultation</span>
+                  <ArrowRight size={16} />
+                </Link>
+                <a href="tel:+918445190135" className="btn-outline-green btn-pill" style={{ padding: '0.85rem 1.6rem', fontSize: '0.95rem' }}>
+                  <Phone size={15} /> +91 84451 90135
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </section>
+      )}
+
+      {/* 3. FLAGSHIP PARTNER TOWNSHIPS & APPROVED DEVELOPMENTS */}
+      {homepageSettings.showPartnerLogos && (
+        <section 
+          id="partner-townships"
+          style={{ 
+            backgroundColor: '#F8FAFC', 
+            padding: '5rem 0', 
+            borderTop: '1px solid #E2E8F0',
+            borderBottom: '1px solid #E2E8F0',
+            position: 'relative'
+          }}
+        >
+          <div className="container">
+            
+            {/* Header */}
+            <div style={{ textAlign: 'center', maxWidth: 860, margin: '0 auto 3rem auto' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '0.85rem' }}>
+                <span style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: 6, 
+                  fontSize: '0.75rem', 
+                  fontWeight: 800, 
+                  letterSpacing: '0.12em', 
+                  textTransform: 'uppercase', 
+                  backgroundColor: '#EBF4EC', 
+                  color: '#386635', 
+                  padding: '0.4rem 0.9rem', 
+                  borderRadius: 20,
+                  border: '1px solid rgba(56, 102, 53, 0.2)'
+                }}>
+                  <Sparkles size={13} /> Approved Townships & Developer Alliances
+                </span>
+              </div>
+
+              <h2 style={{ fontSize: 'clamp(2rem, 3.8vw, 2.75rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
+                Authorized Advisory Partner For Dehradun’s Premier Townships
+              </h2>
+              
+              <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.85rem', lineHeight: 1.7 }}>
+                A2 Realtors is the authorized advisory partner for the Doon Valley’s most sought-after gated townships. 
+                Enjoy direct developer pricing, verified clear freehold titles, priority plot allotment, and complete conveyance assistance.
+              </p>
+
+              {/* Belt Filter Navigation Pills */}
+              <div className="flex items-center justify-center gap-2" style={{ marginTop: '2rem', flexWrap: 'wrap' }}>
+                {[
+                  { key: 'ALL', label: 'All 6 Flagships' },
+                  { key: 'SAHASTRADHARA', label: 'Sahastradhara Belt (ATS, Panache, Zodiac)' },
+                  { key: 'MUSSOORIE', label: 'Mussoorie Corridor (Mayfair)' },
+                  { key: 'CANAL', label: 'Canal Road (Ghati River Valley)' },
+                  { key: 'PREMNAGAR', label: 'Prem Nagar / IMA (Silver Heights)' }
+                ].map(filter => (
+                  <button
+                    key={filter.key}
+                    type="button"
+                    onClick={() => setPartnerFilter(filter.key)}
+                    style={{
+                      padding: '0.45rem 1.1rem',
+                      borderRadius: 24,
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      border: partnerFilter === filter.key ? '1px solid #386635' : '1px solid #CBD5E1',
+                      backgroundColor: partnerFilter === filter.key ? '#386635' : '#FFFFFF',
+                      color: partnerFilter === filter.key ? '#FFFFFF' : '#475569',
+                      boxShadow: partnerFilter === filter.key ? '0 4px 12px rgba(56,102,53,0.2)' : '0 1px 3px rgba(0,0,0,0.02)'
+                    }}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 6-Township Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+              {partnerDevelopments
+                .filter(p => partnerFilter === 'ALL' || p.belt === partnerFilter)
+                .map((project) => (
+                  <div
+                    key={project.id}
+                    className="card flex flex-col"
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: 20,
+                      border: '1px solid #E2E8F0',
+                      overflow: 'hidden',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+                      position: 'relative'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-6px)';
+                      e.currentTarget.style.boxShadow = '0 18px 38px rgba(0, 0, 0, 0.09)';
+                      e.currentTarget.style.borderColor = '#C5A059';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.04)';
+                      e.currentTarget.style.borderColor = '#E2E8F0';
+                    }}
+                  >
+                    {/* Visual Cover Header */}
+                    <div style={{ position: 'relative', height: 210, overflow: 'hidden', backgroundColor: '#0B1120' }}>
+                      <img 
+                        src={project.coverImage} 
+                        alt={project.name} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      
+                      {/* Gradient Overlay */}
+                      <div style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(to top, rgba(11,17,32,0.85) 0%, rgba(11,17,32,0.2) 60%, rgba(0,0,0,0.4) 100%)'
+                      }} />
+
+                      {/* Top Badges */}
+                      <div className="flex items-center justify-between" style={{ position: 'absolute', top: 14, left: 14, right: 14 }}>
+                        <span style={{
+                          backgroundColor: 'rgba(56, 102, 53, 0.92)',
+                          color: '#FFFFFF',
+                          padding: '0.28rem 0.65rem',
+                          borderRadius: 8,
+                          fontSize: '0.72rem',
+                          fontWeight: 800,
+                          letterSpacing: '0.04em',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5,
+                          backdropFilter: 'blur(4px)',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
+                        }}>
+                          <ShieldCheck size={12} style={{ color: '#DFB76C' }} /> {project.approval}
+                        </span>
+
+                        <span style={{
+                          backgroundColor: 'rgba(11, 17, 32, 0.88)',
+                          color: '#DFB76C',
+                          padding: '0.28rem 0.65rem',
+                          borderRadius: 8,
+                          fontSize: '0.74rem',
+                          fontWeight: 800,
+                          border: '1px solid rgba(197, 160, 89, 0.4)',
+                          backdropFilter: 'blur(4px)'
+                        }}>
+                          {project.priceGuide}
+                        </span>
+                      </div>
+
+                      {/* Bottom Banner Tag */}
+                      <div style={{ position: 'absolute', bottom: 12, left: 16, right: 16 }}>
+                        <div style={{ fontSize: '0.72rem', color: '#DFB76C', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                          by {project.developer}
+                        </div>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em', fontFamily: 'Outfit, sans-serif' }}>
+                          {project.name}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card Body */}
+                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
+                      <div>
+                        {/* Location */}
+                        <div className="flex items-center gap-1.5" style={{ color: '#386635', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.65rem' }}>
+                          <MapPin size={14} style={{ flexShrink: 0 }} />
+                          <span className="truncate">{project.location}</span>
+                        </div>
+
+                        {/* Tagline */}
+                        <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5, marginBottom: '1.1rem' }}>
+                          {project.tagline}
+                        </p>
+
+                        {/* Specs Chips */}
+                        <div className="flex items-center gap-2" style={{ marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+                          <span style={{ backgroundColor: '#F1F5F9', color: '#334155', padding: '0.25rem 0.65rem', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700 }}>
+                            {project.scale}
+                          </span>
+                          <span style={{ backgroundColor: '#EBF4EC', color: '#166534', padding: '0.25rem 0.65rem', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700 }}>
+                            {project.type}
+                          </span>
+                        </div>
+
+                        {/* Highlights List */}
+                        <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '1rem', marginBottom: '1.5rem' }}>
+                          <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
+                            Township Highlights
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            {project.highlights.slice(0, 3).map((item, hIdx) => (
+                              <div key={hIdx} className="flex items-start gap-2" style={{ fontSize: '0.8rem', color: '#475569', lineHeight: 1.4 }}>
+                                <CheckCircle2 size={13} style={{ color: '#386635', marginTop: 2, flexShrink: 0 }} />
+                                <span>{item}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Direct Action Links */}
+                      <div className="flex flex-col gap-2" style={{ marginTop: 'auto' }}>
+                        {/* 1. Direct Link to Live Inventory */}
+                        <Link
+                          to={`/search?q=${encodeURIComponent(project.searchQuery)}`}
+                          className="btn-green w-full flex items-center justify-center gap-2"
+                          style={{
+                            padding: '0.65rem 1rem',
+                            fontSize: '0.85rem',
+                            borderRadius: 10,
+                            fontWeight: 700,
+                            textDecoration: 'none'
+                          }}
+                        >
+                          Explore Available Inventory <ArrowRight size={14} />
+                        </Link>
+
+                        {/* 2. Interactive Dossier & Site Visit Trigger */}
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPartnerModal(project)}
+                            className="btn-outline-gray flex items-center justify-center gap-1.5"
+                            style={{
+                              padding: '0.5rem 0.75rem',
+                              fontSize: '0.78rem',
+                              borderRadius: 10,
+                              fontWeight: 700,
+                              color: '#0F172A'
+                            }}
+                          >
+                            <Info size={13} style={{ color: '#386635' }} /> Project Dossier
+                          </button>
+
+                          <Link
+                            to={`/contact?project=${encodeURIComponent(project.name)}`}
+                            className="btn-outline-gray flex items-center justify-center gap-1.5"
+                            style={{
+                              padding: '0.5rem 0.75rem',
+                              fontSize: '0.78rem',
+                              borderRadius: 10,
+                              fontWeight: 700,
+                              color: '#386635',
+                              borderColor: '#386635',
+                              textDecoration: 'none'
+                            }}
+                          >
+                            <Calendar size={13} /> Site Visit
+                          </Link>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            {/* Bottom Advisory Assurance Bar */}
+            <div 
+              style={{ 
+                marginTop: '3.5rem', 
+                backgroundColor: '#FFFFFF', 
+                borderRadius: 16, 
+                padding: '1.5rem 2rem', 
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '1.25rem',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Award size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A' }}>
+                    A2 Realtors Direct Developer Advisory Guarantee
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: '#64748B' }}>
+                    Zero markup on developer pricing • 100% verified mutation records • On-site project escort by certified senior consultants
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <a 
+                  href="tel:+918445190135" 
+                  className="btn-outline-gray flex items-center gap-1.5"
+                  style={{ padding: '0.6rem 1.25rem', borderRadius: 10, fontSize: '0.85rem' }}
+                >
+                  <Phone size={14} style={{ color: '#386635' }} /> +91 84451 90135
+                </a>
+                <Link
+                  to="/contact"
+                  className="btn-green flex items-center gap-1.5"
+                  style={{ padding: '0.6rem 1.25rem', borderRadius: 10, fontSize: '0.85rem', textDecoration: 'none' }}
+                >
+                  <Mail size={14} /> Schedule Advisory Meeting
+                </Link>
+              </div>
+            </div>
+
+          </div>
+
+          {/* PROJECT DOSSIER INTERACTIVE MODAL */}
+          {selectedPartnerModal && (
+            <div 
+              style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(15, 23, 42, 0.75)',
+                backdropFilter: 'blur(6px)',
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '1.5rem'
+              }}
+              onClick={() => setSelectedPartnerModal(null)}
+            >
+              <div 
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 24,
+                  maxWidth: 820,
+                  width: '100%',
+                  maxHeight: '90vh',
+                  overflowY: 'auto',
+                  boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+                  border: '1px solid #E2E8F0',
+                  position: 'relative'
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Modal Header Cover */}
+                <div style={{ position: 'relative', height: 230, backgroundColor: '#0B1120', overflow: 'hidden' }}>
+                  <img 
+                    src={selectedPartnerModal.coverImage} 
+                    alt={selectedPartnerModal.name} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(11,17,32,0.92) 0%, rgba(11,17,32,0.3) 100%)'
+                  }} />
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPartnerModal(null)}
+                    style={{
+                      position: 'absolute',
+                      top: 16,
+                      right: 16,
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      backgroundColor: 'rgba(0,0,0,0.6)',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <X size={18} />
+                  </button>
+
+                  <div style={{ position: 'absolute', bottom: 20, left: 24, right: 24 }}>
+                    <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
+                      <span style={{ backgroundColor: '#DFB76C', color: '#0F172A', padding: '0.2rem 0.6rem', borderRadius: 6, fontSize: '0.72rem', fontWeight: 800 }}>
+                        {selectedPartnerModal.approval}
+                      </span>
+                      <span style={{ color: '#E2E8F0', fontSize: '0.8rem', fontWeight: 600 }}>
+                        by {selectedPartnerModal.developer}
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
+                      {selectedPartnerModal.name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Modal Body */}
+                <div style={{ padding: '2rem' }}>
+                  
+                  {/* Quick Stat Pill Bar */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginBottom: '1.75rem' }}>
+                    <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Pricing</div>
+                      <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#386635', marginTop: 2 }}>{selectedPartnerModal.priceGuide}</div>
+                    </div>
+                    <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Project Scale</div>
+                      <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{selectedPartnerModal.scale}</div>
+                    </div>
+                    <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Asset Class</div>
+                      <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{selectedPartnerModal.type}</div>
+                    </div>
+                    <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Location</div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }} className="truncate">{selectedPartnerModal.location}</div>
+                    </div>
+                  </div>
+
+                  {/* Overview Paragraph */}
+                  <div style={{ marginBottom: '1.75rem' }}>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                      Township Dossier & Overview
+                    </h4>
+                    <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.75 }}>
+                      {selectedPartnerModal.description}
+                    </p>
+                  </div>
+
+                  {/* Two Columns: Highlights & Landmarks */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ marginBottom: '2rem' }}>
+                    
+                    {/* Key Master Plan Highlights */}
+                    <div style={{ padding: '1.25rem', backgroundColor: '#F0FDF4', borderRadius: 16, border: '1px solid #DCFCE7' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#166534', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <ShieldCheck size={16} /> Key Infrastructure & Approvals
+                      </div>
+                      <div className="flex flex-col gap-2.5">
+                        {selectedPartnerModal.highlights.map((h: string, i: number) => (
+                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.84rem', color: '#14532D', lineHeight: 1.45 }}>
+                            <Check size={14} style={{ color: '#166534', marginTop: 2, flexShrink: 0 }} />
+                            <span>{h}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Proximity & Distances */}
+                    <div style={{ padding: '1.25rem', backgroundColor: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <Compass size={16} style={{ color: '#C5A059' }} /> Connectivity & Key Landmarks
+                      </div>
+                      <div className="flex flex-col gap-2.5">
+                        {selectedPartnerModal.landmarks.map((l: string, i: number) => (
+                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.84rem', color: '#475569', lineHeight: 1.45 }}>
+                            <MapPin size={14} style={{ color: '#C5A059', marginTop: 2, flexShrink: 0 }} />
+                            <span>{l}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Action Bar */}
+                  <div className="flex items-center justify-between gap-3 flex-wrap" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.5rem' }}>
+                    <a
+                      href="tel:+918445190135"
+                      className="btn-outline-gray flex items-center gap-2"
+                      style={{ padding: '0.65rem 1.25rem', borderRadius: 12, fontWeight: 700 }}
+                    >
+                      <Phone size={15} style={{ color: '#386635' }} /> Call Advisor (+91 84451 90135)
+                    </a>
+
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/contact?project=${encodeURIComponent(selectedPartnerModal.name)}`}
+                        onClick={() => setSelectedPartnerModal(null)}
+                        className="btn-outline-gray flex items-center gap-2"
+                        style={{ padding: '0.65rem 1.25rem', borderRadius: 12, fontWeight: 700, color: '#386635', borderColor: '#386635', textDecoration: 'none' }}
+                      >
+                        <Calendar size={15} /> Book Site Visit
+                      </Link>
+
+                      <Link
+                        to={`/search?q=${encodeURIComponent(selectedPartnerModal.searchQuery)}`}
+                        onClick={() => setSelectedPartnerModal(null)}
+                        className="btn-green flex items-center gap-2"
+                        style={{ padding: '0.65rem 1.5rem', borderRadius: 12, fontWeight: 700, textDecoration: 'none' }}
+                      >
+                        View Project Inventory <ArrowRight size={15} />
+                      </Link>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          )}
+
+        </section>
       )}
 
       {/* 4. EXPLORE PRIME DEHRADUN HOTSPOTS */}

@@ -15,7 +15,8 @@ import {
   UserRole,
   UserRoleDefinition,
   LeadStatus,
-  DealStage
+  DealStage,
+  HomepageSettings
 } from '../types';
 import {
   initialProperties,
@@ -131,34 +132,8 @@ interface StoreContextType {
   updateBrandTheme: (themeUpdates: Partial<StoreContextType['brandTheme']>) => void;
 
   // Homepage Customization Studio (Super Admin)
-  homepageSettings: {
-    heroHeadline: string;
-    heroSubheadline: string;
-    heroButtonText: string;
-    categoriesTitle: string;
-    popularPropertiesTitle: string;
-    whatWeDoTitle: string;
-    testimonialsTitle: string;
-    contactTitle: string;
-    articlesTitle: string;
-    
-    showHeroSearch: boolean;
-    showPartnerLogos: boolean;
-    showCategories: boolean;
-    showPopularProperties: boolean;
-    showWhatWeDo: boolean;
-    showTestimonials: boolean;
-    showContactForm: boolean;
-    showLatestArticles: boolean;
-
-    // Property Display Grid & Spacing Controls
-    propertyGridCols: number;
-    maxPropertiesCount: number;
-    sectionPaddingY: string;
-    gridGap: string;
-    cardPadding: string;
-  };
-  updateHomepageSettings: (settingsUpdates: Partial<StoreContextType['homepageSettings']>) => void;
+  homepageSettings: HomepageSettings;
+  updateHomepageSettings: (settingsUpdates: Partial<HomepageSettings>) => void;
 }
 
 // Input Sanitization Helper against XSS and Script Injection
@@ -179,7 +154,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const saved = localStorage.getItem('a2_properties');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed: Property[] = JSON.parse(saved);
+        const existingIds = new Set(parsed.map(p => p.id));
+        const missing = initialProperties.filter(ip => !existingIds.has(ip.id));
+        if (missing.length > 0) {
+          return [...parsed, ...missing];
+        }
+        return parsed;
       } catch (e) {
         console.error('Error parsing properties from localStorage', e);
       }
@@ -301,7 +282,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const saved = localStorage.getItem('a2_staff');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        return parsed.map((u: UserProfile) => {
+          if (u.id === 'u-1' && (u.name.includes('Vikram') || u.avatar.includes('unsplash'))) {
+            return {
+              ...u,
+              name: 'Punit Tyagi',
+              avatar: '/director-punit-tyagi.jpg',
+              rating: 5.0,
+              dealsClosed: 85
+            };
+          }
+          return u;
+        });
       } catch (e) {
         console.error('Error parsing staff from localStorage', e);
       }
@@ -363,16 +356,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
   });
 
-  const [homepageSettings, setHomepageSettings] = useState(() => {
-    const saved = localStorage.getItem('a2_homepage_settings');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Error parsing homepage settings from localStorage', e);
-      }
-    }
-    return {
+  const [homepageSettings, setHomepageSettings] = useState<HomepageSettings>(() => {
+    const defaultSettings: HomepageSettings = {
       heroHeadline: 'Your Trusted Real Estate Partner in Dehradun',
       heroSubheadline: 'From luxury apartments to commercial spaces, we help you find the property that fits your lifestyle and investment goals.',
       heroButtonText: 'Explore Property',
@@ -387,10 +372,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       showPartnerLogos: true,
       showCategories: true,
       showPopularProperties: true,
+      showAboutSection: true,
+      showDirectorMessage: true,
+      showWhyChooseUs: true,
       showWhatWeDo: true,
       showTestimonials: true,
       showContactForm: true,
       showLatestArticles: true,
+
+      // Director Information
+      directorName: 'Punit Tyagi',
+      directorRole: 'Founder & Managing Director',
+      directorPhoto: '/director-punit-tyagi.jpg',
+      directorQuote: 'Real estate is not merely land and brick; it is a sacred foundation for family legacies and hard-earned wealth.',
 
       // Property Display Grid, Columns, Rows & Spacing Controls
       propertyGridCols: 4,
@@ -399,6 +393,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       gridGap: '1.5rem',
       cardPadding: '1rem'
     };
+
+    const saved = localStorage.getItem('a2_homepage_settings');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (!parsed.directorName || parsed.directorName.includes('Vikram')) {
+          parsed.directorName = 'Punit Tyagi';
+          parsed.directorRole = 'Founder & Managing Director';
+          parsed.directorPhoto = '/director-punit-tyagi.jpg';
+        }
+        return { ...defaultSettings, ...parsed };
+      } catch (e) {
+        console.error('Error parsing homepage settings from localStorage', e);
+      }
+    }
+    return defaultSettings;
   });
 
   // Local Storage Sync Effects
@@ -1260,7 +1270,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const newProj: ConstructionProject = {
       id: project.id || `proj-${Date.now()}`,
       title: cleanTitle,
-      category: sanitizeText(project.category) || 'Construction',
+      category: (sanitizeText(project.category) as any) || 'Construction',
       location: sanitizeText(project.location) || 'Dehradun',
       completionYear: Math.max(1900, Number(project.completionYear) || 2024),
       status: project.status || 'Completed',
@@ -1288,7 +1298,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       coverImage: loc.coverImage || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=800',
       avgPricePerSqft: loc.avgPricePerSqft || 6500,
       description: loc.description || '',
-      highlights: loc.highlights || []
+      highlights: loc.highlights || [],
+      propertyCount: loc.propertyCount || 0,
+      isFeatured: loc.isFeatured ?? true
     };
     setLocations(prev => [...prev, newLoc]);
     return newLoc;
@@ -1303,11 +1315,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const updateBrandTheme = (themeUpdates: Partial<StoreContextType['brandTheme']>) => {
-    setBrandTheme(prev => ({ ...prev, ...themeUpdates }));
+    setBrandTheme((prev: any) => ({ ...prev, ...themeUpdates }));
   };
 
   const updateHomepageSettings = (settingsUpdates: Partial<StoreContextType['homepageSettings']>) => {
-    setHomepageSettings(prev => ({ ...prev, ...settingsUpdates }));
+    setHomepageSettings((prev: any) => ({ ...prev, ...settingsUpdates }));
   };
 
   return (

@@ -43,6 +43,12 @@ export const HomepageCustomizer: React.FC = () => {
       showContactForm: true,
       showLatestArticles: true,
 
+      // Director Information
+      directorName: 'Punit Tyagi',
+      directorRole: 'Founder & Managing Director',
+      directorPhoto: '/director-punit-tyagi.jpg',
+      directorQuote: 'Real estate is not merely land and brick; it is a sacred foundation for family legacies and hard-earned wealth.',
+
       propertyGridCols: 4,
       maxPropertiesCount: 8,
       sectionPaddingY: '4.5rem',
@@ -128,6 +134,8 @@ export const HomepageCustomizer: React.FC = () => {
                 { key: 'showPartnerLogos', label: 'Builder & Partner Logos Bar', desc: 'DLF, M3M, Godrej brand logos bar' },
                 { key: 'showCategories', label: 'Property Type Categories Grid', desc: 'Choose Your Property Type (Kothi, Plot, etc.)' },
                 { key: 'showPopularProperties', label: 'Best Properties Sale Grid', desc: '4-column popular listings showcase' },
+                { key: 'showAboutSection', label: 'Company Heritage & Director Message', desc: 'About A2 Realtors & Director Punit Tyagi message' },
+                { key: 'showWhyChooseUs', label: 'Why Choose A2 Realtors Section', desc: '6 Key competitive advantages with badges & trust proofs' },
                 { key: 'showWhatWeDo', label: 'See how A2 Realtors can Help', desc: '01, 02, 03, 04 feature cards' },
                 { key: 'showTestimonials', label: 'Client Testimonials Carousel', desc: 'What Clients Say About Pillar section' },
                 { key: 'showContactForm', label: "Let's Talk Your Property Goal", desc: 'Floating inquiry form overlay card' },
@@ -289,6 +297,68 @@ export const HomepageCustomizer: React.FC = () => {
                   value={formData.articlesTitle} 
                   onChange={(e) => handleChange('articlesTitle', e.target.value)} 
                   className="form-input" 
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Director's Profile & Message Section */}
+          <div className="card" style={{ padding: '1.5rem', backgroundColor: '#FFFFFF' }}>
+            <div className="flex items-center gap-2" style={{ marginBottom: '1rem' }}>
+              <Sparkles size={18} style={{ color: '#C5A059' }} />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827' }}>Director Profile & Note</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label">Director Full Name</label>
+                <input 
+                  type="text" 
+                  value={formData.directorName || ''} 
+                  onChange={(e) => handleChange('directorName', e.target.value)} 
+                  className="form-input" 
+                  placeholder="Punit Tyagi"
+                />
+              </div>
+
+              <div className="form-group" style={{ margin: 0 }}>
+                <label className="form-label">Director Title / Designation</label>
+                <input 
+                  type="text" 
+                  value={formData.directorRole || ''} 
+                  onChange={(e) => handleChange('directorRole', e.target.value)} 
+                  className="form-input" 
+                  placeholder="Founder & Managing Director"
+                />
+              </div>
+
+              <div className="form-group md:col-span-2" style={{ margin: 0 }}>
+                <label className="form-label">Director Photo URL or Path</label>
+                <div className="flex items-center gap-3">
+                  <img 
+                    src={formData.directorPhoto || '/director-punit-tyagi.jpg'} 
+                    alt="Director Preview" 
+                    style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 20%', border: '2px solid #C5A059' }}
+                    onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                  />
+                  <input 
+                    type="text" 
+                    value={formData.directorPhoto || ''} 
+                    onChange={(e) => handleChange('directorPhoto', e.target.value)} 
+                    className="form-input flex-1" 
+                    placeholder="/director-punit-tyagi.jpg"
+                  />
+                </div>
+              </div>
+
+              <div className="form-group md:col-span-2" style={{ margin: 0 }}>
+                <label className="form-label">Director Headline Quote</label>
+                <textarea 
+                  rows={2} 
+                  value={formData.directorQuote || ''} 
+                  onChange={(e) => handleChange('directorQuote', e.target.value)} 
+                  className="form-textarea" 
+                  placeholder="Real estate is not merely land and brick; it is a sacred foundation for family legacies and hard-earned wealth."
                 />
               </div>
             </div>

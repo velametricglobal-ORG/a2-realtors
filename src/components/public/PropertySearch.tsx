@@ -22,8 +22,9 @@ export const PropertySearch: React.FC = () => {
     setSelectedLocation(searchParams.get('locality') || searchParams.get('location') || 'ALL');
     setBudgetMax(searchParams.get('budget') ? Number(searchParams.get('budget')) : 100000000);
     setBedrooms(searchParams.get('beds') || 'ALL');
+    setSearchTerm(searchParams.get('q') || searchParams.get('search') || '');
   }, [searchParams]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>(() => searchParams.get('q') || searchParams.get('search') || '');
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [featuredOnly, setFeaturedOnly] = useState<boolean>(false);
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);

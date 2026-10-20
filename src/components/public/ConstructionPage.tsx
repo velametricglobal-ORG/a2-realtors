@@ -142,7 +142,7 @@ export const ConstructionPage: React.FC = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="form-group">
                   <label className="form-label">Your Full Name *</label>
-                  <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="form-input" placeholder="e.g. Vikram Anand" />
+                  <input type="text" required value={name} onChange={(e) => setName(e.target.value)} className="form-input" placeholder="e.g. Rahul Sharma" />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Phone Number *</label>
