@@ -44,8 +44,8 @@ const setSecurityHeaders = (res, isHtml = false) => {
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com data:; " +
-    "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co; " +
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.unsplash.com; " +
+    "img-src 'self' data: blob: https: https://images.unsplash.com https://*.supabase.co; " +
+    "connect-src 'self' https: https://*.supabase.co wss://*.supabase.co https://api.unsplash.com; " +
     "frame-ancestors 'self';"
   );
 

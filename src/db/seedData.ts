@@ -473,7 +473,8 @@ export const initialProperties: Property[] = [
     verified: true,
     published: true,
     images: [
-      { id: 'img-ats-1', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'ATS Heavenly Foothills Plot Vista' }
+      { id: 'img-ats-1', url: 'https://www.atsgreens.com/wp-content/uploads/2022/03/Heaven-foothills.png', isPrimary: true, caption: 'ATS Heavenly Foothills Master Layout & Foothill Vista' },
+      { id: 'img-ats-2', url: 'https://www.atsgreens.com/wp-content/uploads/2022/03/PHOTO-2022-03-03-11-51-13.jpg', isPrimary: false, caption: 'ATS Heavenly Foothills On-Site View' }
     ],
     assignedAgentId: 'u-1',
     assignedAgentName: 'Punit Tyagi',
@@ -512,7 +513,8 @@ export const initialProperties: Property[] = [
     verified: true,
     published: true,
     images: [
-      { id: 'img-pan-1', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Panache Valley Villa Exterior' }
+      { id: 'img-pan-1', url: 'https://valaistaestates.com/wp-content/uploads/2025/05/Panache-Valley-1.jpg', isPrimary: true, caption: 'Panache Valley Real Villa Elevation' },
+      { id: 'img-pan-2', url: 'https://mittirealty.com/assets/image/project/Panch/9.webp', isPrimary: false, caption: 'Panache Valley Valley Landscape' }
     ],
     assignedAgentId: 'u-2',
     assignedAgentName: 'Rajesh Sharma',
@@ -551,7 +553,8 @@ export const initialProperties: Property[] = [
     verified: true,
     published: true,
     images: [
-      { id: 'img-may-1', url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Mayfair Highlands Panoramic View' }
+      { id: 'img-may-1', url: 'https://dynamic.realestateindia.com/proj_images/project56994/projGal-1-770x400.jpeg', isPrimary: true, caption: 'Mayfair Highlands Luxury Suites' },
+      { id: 'img-may-2', url: 'https://dehradunbusinessdirectory.com/wp-content/uploads/2024/04/Mayfair-Highlands-Dehradun.png', isPrimary: false, caption: 'Mayfair Highlands Entrance & Surrounding' }
     ],
     assignedAgentId: 'u-3',
     assignedAgentName: 'Priya Verma',
@@ -583,7 +586,8 @@ export const initialProperties: Property[] = [
     verified: true,
     published: true,
     images: [
-      { id: 'img-slv-1', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Silver Heights Plot Layout' }
+      { id: 'img-slv-1', url: 'https://silverheightsindia.com/images/imgabout.jpg', isPrimary: true, caption: 'Silver Heights Official Clubhouse & Entrance' },
+      { id: 'img-slv-2', url: 'https://www.silverheightsindia.com/gallery/gallery180sm5.jpg', isPrimary: false, caption: 'Silver Heights Plotted Avenues' }
     ],
     assignedAgentId: 'u-4',
     assignedAgentName: 'Amit Joshi',
@@ -615,7 +619,8 @@ export const initialProperties: Property[] = [
     verified: true,
     published: true,
     images: [
-      { id: 'img-zod-1', url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Zodiac Greens Plotted Enclave' }
+      { id: 'img-zod-1', url: 'https://newprojects.99acres.com/projects/projectHighlightStory/j8znga6_1773643023_727312727_med.jpg', isPrimary: true, caption: 'Zodiac Greens Plotted Roads & Footprints' },
+      { id: 'img-zod-2', url: 'https://justabode.com/public/frontend/uploads/17180984291.jpeg', isPrimary: false, caption: 'Zodiac Greens Hillside View' }
     ],
     assignedAgentId: 'u-1',
     assignedAgentName: 'Punit Tyagi',
@@ -654,7 +659,8 @@ export const initialProperties: Property[] = [
     verified: true,
     published: true,
     images: [
-      { id: 'img-ght-1', url: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&q=80&w=1200', isPrimary: true, caption: 'Doon Ghati River Valley Duplex' }
+      { id: 'img-ght-1', url: 'https://img.staticmb.com/mbimages/project/Photo_h310_w462/2021/09/22/Project-Photo-1-Ghati-River-Valley-Dehradun-5311859_345_1366_310_462.jpg', isPrimary: true, caption: 'Doon Ghati River Valley Real Project Site' },
+      { id: 'img-ght-2', url: 'https://imagecdn.99acres.com/media1/42131/4/842624845M-1789816068852.webp', isPrimary: false, caption: 'Doon Ghati Valley Landscape' }
     ],
     assignedAgentId: 'u-2',
     assignedAgentName: 'Rajesh Sharma',

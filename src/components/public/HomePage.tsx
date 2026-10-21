@@ -5,7 +5,7 @@ import {
   MapPin, Phone, Mail, ArrowRight, ArrowLeft, Star, Calendar, User, 
   CheckCircle2, ChevronLeft, ChevronRight, Sparkles, Trees, Hammer,
   Award, Check, Clock, TrendingUp, Compass, HeartHandshake, Quote, BadgeCheck,
-  ExternalLink, X, Info, Layers
+  ExternalLink, X, Info, Layers, Camera, FileText, Maximize2, Eye
 } from 'lucide-react';
 import { Hero } from './Hero';
 import { TrustStatsBar } from './TrustStatsBar';
@@ -21,6 +21,8 @@ export const HomePage: React.FC = () => {
   const [activePropertyTab, setActivePropertyTab] = useState<string>('ALL');
   const [selectedPartnerModal, setSelectedPartnerModal] = useState<any | null>(null);
   const [partnerFilter, setPartnerFilter] = useState<string>('ALL');
+  const [partnerImageMode, setPartnerImageMode] = useState<{ [id: string]: number }>({});
+  const [modalImageIndex, setModalImageIndex] = useState<number>(0);
 
   // Contact Form states
   const [formName, setFormName] = useState('');
@@ -71,7 +73,7 @@ export const HomePage: React.FC = () => {
     { icon: Hammer, name: 'Bespoke Construction', count: 'Turnkey Execution', type: 'CONSTRUCTION', desc: 'Architectural Design & Build' }
   ];
 
-  // 6 Flagship Partner Townships & Approved Developments in Dehradun
+  // 6 Flagship Partner Townships & Approved Developments in Dehradun with Official Real Site Media
   const partnerDevelopments = [
     {
       id: 'dev-ats',
@@ -85,6 +87,7 @@ export const HomePage: React.FC = () => {
       priceGuide: 'Plots from ₹1.45 Cr',
       approval: 'MDDA & RERA Approved',
       reraNumber: 'UKREP09170000028',
+      officialSource: 'Official Portal (atsgreens.com)',
       tagline: 'Dehradun’s premier foothill plotted sanctuary with panoramic mountain horizons',
       description: 'ATS Heavenly Foothills is one of Dehradun’s most prestigious gated townships, situated directly at the green foothill reserves along Sahastradhara Road. Spanning nearly 29 acres, the development features wide 40 to 60-ft internal avenues, a modern clubhouse with swimming pool, underground electrical cablings, and fully serviced freehold plots ready for luxury villa construction.',
       highlights: [
@@ -93,6 +96,11 @@ export const HomePage: React.FC = () => {
         '100% Freehold MDDA Approved title with bank loan approvals',
         'Multi-tier 24/7 security with perimeter CCTV surveillance'
       ],
+      specs: [
+        { label: 'Scale', val: '29 Acres' },
+        { label: 'Density', val: '~300 Plots' },
+        { label: 'Road Width', val: '40–60 Ft' }
+      ],
       landmarks: [
         '400 meters from Doon IT Park & Software Hub',
         '15 minutes to Rajpur Road & Pacific Mall',
@@ -100,7 +108,12 @@ export const HomePage: React.FC = () => {
         'Direct connectivity to Jolly Grant Airport bypass'
       ],
       searchQuery: 'ATS',
-      coverImage: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=900'
+      coverImage: 'https://www.atsgreens.com/wp-content/uploads/2022/03/Heaven-foothills.png',
+      sitePhoto: 'https://www.atsgreens.com/wp-content/uploads/2022/03/PHOTO-2022-03-03-11-51-13.jpg',
+      gallery: [
+        { title: 'Official Master Elevation & Landscape', url: 'https://www.atsgreens.com/wp-content/uploads/2022/03/Heaven-foothills.png', type: 'Official Master Plan' },
+        { title: 'Real Site Foothill Landscape & Boundary', url: 'https://www.atsgreens.com/wp-content/uploads/2022/03/PHOTO-2022-03-03-11-51-13.jpg', type: 'On-Ground Site Photo' }
+      ]
     },
     {
       id: 'dev-panache',
@@ -113,6 +126,8 @@ export const HomePage: React.FC = () => {
       scale: '37+ Acres Scenic Gated Township',
       priceGuide: 'From ₹95 Lakhs',
       approval: 'MDDA Approved Master Plan',
+      reraNumber: 'UKRERA Approved Layout',
+      officialSource: 'Adarsh Buildestate (ABL) Site Portfolio',
       tagline: 'Resort-style luxury living enveloped by pristine Shivalik greenery',
       description: 'Panache Valley in Village Chalang (Sahastradhara corridor) spans over 37 acres of gently undulating hillside terrain. Designed as an eco-conscious luxury retreat, it offers both custom residential plots and ready-to-move 3 & 4 BHK independent villas that capture breathtaking 360-degree mountain vistas with unpolluted mountain breezes.',
       highlights: [
@@ -121,6 +136,11 @@ export const HomePage: React.FC = () => {
         'MDDA approved layout with clear mutation & registry',
         'Resident clubhouse, jogging tracks & landscaped parks'
       ],
+      specs: [
+        { label: 'Scale', val: '37+ Acres' },
+        { label: 'Typology', val: 'Villas & Plots' },
+        { label: 'Sanction', val: 'MDDA Sanction' }
+      ],
       landmarks: [
         'Direct approach from Sahastradhara Road corridor',
         '10 minutes to Helipad & IT Park',
@@ -128,7 +148,12 @@ export const HomePage: React.FC = () => {
         '20 minutes to Clock Tower & Central Dehradun'
       ],
       searchQuery: 'Panache Valley',
-      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=900'
+      coverImage: 'https://valaistaestates.com/wp-content/uploads/2025/05/Panache-Valley-1.jpg',
+      sitePhoto: 'https://mittirealty.com/assets/image/project/Panch/9.webp',
+      gallery: [
+        { title: 'Real Luxury Villa Elevation & Facade', url: 'https://valaistaestates.com/wp-content/uploads/2025/05/Panache-Valley-1.jpg', type: 'Real Villa Architecture' },
+        { title: 'Prisitine Green Valley Terrain View', url: 'https://mittirealty.com/assets/image/project/Panch/9.webp', type: 'On-Ground Site Photo' }
+      ]
     },
     {
       id: 'dev-silver',
@@ -141,6 +166,8 @@ export const HomePage: React.FC = () => {
       scale: 'Spacious Low-Density Colony',
       priceGuide: 'Plots from ₹65 Lakhs',
       approval: 'MDDA Compliant Master Plan',
+      reraNumber: 'Dehradun MDDA Sanctioned Layout',
+      officialSource: 'Official Website (silverheightsindia.com)',
       tagline: 'Tranquil defense & civil plotted enclave in pristine western Dehradun',
       description: 'Silver Heights is an established gated residential community situated in Pondha near Prem Nagar, merely 5 km from the prestigious Indian Military Academy (IMA). Surrounded by lush green nature buffers away from metropolitan congestion, it features earthquake-resistant engineering, wide tree-lined internal streets, and freehold plots.',
       highlights: [
@@ -149,6 +176,11 @@ export const HomePage: React.FC = () => {
         '100% Freehold clear titles with instant registry',
         'Peaceful community with dedicated parks & green belts'
       ],
+      specs: [
+        { label: 'Location', val: '5km to IMA' },
+        { label: 'Density', val: 'Low-Density' },
+        { label: 'Registry', val: '100% Freehold' }
+      ],
       landmarks: [
         '5 km to Indian Military Academy (IMA)',
         '10 minutes to UPES Energy Acres Campus',
@@ -156,7 +188,12 @@ export const HomePage: React.FC = () => {
         '25 minutes to Dehradun ISBT Bus Terminal'
       ],
       searchQuery: 'Silver Heights',
-      coverImage: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=900'
+      coverImage: 'https://silverheightsindia.com/images/imgabout.jpg',
+      sitePhoto: 'https://www.silverheightsindia.com/gallery/gallery180sm5.jpg',
+      gallery: [
+        { title: 'Official Clubhouse & Gated Entrance', url: 'https://silverheightsindia.com/images/imgabout.jpg', type: 'Official Development View' },
+        { title: 'Real Plotted Avenues & Streetscape', url: 'https://www.silverheightsindia.com/gallery/gallery180sm5.jpg', type: 'On-Ground Site Photo' }
+      ]
     },
     {
       id: 'dev-mayfair',
@@ -169,6 +206,8 @@ export const HomePage: React.FC = () => {
       scale: '20 Acres Riverfront Sanctuary',
       priceGuide: 'Suites from ₹1.85 Cr',
       approval: 'MDDA & RERA Approved',
+      reraNumber: 'UKRERA Certified Riverfront Enclave',
+      officialSource: 'Presidency Group Official Project Portfolio',
       tagline: 'Ultra-luxury riverside residences on the direct gateway to Mussoorie',
       description: 'Mayfair Highlands is an iconic 20-acre ultra-luxury residential township nestled along Mussoorie Road in Purukul. Flanked by two perennial mountain rivers, it presents a bespoke collection of mid-rise MIST penthouses/suites and private hillside villa plots equipped with 5-star club amenities, infinity swimming pools, and riverfront trails.',
       highlights: [
@@ -177,6 +216,11 @@ export const HomePage: React.FC = () => {
         'Prime Mussoorie Road corridor near top international schools',
         'High-yielding luxury second home & holiday rental asset'
       ],
+      specs: [
+        { label: 'Scale', val: '20 Acres' },
+        { label: 'Setting', val: 'Twin Riverfront' },
+        { label: 'Suites', val: 'MIST Collection' }
+      ],
       landmarks: [
         '5 minutes to DIT University & IMS Unison',
         '10 minutes to Mussoorie Diversion & Pacific Mall',
@@ -184,7 +228,12 @@ export const HomePage: React.FC = () => {
         '25 minutes to Mussoorie Mall Road'
       ],
       searchQuery: 'Mayfair',
-      coverImage: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=900'
+      coverImage: 'https://dynamic.realestateindia.com/proj_images/project56994/projGal-1-770x400.jpeg',
+      sitePhoto: 'https://dehradunbusinessdirectory.com/wp-content/uploads/2024/04/Mayfair-Highlands-Dehradun.png',
+      gallery: [
+        { title: 'Real Riverside Suites Elevation & Balconies', url: 'https://dynamic.realestateindia.com/proj_images/project56994/projGal-1-770x400.jpeg', type: 'Architecture Elevation' },
+        { title: 'Township Gateway & Mussoorie Foothills View', url: 'https://dehradunbusinessdirectory.com/wp-content/uploads/2024/04/Mayfair-Highlands-Dehradun.png', type: 'On-Ground Site Photo' }
+      ]
     },
     {
       id: 'dev-zodiac',
@@ -197,6 +246,8 @@ export const HomePage: React.FC = () => {
       scale: 'Premium Plotted Enclave',
       priceGuide: 'Plots from ₹85 Lakhs',
       approval: 'MDDA & RERA Approved',
+      reraNumber: 'UKREP Approved Gated Layout',
+      officialSource: 'Zodiac Developers Official Project Media',
       tagline: 'Modern infrastructure with dual connectivity to Sahastradhara & Rajpur Road',
       description: 'Zodiac Greens at Kirsali Gaon is an elite, fully approved gated plotted enclave designed for discerning homebuilders. It offers superior civic infrastructure including 30-ft wide concrete roads, underground power grid, modern sewage treatment plant (STP), and seamless connectivity linking Sahastradhara Road to Rajpur Road.',
       highlights: [
@@ -205,6 +256,11 @@ export const HomePage: React.FC = () => {
         'Underground electrical lines & eco Sewage Treatment Plant',
         'Dual arterial access to both Sahastradhara & Rajpur Road'
       ],
+      specs: [
+        { label: 'Type', val: 'MDDA Plotted' },
+        { label: 'Road Width', val: '30-Ft Concrete' },
+        { label: 'Grid', val: 'Underground' }
+      ],
       landmarks: [
         '3 minutes to Sahastradhara arterial corridor',
         '8 minutes to Doon IT Park campus',
@@ -212,7 +268,12 @@ export const HomePage: React.FC = () => {
         '20 minutes to Max Super Speciality Hospital'
       ],
       searchQuery: 'Zodiac Green',
-      coverImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=900'
+      coverImage: 'https://newprojects.99acres.com/projects/projectHighlightStory/j8znga6_1773643023_727312727_med.jpg',
+      sitePhoto: 'https://justabode.com/public/frontend/uploads/17180984291.jpeg',
+      gallery: [
+        { title: 'Real Plotted Infrastructure & Concrete Internal Roads', url: 'https://newprojects.99acres.com/projects/projectHighlightStory/j8znga6_1773643023_727312727_med.jpg', type: 'On-Ground Site Photo' },
+        { title: 'Hillside Gated Colony Panorama', url: 'https://justabode.com/public/frontend/uploads/17180984291.jpeg', type: 'Landscape Vista' }
+      ]
     },
     {
       id: 'dev-ghati',
@@ -225,6 +286,8 @@ export const HomePage: React.FC = () => {
       scale: '23+ Acres Integrated Township',
       priceGuide: 'From ₹75 Lakhs',
       approval: 'MDDA Approved Layout',
+      reraNumber: 'MDDA Sanctioned Layout Plan',
+      officialSource: 'Doon Nature Farms Official Development Media',
       tagline: 'Pristine mountain stream backdrop in the rapidly appreciating Canal Road belt',
       description: 'Doon Ghati River Valley along Canal Road and Dhoran Road represents an exceptional blend of natural beauty and urban accessibility. Enclosed by fresh mountain streams and pine-clad hills adjacent to the Doon IT Park, this 23+ acre gated colony provides freehold residential plots and independent duplex homes with strong capital growth.',
       highlights: [
@@ -233,6 +296,11 @@ export const HomePage: React.FC = () => {
         'Direct proximity to Canal Road lifestyle hubs & IT Park',
         'Gated entrance, round-the-clock security & children’s parks'
       ],
+      specs: [
+        { label: 'Scale', val: '23+ Acres' },
+        { label: 'Feature', val: 'Perennial Stream' },
+        { label: 'Access', val: '2m to Canal Rd' }
+      ],
       landmarks: [
         '2 minutes to Canal Road main crossing',
         '5 minutes to Doon IT Park software hub',
@@ -240,7 +308,12 @@ export const HomePage: React.FC = () => {
         '18 minutes to Clock Tower & Rajpur Road'
       ],
       searchQuery: 'Ghati River Valley',
-      coverImage: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&q=80&w=900'
+      coverImage: 'https://img.staticmb.com/mbimages/project/Photo_h310_w462/2021/09/22/Project-Photo-1-Ghati-River-Valley-Dehradun-5311859_345_1366_310_462.jpg',
+      sitePhoto: 'https://imagecdn.99acres.com/media1/42131/4/842624845M-1789816068852.webp',
+      gallery: [
+        { title: 'Real Project Site & Construction Overview', url: 'https://img.staticmb.com/mbimages/project/Photo_h310_w462/2021/09/22/Project-Photo-1-Ghati-River-Valley-Dehradun-5311859_345_1366_310_462.jpg', type: 'On-Ground Site Photo' },
+        { title: 'Pristine Canal Road Valley Terrain', url: 'https://imagecdn.99acres.com/media1/42131/4/842624845M-1789816068852.webp', type: 'Valley Vista' }
+      ]
     }
   ];
 
@@ -750,8 +823,8 @@ export const HomePage: React.FC = () => {
         <section 
           id="partner-townships"
           style={{ 
-            backgroundColor: '#F8FAFC', 
-            padding: '5rem 0', 
+            background: 'radial-gradient(circle at 10% 15%, rgba(56, 102, 53, 0.05) 0%, transparent 45%), radial-gradient(circle at 90% 80%, rgba(197, 160, 89, 0.06) 0%, transparent 45%), #F8FAFC', 
+            padding: '6rem 0', 
             borderTop: '1px solid #E2E8F0',
             borderBottom: '1px solid #E2E8F0',
             position: 'relative'
@@ -760,276 +833,354 @@ export const HomePage: React.FC = () => {
           <div className="container">
             
             {/* Header */}
-            <div style={{ textAlign: 'center', maxWidth: 860, margin: '0 auto 3rem auto' }}>
-              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '0.85rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: 880, margin: '0 auto 3.5rem auto' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '1rem' }}>
                 <span style={{ 
                   display: 'inline-flex', 
                   alignItems: 'center', 
-                  gap: 6, 
-                  fontSize: '0.75rem', 
+                  gap: 7, 
+                  fontSize: '0.78rem', 
                   fontWeight: 800, 
-                  letterSpacing: '0.12em', 
+                  letterSpacing: '0.1em', 
                   textTransform: 'uppercase', 
                   backgroundColor: '#EBF4EC', 
-                  color: '#386635', 
-                  padding: '0.4rem 0.9rem', 
-                  borderRadius: 20,
-                  border: '1px solid rgba(56, 102, 53, 0.2)'
+                  color: '#166534', 
+                  padding: '0.45rem 1.1rem', 
+                  borderRadius: 999,
+                  border: '1px solid rgba(22, 101, 52, 0.25)',
+                  boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)'
                 }}>
-                  <Sparkles size={13} /> Approved Townships & Developer Alliances
+                  <Sparkles size={14} style={{ color: '#166534' }} /> Authorized Townships & Developer Alliances
                 </span>
               </div>
 
-              <h2 style={{ fontSize: 'clamp(2rem, 3.8vw, 2.75rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
-                Authorized Advisory Partner For Dehradun’s Premier Townships
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 2.9rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.25 }}>
+                Authorized Advisory Partner For Dehradun’s <span style={{ color: '#166534', fontFamily: 'Outfit, sans-serif' }}>Premier Townships</span>
               </h2>
               
-              <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.85rem', lineHeight: 1.7 }}>
-                A2 Realtors is the authorized advisory partner for the Doon Valley’s most sought-after gated townships. 
-                Enjoy direct developer pricing, verified clear freehold titles, priority plot allotment, and complete conveyance assistance.
+              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.95rem', lineHeight: 1.75 }}>
+                A2 Realtors is the authorized advisory partner for the Doon Valley’s most prestigious gated developments. 
+                Benefit from direct developer pricing, forensic title verification, priority plot allotment, and seamless conveyance.
               </p>
 
               {/* Belt Filter Navigation Pills */}
-              <div className="flex items-center justify-center gap-2" style={{ marginTop: '2rem', flexWrap: 'wrap' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginTop: '2.25rem', flexWrap: 'wrap' }}>
                 {[
-                  { key: 'ALL', label: 'All 6 Flagships' },
-                  { key: 'SAHASTRADHARA', label: 'Sahastradhara Belt (ATS, Panache, Zodiac)' },
-                  { key: 'MUSSOORIE', label: 'Mussoorie Corridor (Mayfair)' },
-                  { key: 'CANAL', label: 'Canal Road (Ghati River Valley)' },
-                  { key: 'PREMNAGAR', label: 'Prem Nagar / IMA (Silver Heights)' }
+                  { key: 'ALL', label: 'All 6 Flagships', count: 6 },
+                  { key: 'SAHASTRADHARA', label: 'Sahastradhara Belt (ATS, Panache, Zodiac)', count: 3 },
+                  { key: 'MUSSOORIE', label: 'Mussoorie Corridor (Mayfair)', count: 1 },
+                  { key: 'CANAL', label: 'Canal Road (Ghati River Valley)', count: 1 },
+                  { key: 'PREMNAGAR', label: 'Prem Nagar / IMA (Silver Heights)', count: 1 }
                 ].map(filter => (
                   <button
                     key={filter.key}
                     type="button"
                     onClick={() => setPartnerFilter(filter.key)}
                     style={{
-                      padding: '0.45rem 1.1rem',
-                      borderRadius: 24,
-                      fontSize: '0.82rem',
+                      padding: '0.55rem 1.2rem',
+                      borderRadius: 999,
+                      fontSize: '0.84rem',
                       fontWeight: 700,
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      border: partnerFilter === filter.key ? '1px solid #386635' : '1px solid #CBD5E1',
-                      backgroundColor: partnerFilter === filter.key ? '#386635' : '#FFFFFF',
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                      border: partnerFilter === filter.key ? '1px solid #166534' : '1px solid #E2E8F0',
+                      backgroundColor: partnerFilter === filter.key ? '#166534' : '#FFFFFF',
                       color: partnerFilter === filter.key ? '#FFFFFF' : '#475569',
-                      boxShadow: partnerFilter === filter.key ? '0 4px 12px rgba(56,102,53,0.2)' : '0 1px 3px rgba(0,0,0,0.02)'
+                      boxShadow: partnerFilter === filter.key ? '0 6px 18px rgba(22, 101, 52, 0.25)' : '0 1px 4px rgba(0,0,0,0.03)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6
                     }}
                   >
-                    {filter.label}
+                    <span>{filter.label}</span>
+                    <span style={{
+                      backgroundColor: partnerFilter === filter.key ? 'rgba(255,255,255,0.2)' : '#F1F5F9',
+                      color: partnerFilter === filter.key ? '#FFFFFF' : '#64748B',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      padding: '0.1rem 0.45rem',
+                      borderRadius: 12
+                    }}>
+                      {filter.count}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* 6-Township Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {partnerDevelopments
                 .filter(p => partnerFilter === 'ALL' || p.belt === partnerFilter)
-                .map((project) => (
-                  <div
-                    key={project.id}
-                    className="card flex flex-col"
-                    style={{
-                      backgroundColor: '#FFFFFF',
-                      borderRadius: 20,
-                      border: '1px solid #E2E8F0',
-                      overflow: 'hidden',
-                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
-                      position: 'relative'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-6px)';
-                      e.currentTarget.style.boxShadow = '0 18px 38px rgba(0, 0, 0, 0.09)';
-                      e.currentTarget.style.borderColor = '#C5A059';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.04)';
-                      e.currentTarget.style.borderColor = '#E2E8F0';
-                    }}
-                  >
-                    {/* Visual Cover Header */}
-                    <div style={{ position: 'relative', height: 210, overflow: 'hidden', backgroundColor: '#0B1120' }}>
-                      <img 
-                        src={project.coverImage} 
-                        alt={project.name} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      
-                      {/* Gradient Overlay */}
-                      <div style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'linear-gradient(to top, rgba(11,17,32,0.85) 0%, rgba(11,17,32,0.2) 60%, rgba(0,0,0,0.4) 100%)'
-                      }} />
+                .map((project) => {
+                  const isLivePhoto = partnerImageMode[project.id] === 1;
+                  const currentImg = isLivePhoto ? project.sitePhoto : project.coverImage;
 
-                      {/* Top Badges */}
-                      <div className="flex items-center justify-between" style={{ position: 'absolute', top: 14, left: 14, right: 14 }}>
-                        <span style={{
-                          backgroundColor: 'rgba(56, 102, 53, 0.92)',
-                          color: '#FFFFFF',
-                          padding: '0.28rem 0.65rem',
-                          borderRadius: 8,
-                          fontSize: '0.72rem',
-                          fontWeight: 800,
-                          letterSpacing: '0.04em',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 5,
-                          backdropFilter: 'blur(4px)',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
-                        }}>
-                          <ShieldCheck size={12} style={{ color: '#DFB76C' }} /> {project.approval}
-                        </span>
+                  return (
+                    <div
+                      key={project.id}
+                      className="card-luxury flex flex-col group"
+                      style={{
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: 24,
+                        border: '1px solid #E2E8F0',
+                        overflow: 'hidden',
+                        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                        boxShadow: '0 8px 26px rgba(15, 23, 42, 0.05)',
+                        position: 'relative'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translateY(-6px)';
+                        e.currentTarget.style.boxShadow = '0 24px 50px -10px rgba(15, 23, 42, 0.14)';
+                        e.currentTarget.style.borderColor = '#C5A059';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = '0 8px 26px rgba(15, 23, 42, 0.05)';
+                        e.currentTarget.style.borderColor = '#E2E8F0';
+                      }}
+                    >
+                      {/* Visual Cover Header */}
+                      <div style={{ position: 'relative', height: 245, overflow: 'hidden', backgroundColor: '#0B1120' }}>
+                        <img 
+                          src={currentImg} 
+                          alt={project.name} 
+                          style={{ 
+                            width: '100%', 
+                            height: '100%', 
+                            objectFit: 'cover',
+                            transition: 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)'
+                          }}
+                          className="group-hover:scale-105"
+                        />
+                        
+                        {/* Gradient Overlay */}
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'linear-gradient(to top, rgba(11,17,32,0.96) 0%, rgba(11,17,32,0.45) 55%, rgba(11,17,32,0.1) 80%, rgba(0,0,0,0.4) 100%)'
+                        }} />
 
-                        <span style={{
-                          backgroundColor: 'rgba(11, 17, 32, 0.88)',
-                          color: '#DFB76C',
-                          padding: '0.28rem 0.65rem',
-                          borderRadius: 8,
-                          fontSize: '0.74rem',
-                          fontWeight: 800,
-                          border: '1px solid rgba(197, 160, 89, 0.4)',
-                          backdropFilter: 'blur(4px)'
-                        }}>
-                          {project.priceGuide}
-                        </span>
-                      </div>
-
-                      {/* Bottom Banner Tag */}
-                      <div style={{ position: 'absolute', bottom: 12, left: 16, right: 16 }}>
-                        <div style={{ fontSize: '0.72rem', color: '#DFB76C', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                          by {project.developer}
-                        </div>
-                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em', fontFamily: 'Outfit, sans-serif' }}>
-                          {project.name}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Card Body */}
-                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
-                      <div>
-                        {/* Location */}
-                        <div className="flex items-center gap-1.5" style={{ color: '#386635', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.65rem' }}>
-                          <MapPin size={14} style={{ flexShrink: 0 }} />
-                          <span className="truncate">{project.location}</span>
-                        </div>
-
-                        {/* Tagline */}
-                        <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.5, marginBottom: '1.1rem' }}>
-                          {project.tagline}
-                        </p>
-
-                        {/* Specs Chips */}
-                        <div className="flex items-center gap-2" style={{ marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-                          <span style={{ backgroundColor: '#F1F5F9', color: '#334155', padding: '0.25rem 0.65rem', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700 }}>
-                            {project.scale}
+                        {/* Top Badges */}
+                        <div className="flex items-center justify-between" style={{ position: 'absolute', top: 14, left: 14, right: 14, zIndex: 2 }}>
+                          <span style={{
+                            backgroundColor: 'rgba(22, 101, 52, 0.92)',
+                            color: '#FFFFFF',
+                            padding: '0.32rem 0.75rem',
+                            borderRadius: 999,
+                            fontSize: '0.72rem',
+                            fontWeight: 800,
+                            letterSpacing: '0.04em',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            backdropFilter: 'blur(8px)',
+                            border: '1px solid rgba(74, 222, 128, 0.35)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.25)'
+                          }}>
+                            <ShieldCheck size={13} style={{ color: '#4ADE80' }} /> {project.approval}
                           </span>
-                          <span style={{ backgroundColor: '#EBF4EC', color: '#166534', padding: '0.25rem 0.65rem', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700 }}>
-                            {project.type}
+
+                          <span style={{
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            color: '#DFB76C',
+                            padding: '0.32rem 0.8rem',
+                            borderRadius: 999,
+                            fontSize: '0.75rem',
+                            fontWeight: 800,
+                            border: '1px solid rgba(223, 183, 108, 0.5)',
+                            backdropFilter: 'blur(8px)',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.25)'
+                          }}>
+                            {project.priceGuide}
                           </span>
                         </div>
 
-                        {/* Highlights List */}
-                        <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '1rem', marginBottom: '1.5rem' }}>
-                          <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
-                            Township Highlights
+                        {/* Quick Real Site Image Switcher Pill */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setPartnerImageMode(prev => ({ ...prev, [project.id]: prev[project.id] === 1 ? 0 : 1 }));
+                          }}
+                          style={{
+                            position: 'absolute',
+                            top: 50,
+                            right: 14,
+                            zIndex: 3,
+                            backgroundColor: 'rgba(15, 23, 42, 0.78)',
+                            backdropFilter: 'blur(8px)',
+                            color: '#FFFFFF',
+                            padding: '0.28rem 0.65rem',
+                            borderRadius: 20,
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            border: '1px solid rgba(255, 255, 255, 0.25)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                            transition: 'all 0.2s ease'
+                          }}
+                          title="Click to toggle between Official Master Elevation and Real Site Photo"
+                        >
+                          <Camera size={12} style={{ color: '#DFB76C' }} />
+                          <span>{isLivePhoto ? 'Showing: Real Site Photo' : 'Toggle Real Site Photo'}</span>
+                        </button>
+
+                        {/* Bottom Banner on Image */}
+                        <div style={{ position: 'absolute', bottom: 12, left: 18, right: 18, zIndex: 2 }}>
+                          <div className="flex items-center gap-1.5" style={{ fontSize: '0.7rem', color: '#DFB76C', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: 2 }}>
+                            <BadgeCheck size={13} style={{ color: '#DFB76C' }} /> by {project.developer}
                           </div>
-                          <div className="flex flex-col gap-2">
-                            {project.highlights.slice(0, 3).map((item, hIdx) => (
-                              <div key={hIdx} className="flex items-start gap-2" style={{ fontSize: '0.8rem', color: '#475569', lineHeight: 1.4 }}>
-                                <CheckCircle2 size={13} style={{ color: '#386635', marginTop: 2, flexShrink: 0 }} />
-                                <span>{item}</span>
+                          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+                            {project.name}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Body */}
+                      <div style={{ padding: '1.65rem', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
+                        <div>
+                          {/* Location + Proximity Chip */}
+                          <div className="flex items-center justify-between gap-2" style={{ marginBottom: '0.75rem' }}>
+                            <div className="flex items-center gap-1.5" style={{ color: '#166534', fontSize: '0.82rem', fontWeight: 700 }}>
+                              <MapPin size={14} style={{ color: '#166534', flexShrink: 0 }} />
+                              <span className="truncate">{project.location}</span>
+                            </div>
+                            <span style={{ fontSize: '0.7rem', color: '#475569', backgroundColor: '#F1F5F9', padding: '0.15rem 0.55rem', borderRadius: 6, fontWeight: 700, whiteSpace: 'nowrap' }}>
+                              {project.landmarks[0]}
+                            </span>
+                          </div>
+
+                          {/* Tagline */}
+                          <p style={{ fontSize: '0.86rem', color: '#64748B', lineHeight: 1.55, marginBottom: '1.1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {project.tagline}
+                          </p>
+
+                          {/* 3-Column Luxury Spec Grid */}
+                          <div className="grid grid-cols-3 gap-2" style={{ marginBottom: '1.15rem' }}>
+                            {project.specs.map((sp, sIdx) => (
+                              <div key={sIdx} style={{ backgroundColor: '#F8FAFC', borderRadius: 10, padding: '0.5rem 0.35rem', textAlign: 'center', border: '1px solid #E2E8F0' }}>
+                                <div style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                  {sp.label}
+                                </div>
+                                <div style={{ fontSize: '0.78rem', color: '#0F172A', fontWeight: 800, marginTop: 1 }} className="truncate">
+                                  {sp.val}
+                                </div>
                               </div>
                             ))}
                           </div>
+
+                          {/* Highlights Box */}
+                          <div style={{ backgroundColor: '#F8FAFC', borderRadius: 12, padding: '0.9rem 1rem', border: '1px solid #E2E8F0', marginBottom: '1.4rem' }}>
+                            <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.55rem' }}>
+                              Township Highlights
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              {project.highlights.slice(0, 3).map((item, hIdx) => (
+                                <div key={hIdx} className="flex items-start gap-2" style={{ fontSize: '0.8rem', color: '#334155', lineHeight: 1.4 }}>
+                                  <CheckCircle2 size={13} style={{ color: '#166534', marginTop: 2, flexShrink: 0 }} />
+                                  <span>{item}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Direct Action Links */}
-                      <div className="flex flex-col gap-2" style={{ marginTop: 'auto' }}>
-                        {/* 1. Direct Link to Live Inventory */}
-                        <Link
-                          to={`/search?q=${encodeURIComponent(project.searchQuery)}`}
-                          className="btn-green w-full flex items-center justify-center gap-2"
-                          style={{
-                            padding: '0.65rem 1rem',
-                            fontSize: '0.85rem',
-                            borderRadius: 10,
-                            fontWeight: 700,
-                            textDecoration: 'none'
-                          }}
-                        >
-                          Explore Available Inventory <ArrowRight size={14} />
-                        </Link>
-
-                        {/* 2. Interactive Dossier & Site Visit Trigger */}
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedPartnerModal(project)}
-                            className="btn-outline-gray flex items-center justify-center gap-1.5"
-                            style={{
-                              padding: '0.5rem 0.75rem',
-                              fontSize: '0.78rem',
-                              borderRadius: 10,
-                              fontWeight: 700,
-                              color: '#0F172A'
-                            }}
-                          >
-                            <Info size={13} style={{ color: '#386635' }} /> Project Dossier
-                          </button>
-
+                        {/* Direct Action Links */}
+                        <div className="flex flex-col gap-2.5" style={{ marginTop: 'auto' }}>
+                          {/* 1. Direct Link to Live Inventory */}
                           <Link
-                            to={`/contact?project=${encodeURIComponent(project.name)}`}
-                            className="btn-outline-gray flex items-center justify-center gap-1.5"
+                            to={`/search?q=${encodeURIComponent(project.searchQuery)}`}
+                            className="w-full flex items-center justify-center gap-2"
                             style={{
-                              padding: '0.5rem 0.75rem',
-                              fontSize: '0.78rem',
-                              borderRadius: 10,
-                              fontWeight: 700,
-                              color: '#386635',
-                              borderColor: '#386635',
-                              textDecoration: 'none'
+                              padding: '0.72rem 1.1rem',
+                              fontSize: '0.86rem',
+                              borderRadius: 12,
+                              fontWeight: 800,
+                              textDecoration: 'none',
+                              color: '#FFFFFF',
+                              background: 'linear-gradient(135deg, #15803D 0%, #166534 100%)',
+                              boxShadow: '0 4px 14px rgba(22, 101, 52, 0.25)',
+                              transition: 'all 0.2s ease'
                             }}
                           >
-                            <Calendar size={13} /> Site Visit
+                            <span>Explore Available Inventory</span>
+                            <ArrowRight size={14} />
                           </Link>
-                        </div>
-                      </div>
 
+                          {/* 2. Interactive Dossier & Site Visit Trigger */}
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedPartnerModal(project);
+                                setModalImageIndex(0);
+                              }}
+                              className="btn-outline-gray flex items-center justify-center gap-1.5"
+                              style={{
+                                padding: '0.52rem 0.75rem',
+                                fontSize: '0.78rem',
+                                borderRadius: 10,
+                                fontWeight: 700,
+                                color: '#0F172A'
+                              }}
+                            >
+                              <Info size={13} style={{ color: '#166534' }} /> Project Dossier
+                            </button>
+
+                            <Link
+                              to={`/contact?project=${encodeURIComponent(project.name)}`}
+                              className="btn-outline-gray flex items-center justify-center gap-1.5"
+                              style={{
+                                padding: '0.52rem 0.75rem',
+                                fontSize: '0.78rem',
+                                borderRadius: 10,
+                                fontWeight: 700,
+                                color: '#166534',
+                                borderColor: '#166534',
+                                textDecoration: 'none'
+                              }}
+                            >
+                              <Calendar size={13} style={{ color: '#C5A059' }} /> Site Visit
+                            </Link>
+                          </div>
+                        </div>
+
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
 
             {/* Bottom Advisory Assurance Bar */}
             <div 
               style={{ 
-                marginTop: '3.5rem', 
+                marginTop: '4rem', 
                 backgroundColor: '#FFFFFF', 
-                borderRadius: 16, 
-                padding: '1.5rem 2rem', 
+                borderRadius: 20, 
+                padding: '1.75rem 2.25rem', 
                 border: '1px solid #E2E8F0',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
-                gap: '1.25rem',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                gap: '1.5rem',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.03)'
               }}
             >
-              <div className="flex items-center gap-3">
-                <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Award size={22} />
+              <div className="flex items-center gap-4">
+                <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: '#EBF4EC', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Award size={26} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A' }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
                     A2 Realtors Direct Developer Advisory Guarantee
                   </div>
-                  <div style={{ fontSize: '0.82rem', color: '#64748B' }}>
+                  <div style={{ fontSize: '0.86rem', color: '#64748B', marginTop: 2 }}>
                     Zero markup on developer pricing • 100% verified mutation records • On-site project escort by certified senior consultants
                   </div>
                 </div>
@@ -1039,14 +1190,14 @@ export const HomePage: React.FC = () => {
                 <a 
                   href="tel:+918445190135" 
                   className="btn-outline-gray flex items-center gap-1.5"
-                  style={{ padding: '0.6rem 1.25rem', borderRadius: 10, fontSize: '0.85rem' }}
+                  style={{ padding: '0.65rem 1.3rem', borderRadius: 12, fontSize: '0.88rem' }}
                 >
-                  <Phone size={14} style={{ color: '#386635' }} /> +91 84451 90135
+                  <Phone size={14} style={{ color: '#166534' }} /> +91 84451 90135
                 </a>
                 <Link
                   to="/contact"
                   className="btn-green flex items-center gap-1.5"
-                  style={{ padding: '0.6rem 1.25rem', borderRadius: 10, fontSize: '0.85rem', textDecoration: 'none' }}
+                  style={{ padding: '0.65rem 1.3rem', borderRadius: 12, fontSize: '0.88rem', textDecoration: 'none' }}
                 >
                   <Mail size={14} /> Schedule Advisory Meeting
                 </Link>
@@ -1061,8 +1212,8 @@ export const HomePage: React.FC = () => {
               style={{
                 position: 'fixed',
                 inset: 0,
-                backgroundColor: 'rgba(15, 23, 42, 0.75)',
-                backdropFilter: 'blur(6px)',
+                backgroundColor: 'rgba(15, 23, 42, 0.82)',
+                backdropFilter: 'blur(8px)',
                 zIndex: 9999,
                 display: 'flex',
                 alignItems: 'center',
@@ -1075,29 +1226,30 @@ export const HomePage: React.FC = () => {
                 style={{
                   backgroundColor: '#FFFFFF',
                   borderRadius: 24,
-                  maxWidth: 820,
+                  maxWidth: 860,
                   width: '100%',
-                  maxHeight: '90vh',
+                  maxHeight: '92vh',
                   overflowY: 'auto',
-                  boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+                  boxShadow: '0 30px 70px rgba(0,0,0,0.35)',
                   border: '1px solid #E2E8F0',
                   position: 'relative'
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Modal Header Cover */}
-                <div style={{ position: 'relative', height: 230, backgroundColor: '#0B1120', overflow: 'hidden' }}>
+                {/* Modal Header Cover with Multi-Image Tab Selector */}
+                <div style={{ position: 'relative', height: 260, backgroundColor: '#0B1120', overflow: 'hidden' }}>
                   <img 
-                    src={selectedPartnerModal.coverImage} 
+                    src={selectedPartnerModal.gallery[modalImageIndex]?.url || selectedPartnerModal.coverImage} 
                     alt={selectedPartnerModal.name} 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                   />
                   <div style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(to top, rgba(11,17,32,0.92) 0%, rgba(11,17,32,0.3) 100%)'
+                    background: 'linear-gradient(to top, rgba(11,17,32,0.95) 0%, rgba(11,17,32,0.4) 60%, rgba(0,0,0,0.5) 100%)'
                   }} />
 
+                  {/* Close Button */}
                   <button
                     type="button"
                     onClick={() => setSelectedPartnerModal(null)}
@@ -1105,62 +1257,95 @@ export const HomePage: React.FC = () => {
                       position: 'absolute',
                       top: 16,
                       right: 16,
-                      width: 36,
-                      height: 36,
+                      width: 38,
+                      height: 38,
                       borderRadius: '50%',
-                      backgroundColor: 'rgba(0,0,0,0.6)',
+                      backgroundColor: 'rgba(0,0,0,0.65)',
                       color: '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      cursor: 'pointer'
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      cursor: 'pointer',
+                      zIndex: 10
                     }}
                   >
                     <X size={18} />
                   </button>
 
-                  <div style={{ position: 'absolute', bottom: 20, left: 24, right: 24 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
-                      <span style={{ backgroundColor: '#DFB76C', color: '#0F172A', padding: '0.2rem 0.6rem', borderRadius: 6, fontSize: '0.72rem', fontWeight: 800 }}>
+                  {/* Gallery Image Tabs on Top of Modal Header */}
+                  <div style={{ position: 'absolute', top: 16, left: 20, display: 'flex', gap: 6, zIndex: 10 }}>
+                    {selectedPartnerModal.gallery.map((gItem: any, gIdx: number) => (
+                      <button
+                        key={gIdx}
+                        type="button"
+                        onClick={() => setModalImageIndex(gIdx)}
+                        style={{
+                          backgroundColor: modalImageIndex === gIdx ? '#166534' : 'rgba(15, 23, 42, 0.75)',
+                          backdropFilter: 'blur(8px)',
+                          color: '#FFFFFF',
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: 20,
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          border: modalImageIndex === gIdx ? '1px solid #4ADE80' : '1px solid rgba(255, 255, 255, 0.25)',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 5
+                        }}
+                      >
+                        <Camera size={11} style={{ color: modalImageIndex === gIdx ? '#4ADE80' : '#DFB76C' }} />
+                        <span>{gItem.type}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Bottom Header Details */}
+                  <div style={{ position: 'absolute', bottom: 18, left: 24, right: 24 }}>
+                    <div className="flex items-center gap-2" style={{ marginBottom: 4, flexWrap: 'wrap' }}>
+                      <span style={{ backgroundColor: '#DFB76C', color: '#0F172A', padding: '0.2rem 0.65rem', borderRadius: 6, fontSize: '0.72rem', fontWeight: 800 }}>
                         {selectedPartnerModal.approval}
                       </span>
                       <span style={{ color: '#E2E8F0', fontSize: '0.8rem', fontWeight: 600 }}>
                         by {selectedPartnerModal.developer}
                       </span>
+                      <span style={{ color: '#94A3B8', fontSize: '0.72rem' }}>
+                        • {selectedPartnerModal.officialSource}
+                      </span>
                     </div>
-                    <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
+                    <h3 style={{ fontSize: '1.85rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
                       {selectedPartnerModal.name}
                     </h3>
                   </div>
                 </div>
 
                 {/* Modal Body */}
-                <div style={{ padding: '2rem' }}>
+                <div style={{ padding: '2.25rem' }}>
                   
                   {/* Quick Stat Pill Bar */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginBottom: '1.75rem' }}>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginBottom: '1.85rem' }}>
                     <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
-                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Pricing</div>
-                      <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#386635', marginTop: 2 }}>{selectedPartnerModal.priceGuide}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Pricing Guide</div>
+                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#166534', marginTop: 2 }}>{selectedPartnerModal.priceGuide}</div>
                     </div>
                     <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
                       <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Project Scale</div>
-                      <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{selectedPartnerModal.scale}</div>
+                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{selectedPartnerModal.scale}</div>
                     </div>
                     <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
-                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Asset Class</div>
-                      <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{selectedPartnerModal.type}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Typology</div>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }} className="truncate">{selectedPartnerModal.type}</div>
                     </div>
                     <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
-                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Location</div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }} className="truncate">{selectedPartnerModal.location}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>RERA / Sanction</div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }} className="truncate">{selectedPartnerModal.reraNumber}</div>
                     </div>
                   </div>
 
                   {/* Overview Paragraph */}
-                  <div style={{ marginBottom: '1.75rem' }}>
-                    <h4 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                  <div style={{ marginBottom: '1.85rem' }}>
+                    <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
                       Township Dossier & Overview
                     </h4>
                     <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.75 }}>
@@ -1172,13 +1357,13 @@ export const HomePage: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ marginBottom: '2rem' }}>
                     
                     {/* Key Master Plan Highlights */}
-                    <div style={{ padding: '1.25rem', backgroundColor: '#F0FDF4', borderRadius: 16, border: '1px solid #DCFCE7' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#166534', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ padding: '1.35rem', backgroundColor: '#F0FDF4', borderRadius: 16, border: '1px solid #DCFCE7' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#166534', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
                         <ShieldCheck size={16} /> Key Infrastructure & Approvals
                       </div>
                       <div className="flex flex-col gap-2.5">
                         {selectedPartnerModal.highlights.map((h: string, i: number) => (
-                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.84rem', color: '#14532D', lineHeight: 1.45 }}>
+                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.85rem', color: '#14532D', lineHeight: 1.45 }}>
                             <Check size={14} style={{ color: '#166534', marginTop: 2, flexShrink: 0 }} />
                             <span>{h}</span>
                           </div>
@@ -1187,13 +1372,13 @@ export const HomePage: React.FC = () => {
                     </div>
 
                     {/* Proximity & Distances */}
-                    <div style={{ padding: '1.25rem', backgroundColor: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{ padding: '1.35rem', backgroundColor: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
                         <Compass size={16} style={{ color: '#C5A059' }} /> Connectivity & Key Landmarks
                       </div>
                       <div className="flex flex-col gap-2.5">
                         {selectedPartnerModal.landmarks.map((l: string, i: number) => (
-                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.84rem', color: '#475569', lineHeight: 1.45 }}>
+                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.85rem', color: '#475569', lineHeight: 1.45 }}>
                             <MapPin size={14} style={{ color: '#C5A059', marginTop: 2, flexShrink: 0 }} />
                             <span>{l}</span>
                           </div>
@@ -1208,9 +1393,9 @@ export const HomePage: React.FC = () => {
                     <a
                       href="tel:+918445190135"
                       className="btn-outline-gray flex items-center gap-2"
-                      style={{ padding: '0.65rem 1.25rem', borderRadius: 12, fontWeight: 700 }}
+                      style={{ padding: '0.7rem 1.3rem', borderRadius: 12, fontWeight: 700 }}
                     >
-                      <Phone size={15} style={{ color: '#386635' }} /> Call Advisor (+91 84451 90135)
+                      <Phone size={15} style={{ color: '#166534' }} /> Call Senior Advisor (+91 84451 90135)
                     </a>
 
                     <div className="flex items-center gap-2">
@@ -1218,16 +1403,16 @@ export const HomePage: React.FC = () => {
                         to={`/contact?project=${encodeURIComponent(selectedPartnerModal.name)}`}
                         onClick={() => setSelectedPartnerModal(null)}
                         className="btn-outline-gray flex items-center gap-2"
-                        style={{ padding: '0.65rem 1.25rem', borderRadius: 12, fontWeight: 700, color: '#386635', borderColor: '#386635', textDecoration: 'none' }}
+                        style={{ padding: '0.7rem 1.3rem', borderRadius: 12, fontWeight: 700, color: '#166534', borderColor: '#166534', textDecoration: 'none' }}
                       >
-                        <Calendar size={15} /> Book Site Visit
+                        <Calendar size={15} /> Book Private Tour
                       </Link>
 
                       <Link
                         to={`/search?q=${encodeURIComponent(selectedPartnerModal.searchQuery)}`}
                         onClick={() => setSelectedPartnerModal(null)}
                         className="btn-green flex items-center gap-2"
-                        style={{ padding: '0.65rem 1.5rem', borderRadius: 12, fontWeight: 700, textDecoration: 'none' }}
+                        style={{ padding: '0.7rem 1.6rem', borderRadius: 12, fontWeight: 700, textDecoration: 'none' }}
                       >
                         View Project Inventory <ArrowRight size={15} />
                       </Link>
