@@ -85,16 +85,42 @@ export const Hero: React.FC = () => {
           {/* Left Column: Brand Story & Value Proposition (7 Cols) */}
           <div className="lg:col-span-7">
             
+            {/* Trust Pill */}
+            <div className="flex items-center gap-2" style={{ marginBottom: '1.25rem' }}>
+              <span 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  backgroundColor: 'rgba(22, 101, 52, 0.45)',
+                  color: '#4ADE80',
+                  padding: '0.42rem 1.1rem',
+                  borderRadius: 999,
+                  border: '1px solid rgba(74, 222, 128, 0.35)',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
+                }}
+              >
+                <Sparkles size={13} style={{ color: '#DFB76C' }} /> 
+                <span>Heritage of Trust • Inder Road, Dalanwala</span>
+              </span>
+            </div>
+
             {/* Headline */}
             <h1 
               style={{ 
-                fontSize: 'clamp(2.5rem, 5vw, 4.2rem)', 
+                fontSize: 'clamp(2.5rem, 4.8vw, 4.1rem)', 
                 fontWeight: 800, 
                 letterSpacing: '-0.025em', 
                 color: '#FFFFFF', 
                 lineHeight: 1.15, 
                 marginBottom: '1.5rem',
-                textWrap: 'balance'
+                textWrap: 'balance',
+                fontFamily: 'Outfit, sans-serif'
               }}
             >
               {homepageSettings.heroHeadline ? (
@@ -118,7 +144,7 @@ export const Hero: React.FC = () => {
                 lineHeight: 1.7, 
                 maxWidth: 620, 
                 fontWeight: 400, 
-                marginBottom: '2.5rem',
+                marginBottom: '2rem',
                 textWrap: 'pretty'
               }}
             >
@@ -126,14 +152,15 @@ export const Hero: React.FC = () => {
             </p>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4" style={{ marginBottom: '3rem' }}>
+            <div className="flex flex-wrap items-center gap-4" style={{ marginBottom: '2.25rem' }}>
               <button
                 onClick={() => navigate('/search')}
                 className="btn-gold btn-pill"
                 style={{ 
                   padding: '0.95rem 2.4rem', 
                   fontSize: '1rem', 
-                  fontWeight: 800 
+                  fontWeight: 800,
+                  boxShadow: '0 8px 24px rgba(197, 160, 89, 0.35)'
                 }}
               >
                 <span>Browse Inventory</span>
@@ -156,10 +183,26 @@ export const Hero: React.FC = () => {
               </button>
             </div>
 
+            {/* 3 Credibility Indicators Strip */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" style={{ marginBottom: '2.5rem', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '1.5rem', maxWidth: 640 }}>
+              <div className="flex items-center gap-2" style={{ color: '#E2E8F0', fontSize: '0.82rem' }}>
+                <Shield size={16} style={{ color: '#4ADE80', flexShrink: 0 }} />
+                <span><strong>30-Yr Legal</strong> Title Search</span>
+              </div>
+              <div className="flex items-center gap-2" style={{ color: '#E2E8F0', fontSize: '0.82rem' }}>
+                <Landmark size={16} style={{ color: '#DFB76C', flexShrink: 0 }} />
+                <span><strong>MDDA & RERA</strong> Sanctioned</span>
+              </div>
+              <div className="flex items-center gap-2" style={{ color: '#E2E8F0', fontSize: '0.82rem' }}>
+                <Trees size={16} style={{ color: '#4ADE80', flexShrink: 0 }} />
+                <span><strong>Prime Valley</strong> Inventory</span>
+              </div>
+            </div>
+
             {/* Quick Popular Locality Shortcuts */}
             <div>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#94A3B8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-                Popular Locations
+              <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                Quick Locality Explorer
               </div>
               <div className="flex flex-wrap gap-2">
                 {quickLocalityPills.map((loc) => (
@@ -167,29 +210,35 @@ export const Hero: React.FC = () => {
                     key={loc}
                     onClick={() => navigate(`/search?locality=${encodeURIComponent(loc)}`)}
                     style={{
-                      backgroundColor: 'rgba(15, 23, 42, 0.65)',
-                      color: '#CBD5E1',
-                      border: '1px solid rgba(255, 255, 255, 0.12)',
-                      padding: '0.4rem 0.95rem',
-                      borderRadius: 20,
+                      backgroundColor: 'rgba(15, 23, 42, 0.72)',
+                      color: '#F1F5F9',
+                      border: '1px solid rgba(255, 255, 255, 0.16)',
+                      padding: '0.45rem 1rem',
+                      borderRadius: 999,
                       fontSize: '0.82rem',
                       fontWeight: 600,
                       cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                      backdropFilter: 'blur(4px)'
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                      backdropFilter: 'blur(8px)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6
                     }}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = '#386635';
-                      e.currentTarget.style.borderColor = '#386635';
+                      e.currentTarget.style.backgroundColor = '#166534';
+                      e.currentTarget.style.borderColor = '#4ADE80';
                       e.currentTarget.style.color = '#FFFFFF';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(15, 23, 42, 0.65)';
-                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-                      e.currentTarget.style.color = '#CBD5E1';
+                      e.currentTarget.style.backgroundColor = 'rgba(15, 23, 42, 0.72)';
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.16)';
+                      e.currentTarget.style.color = '#F1F5F9';
+                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
-                    {loc}
+                    <MapPin size={12} style={{ color: '#DFB76C' }} />
+                    <span>{loc}</span>
                   </button>
                 ))}
               </div>
@@ -200,23 +249,25 @@ export const Hero: React.FC = () => {
           {/* Right Column: Next-Gen Floating Property Search Pod (5 Cols) */}
           <div className="lg:col-span-5">
             <div 
-              className="glass-panel"
               style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.98)',
                 color: '#0F172A',
-                borderRadius: 24,
-                padding: '2rem',
-                boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)'
+                borderRadius: 26,
+                padding: '2.25rem',
+                boxShadow: '0 25px 60px -12px rgba(0, 0, 0, 0.55)',
+                border: '1px solid rgba(255, 255, 255, 0.85)',
+                position: 'relative'
               }}
             >
               
               {/* Search Hub Title & Tab Switches */}
               <div style={{ marginBottom: '1.5rem' }}>
-                <div className="flex items-center justify-between" style={{ marginBottom: '0.75rem' }}>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A' }}>
+                <div className="flex items-center justify-between" style={{ marginBottom: '0.85rem' }}>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
                     Find Verified Property
                   </h3>
-                  <span className="flex items-center gap-1" style={{ fontSize: '0.72rem', color: '#16A34A', fontWeight: 700 }}>
-                    <Shield size={13} /> 100% Freehold
+                  <span className="flex items-center gap-1" style={{ fontSize: '0.74rem', color: '#166534', fontWeight: 800, backgroundColor: '#EBF4EC', padding: '0.25rem 0.65rem', borderRadius: 999, border: '1px solid rgba(22,101,52,0.2)' }}>
+                    <Shield size={13} style={{ color: '#166534' }} /> 100% Freehold
                   </span>
                 </div>
 
@@ -225,9 +276,10 @@ export const Hero: React.FC = () => {
                   className="flex" 
                   style={{ 
                     backgroundColor: '#F1F5F9', 
-                    padding: 3, 
+                    padding: 4, 
                     borderRadius: 14,
-                    overflowX: 'auto'
+                    overflowX: 'auto',
+                    border: '1px solid #E2E8F0'
                   }}
                 >
                   {[
@@ -243,14 +295,14 @@ export const Hero: React.FC = () => {
                       onClick={() => setActiveTab(t.id as any)}
                       style={{
                         flex: 1,
-                        padding: '0.45rem 0.5rem',
+                        padding: '0.5rem 0.6rem',
                         borderRadius: 10,
-                        fontSize: '0.78rem',
+                        fontSize: '0.8rem',
                         fontWeight: 700,
-                        backgroundColor: activeTab === t.id ? '#386635' : 'transparent',
+                        backgroundColor: activeTab === t.id ? '#166534' : 'transparent',
                         color: activeTab === t.id ? '#FFFFFF' : '#475569',
-                        boxShadow: activeTab === t.id ? '0 2px 8px rgba(56,102,53,0.3)' : 'none',
-                        transition: 'all 0.15s ease',
+                        boxShadow: activeTab === t.id ? '0 4px 12px rgba(22,101,52,0.3)' : 'none',
+                        transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                         whiteSpace: 'nowrap'
                       }}
                     >
@@ -265,15 +317,15 @@ export const Hero: React.FC = () => {
                 
                 {/* Locality Selector */}
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontSize: '0.78rem', color: '#475569' }}>
-                    Preferred Locality / Sector
+                  <label className="form-label" style={{ fontSize: '0.78rem', color: '#475569', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <MapPin size={13} style={{ color: '#166534' }} /> Preferred Locality / Sector
                   </label>
                   <div style={{ position: 'relative' }}>
                     <select 
                       value={locality} 
                       onChange={(e) => setLocality(e.target.value)} 
                       className="form-select"
-                      style={{ fontSize: '0.88rem', padding: '0.65rem 0.85rem' }}
+                      style={{ fontSize: '0.88rem', padding: '0.7rem 0.85rem', borderRadius: 12, borderColor: '#CBD5E1', backgroundColor: '#FFFFFF' }}
                     >
                       <option value="ALL">All Prime Dehradun Localities</option>
                       {locations.map(loc => (
@@ -286,14 +338,14 @@ export const Hero: React.FC = () => {
                 {/* Property Category (If on Buy / Rent) */}
                 {activeTab === 'BUY' && (
                   <div className="form-group" style={{ margin: 0 }}>
-                    <label className="form-label" style={{ fontSize: '0.78rem', color: '#475569' }}>
-                      Property Type
+                    <label className="form-label" style={{ fontSize: '0.78rem', color: '#475569', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <Building size={13} style={{ color: '#166534' }} /> Property Typology
                     </label>
                     <select 
                       value={propertyType} 
                       onChange={(e) => setPropertyType(e.target.value)} 
                       className="form-select"
-                      style={{ fontSize: '0.88rem', padding: '0.65rem 0.85rem' }}
+                      style={{ fontSize: '0.88rem', padding: '0.7rem 0.85rem', borderRadius: 12, borderColor: '#CBD5E1', backgroundColor: '#FFFFFF' }}
                     >
                       <option value="ALL">All Types (Villas, Flats, Plots)</option>
                       <option value="INDEPENDENT_HOUSE">Independent Villa / Kothi</option>
@@ -307,14 +359,14 @@ export const Hero: React.FC = () => {
 
                 {/* Budget Range Dropdown */}
                 <div className="form-group" style={{ margin: 0 }}>
-                  <label className="form-label" style={{ fontSize: '0.78rem', color: '#475569' }}>
-                    Budget Range
+                  <label className="form-label" style={{ fontSize: '0.78rem', color: '#475569', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <Landmark size={13} style={{ color: '#C5A059' }} /> Budget Range
                   </label>
                   <select 
                     value={budget} 
                     onChange={(e) => setBudget(e.target.value)} 
                     className="form-select"
-                    style={{ fontSize: '0.88rem', padding: '0.65rem 0.85rem' }}
+                    style={{ fontSize: '0.88rem', padding: '0.7rem 0.85rem', borderRadius: 12, borderColor: '#CBD5E1', backgroundColor: '#FFFFFF' }}
                   >
                     <option value="ALL">Any Budget</option>
                     <option value="5000000">Up to ₹50 Lakhs</option>
@@ -327,8 +379,8 @@ export const Hero: React.FC = () => {
                 {/* Bedroom Selector Chips */}
                 {(activeTab === 'BUY' || activeTab === 'RENT' || activeTab === 'VILLA') && (
                   <div>
-                    <label className="form-label" style={{ fontSize: '0.78rem', color: '#475569', marginBottom: 4, display: 'block' }}>
-                      Bedrooms (BHK)
+                    <label className="form-label" style={{ fontSize: '0.78rem', color: '#475569', marginBottom: 5, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <Home size={13} style={{ color: '#166534' }} /> Bedrooms (BHK)
                     </label>
                     <div className="flex gap-1.5">
                       {['ALL', '2', '3', '4', '5+'].map((b) => (
@@ -338,15 +390,16 @@ export const Hero: React.FC = () => {
                           onClick={() => setBedrooms(b)}
                           style={{
                             flex: 1,
-                            padding: '0.4rem',
-                            borderRadius: 8,
-                            fontSize: '0.78rem',
+                            padding: '0.45rem',
+                            borderRadius: 10,
+                            fontSize: '0.8rem',
                             fontWeight: 700,
                             border: '1px solid',
-                            borderColor: bedrooms === b ? '#386635' : '#E2E8F0',
+                            borderColor: bedrooms === b ? '#166534' : '#E2E8F0',
                             backgroundColor: bedrooms === b ? '#EBF4EC' : '#FFFFFF',
-                            color: bedrooms === b ? '#1B4332' : '#64748B',
-                            cursor: 'pointer'
+                            color: bedrooms === b ? '#166534' : '#64748B',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
                           }}
                         >
                           {b === 'ALL' ? 'Any' : `${b} BHK`}
@@ -361,23 +414,25 @@ export const Hero: React.FC = () => {
                   type="submit" 
                   className="btn-green w-full" 
                   style={{ 
-                    padding: '0.85rem', 
-                    borderRadius: 12, 
-                    fontSize: '0.95rem', 
-                    marginTop: '0.5rem',
-                    width: '100%'
+                    padding: '0.92rem', 
+                    borderRadius: 14, 
+                    fontSize: '0.98rem', 
+                    marginTop: '0.65rem',
+                    width: '100%',
+                    backgroundColor: '#166534',
+                    boxShadow: '0 8px 20px rgba(22, 101, 52, 0.35)'
                   }}
                 >
-                  <Search size={18} />
-                  <span>Search Verified Inventory</span>
+                  <Search size={18} style={{ color: '#DFB76C' }} />
+                  <span>Search Verified Properties</span>
                 </button>
 
               </form>
 
               {/* Bottom Assurance */}
-              <div className="flex items-center justify-between" style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #E2E8F0', fontSize: '0.72rem', color: '#64748B' }}>
-                <span>🔒 Zero Brokerage Hassle</span>
-                <span>⚡ Instant Site Visit Booking</span>
+              <div className="flex items-center justify-between" style={{ marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid #E2E8F0', fontSize: '0.75rem', color: '#64748B' }}>
+                <span className="flex items-center gap-1">🔒 100% Freehold Cleared</span>
+                <span className="flex items-center gap-1">⚡ Dedicated Valley Escort</span>
               </div>
 
             </div>

@@ -1432,15 +1432,34 @@ export const HomePage: React.FC = () => {
 
       {/* 5. PROPERTY CATEGORIES GRID */}
       {homepageSettings.showCategories && (
-        <section style={{ padding: '6rem 0', backgroundColor: '#FFFFFF' }}>
+        <section style={{ padding: '6.5rem 0', backgroundColor: '#FFFFFF' }}>
           <div className="container">
             
-            <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 3.5rem auto' }}>
-              <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.6rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+            <div style={{ textAlign: 'center', maxWidth: 720, margin: '0 auto 3.5rem auto' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '0.85rem' }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  backgroundColor: '#EBF4EC',
+                  color: '#166534',
+                  padding: '0.35rem 0.9rem',
+                  borderRadius: 999,
+                  border: '1px solid rgba(22, 101, 52, 0.25)'
+                }}>
+                  <Building2 size={13} style={{ color: '#166534' }} /> Curated Valley Portfolios
+                </span>
+              </div>
+
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
                 {homepageSettings.categoriesTitle || 'Explore by Property Category'}
               </h2>
-              <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.65rem' }}>
-                Select your preferred asset class to view verified inventory with high capital appreciation potential.
+              <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.65rem', lineHeight: 1.65 }}>
+                Select your preferred asset class to view verified inventory with high capital appreciation potential across Dehradun.
               </p>
             </div>
 
@@ -1452,45 +1471,60 @@ export const HomePage: React.FC = () => {
                     if (cat.type === 'CONSTRUCTION') navigate('/construction');
                     else navigate(`/search?category=${cat.type}`);
                   }}
-                  className="card-luxury"
+                  className="card-luxury group"
                   style={{
                     padding: '2rem 1.25rem',
-                    borderRadius: 20,
+                    borderRadius: 22,
                     cursor: 'pointer',
                     textAlign: 'center',
                     backgroundColor: '#FFFFFF',
+                    border: '1px solid #E2E8F0',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxShadow: '0 4px 18px rgba(15, 23, 42, 0.03)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-5px)';
+                    e.currentTarget.style.boxShadow = '0 16px 36px -8px rgba(15, 23, 42, 0.12)';
+                    e.currentTarget.style.borderColor = '#166534';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
+                    e.currentTarget.style.borderColor = '#E2E8F0';
                   }}
                 >
                   <div 
                     style={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 16,
+                      width: 58,
+                      height: 58,
+                      borderRadius: 18,
                       backgroundColor: '#EBF4EC',
-                      color: '#386635',
+                      color: '#166534',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      marginBottom: '1rem',
-                      transition: 'all 0.2s ease'
+                      marginBottom: '1.15rem',
+                      transition: 'transform 0.3s ease',
+                      border: '1px solid rgba(22, 101, 52, 0.2)'
                     }}
+                    className="group-hover:scale-110"
                   >
                     <cat.icon size={26} />
                   </div>
 
-                  <h3 style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0F172A', marginBottom: 3 }}>
+                  <h3 style={{ fontSize: '1.02rem', fontWeight: 800, color: '#0F172A', marginBottom: 4, fontFamily: 'Outfit, sans-serif' }}>
                     {cat.name}
                   </h3>
                   
-                  <div style={{ fontSize: '0.78rem', color: '#386635', fontWeight: 700, marginBottom: 2 }}>
+                  <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 800, marginBottom: 4 }}>
                     {cat.count}
                   </div>
 
-                  <div style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                  <div style={{ fontSize: '0.74rem', color: '#64748B', lineHeight: 1.4 }}>
                     {cat.desc}
                   </div>
                 </div>
@@ -1503,15 +1537,34 @@ export const HomePage: React.FC = () => {
 
       {/* 6. POPULAR & FEATURED PROPERTIES SHOWCASE */}
       {homepageSettings.showPopularProperties && (
-        <section style={{ padding: '6rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
+        <section style={{ padding: '6.5rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
           <div className="container">
             
-            <div className="flex flex-wrap items-end justify-between gap-6" style={{ marginBottom: '3rem' }}>
+            <div className="flex flex-wrap items-end justify-between gap-6" style={{ marginBottom: '3.5rem' }}>
               <div>
-                <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.6rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+                <div className="flex items-center gap-2" style={{ marginBottom: '0.85rem' }}>
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    backgroundColor: '#EBF4EC',
+                    color: '#166534',
+                    padding: '0.35rem 0.9rem',
+                    borderRadius: 999,
+                    border: '1px solid rgba(22, 101, 52, 0.25)'
+                  }}>
+                    <Sparkles size={13} style={{ color: '#166534' }} /> Verified Mandates
+                  </span>
+                </div>
+
+                <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
                   {homepageSettings.popularPropertiesTitle || 'Best Properties For Sale in Dehradun'}
                 </h2>
-                <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.5rem' }}>
+                <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.65rem' }}>
                   Hand-picked exclusive villas, penthouses, and prime plots with clear title deeds.
                 </p>
               </div>
@@ -1528,8 +1581,18 @@ export const HomePage: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActivePropertyTab(tab.id)}
-                    className={activePropertyTab === tab.id ? "btn-green btn-pill" : "btn-outline-gray btn-pill"}
-                    style={{ padding: '0.55rem 1.25rem', fontSize: '0.86rem' }}
+                    style={{
+                      padding: '0.55rem 1.3rem',
+                      borderRadius: 999,
+                      fontSize: '0.86rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                      border: activePropertyTab === tab.id ? '1px solid #166534' : '1px solid #E2E8F0',
+                      backgroundColor: activePropertyTab === tab.id ? '#166534' : '#FFFFFF',
+                      color: activePropertyTab === tab.id ? '#FFFFFF' : '#475569',
+                      boxShadow: activePropertyTab === tab.id ? '0 4px 14px rgba(22, 101, 52, 0.25)' : 'none'
+                    }}
                   >
                     {tab.label}
                   </button>
@@ -1545,14 +1608,14 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* View All Properties Bottom CTA */}
-            <div style={{ textAlign: 'center', marginTop: '4rem' }}>
+            <div style={{ textAlign: 'center', marginTop: '4.5rem' }}>
               <button
                 onClick={() => navigate('/search')}
                 className="btn-outline-green btn-pill"
-                style={{ padding: '0.85rem 2.5rem', fontSize: '0.98rem' }}
+                style={{ padding: '0.9rem 2.6rem', fontSize: '1rem', fontWeight: 700 }}
               >
                 <span>View All 80+ Verified Properties</span>
-                <ArrowRight size={16} />
+                <ArrowRight size={17} />
               </button>
             </div>
 
@@ -1565,7 +1628,7 @@ export const HomePage: React.FC = () => {
 
       {/* 8. WHAT WE DO: BESPOKE REAL ESTATE & CONSTRUCTION SERVICES */}
       {homepageSettings.showWhatWeDo && (
-        <section style={{ padding: '6rem 0', backgroundColor: '#0B1120', color: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ padding: '6.5rem 0', backgroundColor: '#0B1120', color: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
           
           {/* Ambient Glow */}
           <div 
@@ -1584,70 +1647,189 @@ export const HomePage: React.FC = () => {
 
           <div className="container" style={{ position: 'relative', zIndex: 2 }}>
             
-            <div style={{ textAlign: 'center', maxWidth: 700, margin: '0 auto 4rem auto' }}>
-              <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.6rem)', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+            <div style={{ textAlign: 'center', maxWidth: 740, margin: '0 auto 4rem auto' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '0.85rem' }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  backgroundColor: 'rgba(56, 102, 53, 0.3)',
+                  color: '#4ADE80',
+                  padding: '0.35rem 0.95rem',
+                  borderRadius: 999,
+                  border: '1px solid rgba(74, 222, 128, 0.3)'
+                }}>
+                  <Hammer size={13} style={{ color: '#DFB76C' }} /> Comprehensive Real Estate Architecture
+                </span>
+              </div>
+
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
                 End-to-End Real Estate & Architectural Solutions
               </h2>
-              <p style={{ color: '#94A3B8', fontSize: '1.08rem', marginTop: '0.65rem' }}>
-                We provide full-lifecycle support from property discovery, legal vetting to luxury turnkey construction.
+              <p style={{ color: '#94A3B8', fontSize: '1.08rem', marginTop: '0.75rem', lineHeight: 1.7 }}>
+                From legal due diligence and land acquisition to bespoke turnkey villa construction, we handle every phase under unified accountability.
               </p>
             </div>
 
             {/* 4 Feature Cards with Numbering */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               
-              <div className="card-dark" style={{ padding: '2.4rem 1.85rem', borderRadius: 20, position: 'relative' }}>
-                <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: '#1E293B', fontFamily: 'Outfit' }}>01</div>
-                <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(56,102,53,0.25)', color: '#A7F3D0', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(56,102,53,0.4)' }}>
-                  <Home size={24} />
+              <div 
+                className="group" 
+                style={{ 
+                  padding: '2.4rem 1.85rem', 
+                  borderRadius: 22, 
+                  position: 'relative', 
+                  backgroundColor: '#111A2E', 
+                  border: '1px solid #1E2E4F', 
+                  transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#C5A059';
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#1E2E4F';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                <div>
+                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: 'rgba(255,255,255,0.08)', fontFamily: 'Outfit' }}>01</div>
+                  <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(56,102,53,0.3)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(74,222,128,0.35)' }}>
+                    <Home size={24} />
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem', fontFamily: 'Outfit, sans-serif' }}>Residential Advisory</h3>
+                  <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                    Curated luxury bungalows, mountain-facing apartments, and independent kothis in Dehradun’s most prestigious corridors.
+                  </p>
                 </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem' }}>Residential Advisory</h3>
-                <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                  Curated luxury bungalows, mountain-facing apartments, and independent kothis in Dehradun’s most prestigious corridors.
-                </p>
-                <Link to="/search" style={{ color: '#DFB76C', fontSize: '0.85rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <Link to="/search" style={{ color: '#DFB76C', fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                   Browse Homes <ArrowRight size={14} />
                 </Link>
               </div>
 
-              <div className="card-dark" style={{ padding: '2.4rem 1.85rem', borderRadius: 20, position: 'relative' }}>
-                <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: '#1E293B', fontFamily: 'Outfit' }}>02</div>
-                <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(197,160,89,0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(197,160,89,0.4)' }}>
-                  <Hammer size={24} />
+              <div 
+                className="group" 
+                style={{ 
+                  padding: '2.4rem 1.85rem', 
+                  borderRadius: 22, 
+                  position: 'relative', 
+                  backgroundColor: '#111A2E', 
+                  border: '1px solid #1E2E4F', 
+                  transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#C5A059';
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#1E2E4F';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                <div>
+                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: 'rgba(255,255,255,0.08)', fontFamily: 'Outfit' }}>02</div>
+                  <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(197,160,89,0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(197,160,89,0.4)' }}>
+                    <Hammer size={24} />
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem', fontFamily: 'Outfit, sans-serif' }}>Turnkey Construction</h3>
+                  <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                    Architectural planning, MDDA sanction drawings, RCC construction, and luxury interior finishing under single contract.
+                  </p>
                 </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem' }}>Turnkey Construction</h3>
-                <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                  Architectural planning, MDDA sanction drawings, RCC construction, and luxury interior finishing under single contract.
-                </p>
-                <Link to="/construction" style={{ color: '#DFB76C', fontSize: '0.85rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <Link to="/construction" style={{ color: '#DFB76C', fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                   Build With Us <ArrowRight size={14} />
                 </Link>
               </div>
 
-              <div className="card-dark" style={{ padding: '2.4rem 1.85rem', borderRadius: 20, position: 'relative' }}>
-                <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: '#1E293B', fontFamily: 'Outfit' }}>03</div>
-                <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(56,102,53,0.25)', color: '#A7F3D0', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(56,102,53,0.4)' }}>
-                  <FileCheck size={24} />
+              <div 
+                className="group" 
+                style={{ 
+                  padding: '2.4rem 1.85rem', 
+                  borderRadius: 22, 
+                  position: 'relative', 
+                  backgroundColor: '#111A2E', 
+                  border: '1px solid #1E2E4F', 
+                  transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#C5A059';
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#1E2E4F';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                <div>
+                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: 'rgba(255,255,255,0.08)', fontFamily: 'Outfit' }}>03</div>
+                  <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(56,102,53,0.3)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(74,222,128,0.35)' }}>
+                    <FileCheck size={24} />
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem', fontFamily: 'Outfit, sans-serif' }}>Title & Due Diligence</h3>
+                  <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                    Comprehensive 30-year search report, mutation check, registry drafting, and hassle-free bank loan liaison.
+                  </p>
                 </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem' }}>Title & Legal Due Diligence</h3>
-                <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                  Comprehensive 30-year search report, mutation check, registry drafting, and hassle-free bank loan liaison.
-                </p>
-                <Link to="/about" style={{ color: '#DFB76C', fontSize: '0.85rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <Link to="/about" style={{ color: '#DFB76C', fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                   Learn More <ArrowRight size={14} />
                 </Link>
               </div>
 
-              <div className="card-dark" style={{ padding: '2.4rem 1.85rem', borderRadius: 20, position: 'relative' }}>
-                <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: '#1E293B', fontFamily: 'Outfit' }}>04</div>
-                <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(197,160,89,0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(197,160,89,0.4)' }}>
-                  <Briefcase size={24} />
+              <div 
+                className="group" 
+                style={{ 
+                  padding: '2.4rem 1.85rem', 
+                  borderRadius: 22, 
+                  position: 'relative', 
+                  backgroundColor: '#111A2E', 
+                  border: '1px solid #1E2E4F', 
+                  transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#C5A059';
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#1E2E4F';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                <div>
+                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: 'rgba(255,255,255,0.08)', fontFamily: 'Outfit' }}>04</div>
+                  <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(197,160,89,0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(197,160,89,0.4)' }}>
+                    <Briefcase size={24} />
+                  </div>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem', fontFamily: 'Outfit, sans-serif' }}>NRI & Owner Management</h3>
+                  <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                    Dedicated property caretakers, tenant screening, lease agreements, and fast asset resale for overseas property owners.
+                  </p>
                 </div>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem' }}>NRI & Owner Management</h3>
-                <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                  Dedicated property caretakers, tenant screening, lease agreements, and fast asset resale for overseas property owners.
-                </p>
-                <Link to="/sell" style={{ color: '#DFB76C', fontSize: '0.85rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <Link to="/sell" style={{ color: '#DFB76C', fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
                   List With Us <ArrowRight size={14} />
                 </Link>
               </div>
@@ -1660,15 +1842,34 @@ export const HomePage: React.FC = () => {
 
       {/* 9. TESTIMONIALS & CLIENT REVIEWS */}
       {homepageSettings.showTestimonials && (
-        <section style={{ padding: '6rem 0', backgroundColor: '#FFFFFF' }}>
+        <section style={{ padding: '6.5rem 0', backgroundColor: '#FFFFFF' }}>
           <div className="container">
             
-            <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 4rem auto' }}>
-              <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.6rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+            <div style={{ textAlign: 'center', maxWidth: 720, margin: '0 auto 4rem auto' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '0.85rem' }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  backgroundColor: '#FFFBEB',
+                  color: '#B45309',
+                  padding: '0.35rem 0.95rem',
+                  borderRadius: 999,
+                  border: '1px solid rgba(245, 158, 11, 0.3)'
+                }}>
+                  <Star size={13} fill="#F59E0B" style={{ color: '#F59E0B' }} /> Client Testimonials & Track Record
+                </span>
+              </div>
+
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
                 Trusted by 1,850+ Homeowners & Investors
               </h2>
-              <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.65rem' }}>
-                Hear directly from clients who found their dream home and prime investments through A2 Realtors.
+              <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.65rem', lineHeight: 1.65 }}>
+                Hear directly from buyers and NRI families who acquired mountain estates and prime investments through A2 Realtors.
               </p>
             </div>
 
@@ -1678,13 +1879,26 @@ export const HomePage: React.FC = () => {
                   key={idx}
                   className="card-luxury"
                   style={{
-                    padding: '2.4rem 2rem',
+                    padding: '2.5rem 2.2rem',
                     borderRadius: 24,
                     backgroundColor: '#F8FAFC',
+                    border: '1px solid #E2E8F0',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    position: 'relative'
+                    position: 'relative',
+                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxShadow: '0 4px 18px rgba(15, 23, 42, 0.03)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.borderColor = '#166534';
+                    e.currentTarget.style.boxShadow = '0 16px 36px -8px rgba(15, 23, 42, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.borderColor = '#E2E8F0';
+                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
                   }}
                 >
                   <div>
@@ -1695,23 +1909,23 @@ export const HomePage: React.FC = () => {
                       ))}
                     </div>
 
-                    <p style={{ fontSize: '0.98rem', color: '#1E293B', lineHeight: 1.7, fontStyle: 'italic', marginBottom: '1.5rem' }}>
+                    <p style={{ fontSize: '0.96rem', color: '#334155', lineHeight: 1.75, fontStyle: 'italic', marginBottom: '1.75rem' }}>
                       "{item.quote}"
                     </p>
                   </div>
 
                   {/* Author Profile */}
-                  <div className="flex items-center gap-3" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem' }}>
+                  <div className="flex items-center gap-3.5" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem' }}>
                     <img
                       src={item.avatar}
                       alt={item.name}
-                      style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', border: '2px solid #386635' }}
+                      style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover', border: '2px solid #166534', boxShadow: '0 2px 8px rgba(22, 101, 52, 0.2)' }}
                     />
                     <div>
-                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0F172A' }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.98rem', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
                         {item.name}
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>
+                      <div style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>
                         {item.role}
                       </div>
                     </div>
@@ -1726,7 +1940,7 @@ export const HomePage: React.FC = () => {
 
       {/* 10. GET IN TOUCH & SCHEDULE VIP CONSULTATION */}
       {homepageSettings.showContactForm && (
-        <section style={{ padding: '6rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
+        <section style={{ padding: '6.5rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
           <div className="container">
             
             <div 
@@ -1734,135 +1948,213 @@ export const HomePage: React.FC = () => {
                 position: 'relative',
                 borderRadius: 28,
                 overflow: 'hidden',
-                backgroundImage: 'linear-gradient(to right, rgba(11,17,32,0.85) 0%, rgba(11,17,32,0.4) 50%, rgba(11,17,32,0.9) 100%), url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1600")',
+                backgroundImage: 'linear-gradient(135deg, rgba(11,17,32,0.96) 0%, rgba(11,17,32,0.85) 45%, rgba(11,17,32,0.94) 100%), url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1600")',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                padding: '4.5rem 3rem',
-                display: 'flex',
-                justifyContent: 'flex-end',
-                boxShadow: '0 25px 50px rgba(0,0,0,0.15)'
+                padding: '4.5rem 3.5rem',
+                boxShadow: '0 25px 60px rgba(0,0,0,0.25)',
+                border: '1px solid #1E2E4F'
               }}
             >
-              <div 
-                className="glass-panel"
-                style={{ 
-                  maxWidth: 500, 
-                  width: '100%', 
-                  padding: '2.5rem', 
-                  borderRadius: 24,
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.2)' 
-                }}
-              >
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
                 
-                <h3 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem', lineHeight: 1.2 }}>
-                  {homepageSettings.contactTitle || "Book a Guided Valley Property Tour"}
-                </h3>
-                <p style={{ fontSize: '0.9rem', color: '#64748B', marginBottom: '1.5rem' }}>
-                  Our senior consultants will shortlist properties matching your exact criteria and arrange chauffeured site visits.
-                </p>
-
-                {formSubmitted ? (
-                  <div style={{ textAlign: 'center', padding: '2rem 0', backgroundColor: '#EBF4EC', borderRadius: 16 }}>
-                    <CheckCircle2 size={46} style={{ color: '#386635', margin: '0 auto 0.75rem auto' }} />
-                    <strong style={{ display: 'block', fontSize: '1.15rem', color: '#0F172A' }}>Consultation Booked!</strong>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', marginTop: 6, maxWidth: 320, margin: '6px auto 0 auto' }}>
-                      Our property specialist will contact you on <strong>{formPhone}</strong> to confirm your schedule.
-                    </p>
+                {/* Left Column: VIP Tour Value Proposition (7 Cols) */}
+                <div className="lg:col-span-7" style={{ color: '#FFFFFF' }}>
+                  <div className="flex items-center gap-2" style={{ marginBottom: '1.25rem' }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: '0.78rem',
+                      fontWeight: 800,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      backgroundColor: 'rgba(197, 160, 89, 0.2)',
+                      color: '#DFB76C',
+                      padding: '0.35rem 0.95rem',
+                      borderRadius: 999,
+                      border: '1px solid rgba(197, 160, 89, 0.4)'
+                    }}>
+                      <Award size={13} style={{ color: '#DFB76C' }} /> White-Glove VIP Service
+                    </span>
                   </div>
-                ) : (
-                  <form onSubmit={handleContactSubmit}>
+
+                  <h3 style={{ fontSize: 'clamp(2rem, 3.4vw, 2.75rem)', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.2, marginBottom: '1.25rem', fontFamily: 'Outfit, sans-serif' }}>
+                    Experience Dehradun’s Premier Properties in Absolute Comfort
+                  </h3>
+
+                  <p style={{ color: '#CBD5E1', fontSize: '1.05rem', lineHeight: 1.7, maxWidth: 580, marginBottom: '2.5rem' }}>
+                    Eliminate the frustration of unverified listings and difficult mountain navigation. Our senior partners curate tailored property shortlists and arrange private site inspections with forensic legal documentation.
+                  </p>
+
+                  {/* 4 Pillars of VIP Tour */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5" style={{ maxWidth: 620 }}>
+                    <div className="flex items-start gap-3">
+                      <div style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(56, 102, 53, 0.35)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(74, 222, 128, 0.3)' }}>
+                        <Compass size={18} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#FFFFFF' }}>Chauffeured Pickup</div>
+                        <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: 2 }}>Airport (Jolly Grant), hotel, or residence transport in AC comfort.</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <div style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(197, 160, 89, 0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(197, 160, 89, 0.4)' }}>
+                        <FileCheck size={18} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#FFFFFF' }}>Advance Legal Dossier</div>
+                        <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: 2 }}>30-yr title abstracts and MDDA master plan compliance provided upfront.</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <div style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(56, 102, 53, 0.35)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(74, 222, 128, 0.3)' }}>
+                        <ShieldCheck size={18} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#FFFFFF' }}>Direct Mandate Pricing</div>
+                        <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: 2 }}>Zero broker markups; transparent negotiations directly with owners.</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <div style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(197, 160, 89, 0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(197, 160, 89, 0.4)' }}>
+                        <HeartHandshake size={18} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#FFFFFF' }}>Zero-Pressure Guidance</div>
+                        <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: 2 }}>Fiduciary market advisory focused entirely on your lifestyle goals.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: High-Conversion Booking Card (5 Cols) */}
+                <div className="lg:col-span-5">
+                  <div 
+                    style={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.98)', 
+                      padding: '2.5rem', 
+                      borderRadius: 24,
+                      boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+                      border: '1px solid rgba(255, 255, 255, 0.8)' 
+                    }}
+                  >
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <div className="form-group" style={{ margin: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.78rem' }}>Full Name *</label>
-                        <input 
-                          type="text" 
-                          required 
-                          placeholder="Your Name" 
-                          value={formName} 
-                          onChange={(e) => setFormName(e.target.value)} 
-                          className="form-input" 
-                          style={{ padding: '0.65rem 0.85rem', fontSize: '0.88rem' }} 
-                        />
+                    <h4 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.45rem', lineHeight: 1.25, fontFamily: 'Outfit, sans-serif' }}>
+                      {homepageSettings.contactTitle || "Book Guided Valley Property Tour"}
+                    </h4>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+                      Shortlist properties matching your exact criteria and schedule a private escorted visit with our senior director.
+                    </p>
+
+                    {formSubmitted ? (
+                      <div style={{ textAlign: 'center', padding: '2.5rem 1rem', backgroundColor: '#EBF4EC', borderRadius: 16 }}>
+                        <CheckCircle2 size={48} style={{ color: '#166534', margin: '0 auto 0.75rem auto' }} />
+                        <strong style={{ display: 'block', fontSize: '1.2rem', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>Tour Confirmed!</strong>
+                        <p style={{ fontSize: '0.88rem', color: '#475569', marginTop: 6, maxWidth: 300, margin: '6px auto 0 auto' }}>
+                          Our senior consultant will contact you on <strong>{formPhone}</strong> to confirm your vehicle schedule.
+                        </p>
                       </div>
-                      <div className="form-group" style={{ margin: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.78rem' }}>Phone Number *</label>
-                        <input 
-                          type="tel" 
-                          required 
-                          placeholder="+91 98970 00000" 
-                          value={formPhone} 
-                          onChange={(e) => setFormPhone(e.target.value)} 
-                          className="form-input" 
-                          style={{ padding: '0.65rem 0.85rem', fontSize: '0.88rem' }} 
-                        />
-                      </div>
-                    </div>
+                    ) : (
+                      <form onSubmit={handleContactSubmit}>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Full Name *</label>
+                            <input 
+                              type="text" 
+                              required 
+                              placeholder="Your Name" 
+                              value={formName} 
+                              onChange={(e) => setFormName(e.target.value)} 
+                              className="form-input" 
+                              style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                            />
+                          </div>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Phone Number *</label>
+                            <input 
+                              type="tel" 
+                              required 
+                              placeholder="+91 98970 00000" 
+                              value={formPhone} 
+                              onChange={(e) => setFormPhone(e.target.value)} 
+                              className="form-input" 
+                              style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                            />
+                          </div>
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ marginTop: '0.75rem' }}>
-                      <div className="form-group" style={{ margin: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.78rem' }}>Email Address</label>
-                        <input 
-                          type="email" 
-                          placeholder="name@email.com" 
-                          value={formEmail} 
-                          onChange={(e) => setFormEmail(e.target.value)} 
-                          className="form-input" 
-                          style={{ padding: '0.65rem 0.85rem', fontSize: '0.88rem' }} 
-                        />
-                      </div>
-                      <div className="form-group" style={{ margin: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.78rem' }}>Preferred Date</label>
-                        <input 
-                          type="date" 
-                          value={formDate} 
-                          onChange={(e) => setFormDate(e.target.value)} 
-                          className="form-input" 
-                          style={{ padding: '0.65rem 0.85rem', fontSize: '0.88rem' }} 
-                        />
-                      </div>
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ marginTop: '0.85rem' }}>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Email Address</label>
+                            <input 
+                              type="email" 
+                              placeholder="name@email.com" 
+                              value={formEmail} 
+                              onChange={(e) => setFormEmail(e.target.value)} 
+                              className="form-input" 
+                              style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                            />
+                          </div>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Preferred Date</label>
+                            <input 
+                              type="date" 
+                              value={formDate} 
+                              onChange={(e) => setFormDate(e.target.value)} 
+                              className="form-input" 
+                              style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                            />
+                          </div>
+                        </div>
 
-                    <div className="form-group" style={{ marginTop: '0.75rem' }}>
-                      <label className="form-label" style={{ fontSize: '0.78rem' }}>Property Interest</label>
-                      <select
-                        value={formCategory}
-                        onChange={(e) => setFormCategory(e.target.value)}
-                        className="form-select"
-                        style={{ padding: '0.65rem 0.85rem', fontSize: '0.88rem' }}
-                      >
-                        <option value="Buy Luxury Villa / Kothi">Buy Luxury Villa / Kothi</option>
-                        <option value="Buy Apartment / Penthouse">Buy Apartment / Penthouse</option>
-                        <option value="Buy Residential Plot">Buy Residential Plot</option>
-                        <option value="Commercial Space / Investment">Commercial Space / Investment</option>
-                        <option value="Turnkey Construction / Renovation">Turnkey Construction / Renovation</option>
-                        <option value="Sell / Rent My Property">Sell / Rent My Property</option>
-                      </select>
-                    </div>
+                        <div className="form-group" style={{ marginTop: '0.85rem' }}>
+                          <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Property Typology</label>
+                          <select
+                            value={formCategory}
+                            onChange={(e) => setFormCategory(e.target.value)}
+                            className="form-select"
+                            style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }}
+                          >
+                            <option value="Buy Luxury Villa / Kothi">Buy Luxury Villa / Kothi</option>
+                            <option value="Buy Apartment / Penthouse">Buy Apartment / Penthouse</option>
+                            <option value="Buy Residential Plot">Buy Residential Plot</option>
+                            <option value="Commercial Space / Investment">Commercial Space / Investment</option>
+                            <option value="Turnkey Construction / Renovation">Turnkey Construction / Renovation</option>
+                            <option value="Sell / Rent My Property">Sell / Rent My Property</option>
+                          </select>
+                        </div>
 
-                    <div className="form-group" style={{ marginTop: '0.75rem', marginBottom: '1.25rem' }}>
-                      <label className="form-label" style={{ fontSize: '0.78rem' }}>Specific Requirements / Note</label>
-                      <textarea 
-                        rows={2} 
-                        placeholder="e.g. Looking for 4BHK with valley view near Dalanwala..." 
-                        value={formMessage} 
-                        onChange={(e) => setFormMessage(e.target.value)} 
-                        className="form-textarea" 
-                        style={{ padding: '0.65rem 0.85rem', fontSize: '0.88rem' }} 
-                      />
-                    </div>
+                        <div className="form-group" style={{ marginTop: '0.85rem', marginBottom: '1.35rem' }}>
+                          <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Specific Requirements / Note</label>
+                          <textarea 
+                            rows={2} 
+                            placeholder="e.g. Looking for 4BHK with valley view near Dalanwala or Rajpur Road..." 
+                            value={formMessage} 
+                            onChange={(e) => setFormMessage(e.target.value)} 
+                            className="form-textarea" 
+                            style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                          />
+                        </div>
 
-                    <button 
-                      type="submit" 
-                      className="btn-green w-full" 
-                      style={{ width: '100%', borderRadius: 12, padding: '0.85rem', fontSize: '0.95rem' }}
-                    >
-                      <span>Submit Tour Request</span>
-                      <ArrowRight size={16} />
-                    </button>
+                        <button 
+                          type="submit" 
+                          className="btn-green w-full" 
+                          style={{ width: '100%', borderRadius: 14, padding: '0.92rem', fontSize: '0.98rem', backgroundColor: '#166534', boxShadow: '0 8px 20px rgba(22, 101, 52, 0.35)' }}
+                        >
+                          <span>Confirm Chauffeured Tour Request</span>
+                          <ArrowRight size={17} style={{ color: '#DFB76C' }} />
+                        </button>
 
-                  </form>
-                )}
+                      </form>
+                    )}
+
+                  </div>
+                </div>
 
               </div>
 
@@ -1874,19 +2166,38 @@ export const HomePage: React.FC = () => {
 
       {/* 11. HELPFUL REAL ESTATE ARTICLES & MARKET INSIGHTS */}
       {homepageSettings.showLatestArticles && (
-        <section style={{ padding: '6rem 0', backgroundColor: '#FFFFFF' }}>
+        <section style={{ padding: '6.5rem 0', backgroundColor: '#FFFFFF' }}>
           <div className="container">
             
             <div className="flex flex-wrap items-center justify-between gap-4" style={{ marginBottom: '3.5rem' }}>
               <div>
-                <h2 style={{ fontSize: 'clamp(2rem, 3.5vw, 2.6rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+                <div className="flex items-center gap-2" style={{ marginBottom: '0.85rem' }}>
+                  <span style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: '0.78rem',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    backgroundColor: '#EBF4EC',
+                    color: '#166534',
+                    padding: '0.35rem 0.9rem',
+                    borderRadius: 999,
+                    border: '1px solid rgba(22, 101, 52, 0.25)'
+                  }}>
+                    <FileText size={13} style={{ color: '#166534' }} /> Market Research & Advisory
+                  </span>
+                </div>
+
+                <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
                   {homepageSettings.articlesTitle || 'Market Reports & Buying Guides'}
                 </h2>
                 <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.5rem' }}>
                   Expert insights on property registry laws, locality appreciation, and investment strategies in Uttarakhand.
                 </p>
               </div>
-              <Link to="/insights" className="btn-outline-green btn-pill" style={{ padding: '0.65rem 1.5rem' }}>
+              <Link to="/insights" className="btn-outline-green btn-pill" style={{ padding: '0.75rem 1.6rem', fontSize: '0.92rem' }}>
                 Explore All Articles
               </Link>
             </div>
@@ -1894,32 +2205,56 @@ export const HomePage: React.FC = () => {
             {/* Articles Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {blogPosts.slice(0, 3).map((post) => (
-                <div key={post.id} className="card-luxury flex flex-col" style={{ borderRadius: 20, overflow: 'hidden' }}>
-                  <img 
-                    src={post.coverImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800'} 
-                    alt={post.title} 
-                    style={{ width: '100%', height: 220, objectFit: 'cover' }} 
-                  />
-                  <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                    <div className="flex items-center gap-2" style={{ fontSize: '0.78rem', color: '#386635', fontWeight: 700, marginBottom: '0.5rem' }}>
-                      <span className="badge badge-verified" style={{ fontSize: '0.68rem' }}>{post.category}</span>
+                <div 
+                  key={post.id} 
+                  className="card-luxury group flex flex-col" 
+                  style={{ 
+                    borderRadius: 22, 
+                    overflow: 'hidden', 
+                    border: '1px solid #E2E8F0',
+                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                    boxShadow: '0 4px 18px rgba(15, 23, 42, 0.03)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-5px)';
+                    e.currentTarget.style.boxShadow = '0 16px 36px -8px rgba(15, 23, 42, 0.12)';
+                    e.currentTarget.style.borderColor = '#166534';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
+                    e.currentTarget.style.borderColor = '#E2E8F0';
+                  }}
+                >
+                  <div style={{ height: 230, overflow: 'hidden', position: 'relative', backgroundColor: '#0B1120' }}>
+                    <img 
+                      src={post.coverImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800'} 
+                      alt={post.title} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}
+                      className="group-hover:scale-108"
+                    />
+                  </div>
+
+                  <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                    <div className="flex items-center gap-2" style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 700, marginBottom: '0.65rem' }}>
+                      <span className="badge badge-verified" style={{ fontSize: '0.72rem', padding: '0.2rem 0.65rem' }}>{post.category}</span>
                       <span>• {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}</span>
                     </div>
 
-                    <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.35, marginBottom: '0.75rem' }}>
+                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.35, marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
                       <Link to="/insights" style={{ color: 'inherit' }}>
                         {post.title}
                       </Link>
                     </h3>
 
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+                    <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.65, marginBottom: '1.5rem' }}>
                       {post.excerpt}
                     </p>
 
-                    <div className="flex items-center justify-between" style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #F1F5F9' }}>
-                      <span style={{ fontSize: '0.8rem', color: '#475569', fontWeight: 600 }}>By {post.author}</span>
-                      <Link to="/insights" style={{ color: '#386635', fontWeight: 700, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 3 }}>
-                        Read More <ArrowRight size={13} />
+                    <div className="flex items-center justify-between" style={{ marginTop: 'auto', paddingTop: '1.15rem', borderTop: '1px solid #F1F5F9' }}>
+                      <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>By {post.author}</span>
+                      <Link to="/insights" style={{ color: '#166534', fontWeight: 700, fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        Read Guide <ArrowRight size={14} />
                       </Link>
                     </div>
                   </div>

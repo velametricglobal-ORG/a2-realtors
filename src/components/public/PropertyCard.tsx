@@ -296,11 +296,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         </div>
 
         {/* Action Row */}
-        <div className="flex items-center justify-between" style={{ paddingTop: '0.75rem', borderTop: '1px solid #F1F5F9' }}>
+        <div className="flex items-center justify-between" style={{ paddingTop: '0.85rem', borderTop: '1px solid #F1F5F9', marginTop: 'auto' }}>
           <div>
-            <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#386635' }}>
-              Price on Request
-            </span>
+            <div style={{ fontSize: '0.68rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {property.transactionType === 'RENT' ? 'Monthly Rent' : 'Guide Price'}
+            </div>
+            <div style={{ fontSize: '1.22rem', fontWeight: 800, color: '#166534', fontFamily: 'Outfit, sans-serif', lineHeight: 1.15 }}>
+              {property.priceDisplay || (property.price ? (property.price >= 10000000 ? `₹${(property.price / 10000000).toFixed(2)} Cr` : `₹${(property.price / 100000).toFixed(0)} Lakhs`) : 'Price on Request')}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -310,26 +313,29 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
               rel="noopener noreferrer"
               title="Chat on WhatsApp"
               style={{
-                width: 34,
-                height: 34,
+                width: 36,
+                height: 36,
                 borderRadius: '50%',
                 backgroundColor: '#25D366',
                 color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 2px 6px rgba(37,211,102,0.3)'
+                boxShadow: '0 3px 8px rgba(37,211,102,0.3)',
+                transition: 'transform 0.2s ease'
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.08)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1.0)')}
             >
-              <MessageSquare size={15} />
+              <MessageSquare size={16} />
             </a>
 
             <Link 
               to={`/property/${property.id}`} 
               className="btn-outline-green btn-sm"
-              style={{ borderRadius: 20, padding: '0.45rem 1rem', fontWeight: 600 }}
+              style={{ borderRadius: 20, padding: '0.5rem 1.05rem', fontWeight: 700, fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: 5 }}
             >
-              <span>View Details</span>
+              <span>Explore</span>
               <Eye size={13} />
             </Link>
           </div>
