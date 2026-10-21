@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Phone, Mail, Menu, X, LayoutDashboard, Scale, Plus, 
-  Shield, MapPin, Sparkles, MessageSquare, ChevronRight, Lock, Building, Home, Landmark
+  Shield, MapPin, Sparkles, MessageSquare, ChevronRight, Lock, Building, Home, Landmark, Search
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { Logo } from '../common/Logo';
@@ -183,6 +183,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onSwitchToCRM }) => {
         {/* Right Action Suite (PC & Mobile) */}
         <div className="flex items-center gap-2.5">
           
+          {/* Quick Search Shortcut (Desktop) */}
+          <Link 
+            to="/search" 
+            className="btn-outline-gray desktop-only"
+            title="Search verified properties"
+            style={{ 
+              width: 38, 
+              height: 38, 
+              borderRadius: '50%', 
+              padding: 0, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}
+          >
+            <Search size={15} style={{ color: '#166534' }} />
+          </Link>
+
           {/* Compare Counter (Desktop) */}
           {compareList.length > 0 && (
             <Link 
@@ -190,9 +208,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onSwitchToCRM }) => {
               className="btn-outline-gray flex items-center gap-1.5 desktop-only"
               style={{ padding: '0.45rem 0.85rem', fontSize: '0.82rem', borderRadius: 20 }}
             >
-              <Scale size={14} style={{ color: '#386635' }} />
+              <Scale size={14} style={{ color: '#166534' }} />
               <span>Compare</span>
-              <span style={{ backgroundColor: '#386635', color: '#FFFFFF', fontSize: '0.68rem', fontWeight: 800, padding: '0.1rem 0.45rem', borderRadius: 10 }}>
+              <span style={{ backgroundColor: '#166534', color: '#FFFFFF', fontSize: '0.68rem', fontWeight: 800, padding: '0.1rem 0.45rem', borderRadius: 10 }}>
                 {compareList.length}
               </span>
             </Link>

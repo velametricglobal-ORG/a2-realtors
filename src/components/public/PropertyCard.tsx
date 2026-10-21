@@ -6,14 +6,16 @@ import { useStore } from '../../context/StoreContext';
 
 interface PropertyCardProps {
   property: Property;
+  layout?: 'grid' | 'list';
 }
 
-export const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
+export const PropertyCard: React.FC<PropertyCardProps> = ({ property, layout = 'grid' }) => {
   const { favorites, toggleFavorite, compareList, toggleCompare } = useStore();
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
 
   const isFav = favorites.includes(property.id);
   const isComp = compareList.includes(property.id);
+  const isList = layout === 'list';
 
   const allImages = property.images && property.images.length > 0
     ? property.images.map(i => i.url)
@@ -33,10 +35,10 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
   return (
     <div 
-      className="card-luxury" 
+      className={`card-luxury ${isList ? 'property-card-list' : ''}`}
       style={{ 
         display: 'flex', 
-        flexDirection: 'column', 
+        flexDirection: isList ? 'row' : 'column', 
         height: '100%', 
         borderRadius: 20, 
         overflow: 'hidden', 
@@ -49,10 +51,12 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
       <div 
         style={{ 
           position: 'relative', 
-          width: '100%', 
-          aspectRatio: '4 / 3', 
+          width: isList ? '320px' : '100%', 
+          minWidth: isList ? '300px' : 'auto',
+          aspectRatio: isList ? '16 / 11' : '4 / 3', 
           overflow: 'hidden', 
-          backgroundColor: '#0B1120' 
+          backgroundColor: '#0B1120',
+          flexShrink: 0
         }}
       >
         <img 
