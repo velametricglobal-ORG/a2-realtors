@@ -1,26 +1,30 @@
 import React from 'react';
 
 interface LogoProps {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'header';
   showText?: boolean;
   lightMode?: boolean;
   className?: string;
+  customHeight?: number;
 }
 
 export const Logo: React.FC<LogoProps> = ({ 
   size = 'md', 
   lightMode = false,
-  className = ''
+  className = '',
+  customHeight
 }) => {
-  const heightMap = {
-    xs: 32,
-    sm: 38,
-    md: 46,
-    lg: 58,
-    xl: 72
+  const heightMap: Record<string, number> = {
+    xs: 34,
+    sm: 42,
+    md: 54,
+    lg: 68,
+    xl: 86,
+    header: 78
   };
 
-  const logoHeight = heightMap[size] || 46;
+  const logoHeight = customHeight || heightMap[size] || 54;
+  const isHeader = size === 'header';
 
   return (
     <div 
@@ -41,15 +45,21 @@ export const Logo: React.FC<LogoProps> = ({
     >
       <img
         src="/logo.png"
-        alt="A2 Realtors — Dehradun Property Partner"
+        alt="A2 Realtors — Your Trust Our Commitment"
+        loading="eager"
+        decoding="async"
+        className={isHeader ? 'header-brand-logo-img' : ''}
         style={{
           height: logoHeight,
           width: 'auto',
           maxHeight: logoHeight,
           objectFit: 'contain',
           display: 'block',
-          borderRadius: lightMode ? 10 : 8,
-          boxShadow: lightMode ? '0 4px 16px rgba(0, 0, 0, 0.25)' : 'none'
+          backgroundColor: lightMode ? '#FFFFFF' : 'transparent',
+          padding: lightMode ? '4px 8px' : '0',
+          borderRadius: lightMode ? 10 : 6,
+          boxShadow: lightMode ? '0 4px 18px rgba(0, 0, 0, 0.3)' : 'none',
+          border: lightMode ? '1px solid rgba(255, 255, 255, 0.2)' : 'none'
         }}
       />
     </div>

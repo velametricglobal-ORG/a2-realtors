@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { Property, PropertyStatus, PropertyType, TransactionType } from '../../types';
+import { ImageUploadInput } from '../common/ImageUploadInput';
 
 export const PropertyCRM: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -767,21 +768,13 @@ export const PropertyCRM: React.FC = () => {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Primary Image URL</label>
-                <input 
-                  type="text" 
-                  value={imageUrl} 
-                  onChange={(e) => setImageUrl(e.target.value)} 
-                  className="form-input" 
-                  placeholder="https://images.unsplash.com/..." 
-                />
-                {imageUrl && (
-                  <div style={{ marginTop: 8 }}>
-                    <img src={imageUrl} alt="Preview" style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8, border: '1px solid #E2E8F0' }} />
-                  </div>
-                )}
-              </div>
+              <ImageUploadInput
+                label="Primary Property Elevation / Cover Photo"
+                value={imageUrl}
+                onChange={(newVal) => setImageUrl(newVal)}
+                placeholder="https://images.unsplash.com/..."
+                helpText="Paste a web image URL or upload directly from your local computer/phone"
+              />
 
               <div className="form-group">
                 <label className="form-label">Amenities (Comma-separated)</label>
@@ -944,20 +937,13 @@ export const PropertyCRM: React.FC = () => {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Primary Image URL</label>
-                <input 
-                  type="text" 
-                  value={imageUrl} 
-                  onChange={(e) => setImageUrl(e.target.value)} 
-                  className="form-input" 
-                />
-                {imageUrl && (
-                  <div style={{ marginTop: 8 }}>
-                    <img src={imageUrl} alt="Preview" style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8, border: '1px solid #E2E8F0' }} />
-                  </div>
-                )}
-              </div>
+              <ImageUploadInput
+                label="Primary Property Elevation / Cover Photo"
+                value={imageUrl}
+                onChange={(newVal) => setImageUrl(newVal)}
+                placeholder="https://images.unsplash.com/..."
+                helpText="Paste a web image URL or upload directly from your local computer/phone"
+              />
 
               <div className="form-group">
                 <label className="form-label">Amenities (Comma-separated)</label>

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { UserProfile, UserRole, UserRoleDefinition, RolePermissions } from '../../types';
+import { ImageUploadInput } from '../common/ImageUploadInput';
 
 export const StaffManagement: React.FC = () => {
   const { 
@@ -39,6 +40,7 @@ export const StaffManagement: React.FC = () => {
   const [newStaffPhone, setNewStaffPhone] = useState('+91 ');
   const [newStaffRole, setNewStaffRole] = useState<UserRole>('AGENT');
   const [newStaffPassword, setNewStaffPassword] = useState('admin123');
+  const [newStaffAvatar, setNewStaffAvatar] = useState('');
   const [showNewStaffPass, setShowNewStaffPass] = useState(false);
 
   // Change Password Form state
@@ -50,6 +52,7 @@ export const StaffManagement: React.FC = () => {
   const [editName, setEditName] = useState('');
   const [editPhone, setEditPhone] = useState('');
   const [editRole, setEditRole] = useState<UserRole>('AGENT');
+  const [editAvatar, setEditAvatar] = useState('');
 
   // Create Role Form state
   const [newRoleName, setNewRoleName] = useState('');
@@ -85,7 +88,8 @@ export const StaffManagement: React.FC = () => {
       email: newStaffEmail.trim(),
       phone: newStaffPhone,
       role: newStaffRole,
-      password: newStaffPassword || 'admin123'
+      password: newStaffPassword || 'admin123',
+      avatar: newStaffAvatar
     });
 
     setShowAddStaffModal(false);
@@ -94,6 +98,7 @@ export const StaffManagement: React.FC = () => {
     setNewStaffPhone('+91 ');
     setNewStaffRole('AGENT');
     setNewStaffPassword('admin123');
+    setNewStaffAvatar('');
     showToast(`Staff member ${newStaffName} created successfully with login access!`);
   };
 
@@ -131,6 +136,7 @@ export const StaffManagement: React.FC = () => {
     setEditName(member.name);
     setEditPhone(member.phone);
     setEditRole(member.role);
+    setEditAvatar(member.avatar || '');
     setShowEditStaffModal(true);
   };
 
@@ -141,7 +147,8 @@ export const StaffManagement: React.FC = () => {
     updateStaff(selectedStaff.id, {
       name: editName,
       phone: editPhone,
-      role: editRole
+      role: editRole,
+      avatar: editAvatar
     });
 
     setShowEditStaffModal(false);
@@ -678,6 +685,14 @@ export const StaffManagement: React.FC = () => {
                 </div>
               </div>
 
+              <ImageUploadInput
+                label="Staff Profile Photo (Optional)"
+                value={newStaffAvatar}
+                onChange={(newVal) => setNewStaffAvatar(newVal)}
+                placeholder="https://images.unsplash.com/..."
+                helpText="Upload a portrait photo from your computer/device or enter an image URL"
+              />
+
               <div className="flex justify-end gap-2.5" style={{ marginTop: '0.75rem' }}>
                 <button 
                   type="button" 
@@ -840,6 +855,14 @@ export const StaffManagement: React.FC = () => {
                   ))}
                 </select>
               </div>
+
+              <ImageUploadInput
+                label="Profile Photo (Optional)"
+                value={editAvatar}
+                onChange={(newVal) => setEditAvatar(newVal)}
+                placeholder="https://images.unsplash.com/..."
+                helpText="Upload a portrait photo from your computer/device or enter an image URL"
+              />
 
               <div className="flex justify-end gap-2.5" style={{ marginTop: '0.75rem' }}>
                 <button 

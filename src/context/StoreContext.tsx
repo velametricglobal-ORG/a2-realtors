@@ -384,7 +384,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       directorName: 'Punit Tyagi',
       directorRole: 'Founder & Managing Director',
       directorPhoto: '/director-punit-tyagi.jpg',
-      directorQuote: 'Real estate is not merely land and brick; it is a sacred foundation for family legacies and hard-earned wealth.',
+      directorQuote: 'Our success as a company is measured by the remarkable returns and generational trust we have consistently provided our clients across Dehradun and Uttarakhand over the past 14 years.',
 
       // Property Display Grid, Columns, Rows & Spacing Controls
       propertyGridCols: 4,

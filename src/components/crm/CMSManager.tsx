@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { BlogPost, ConstructionProject, LocationInfo } from '../../types';
+import { ImageUploadInput } from '../common/ImageUploadInput';
 
 export const CMSManager: React.FC = () => {
   const { 
@@ -585,9 +586,14 @@ export const CMSManager: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Cover Image URL</label>
-                  <input type="text" value={blogImage} onChange={(e) => setBlogImage(e.target.value)} className="form-input" />
+                <div className="form-group md:col-span-2">
+                  <ImageUploadInput
+                    label="Cover Image"
+                    value={blogImage}
+                    onChange={(newVal) => setBlogImage(newVal)}
+                    placeholder="https://images.unsplash.com/..."
+                    helpText="Select an image file from your device or paste a web URL"
+                  />
                 </div>
               </div>
 
@@ -644,9 +650,14 @@ export const CMSManager: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="form-group">
-                  <label className="form-label">Cover Image URL</label>
-                  <input type="text" value={blogImage} onChange={(e) => setBlogImage(e.target.value)} className="form-input" />
+                <div className="form-group md:col-span-2">
+                  <ImageUploadInput
+                    label="Cover Image"
+                    value={blogImage}
+                    onChange={(newVal) => setBlogImage(newVal)}
+                    placeholder="https://images.unsplash.com/..."
+                    helpText="Select an image file from your device or paste a web URL"
+                  />
                 </div>
               </div>
 
@@ -721,10 +732,13 @@ export const CMSManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Cover Image URL</label>
-                <input type="text" value={projImage} onChange={(e) => setProjImage(e.target.value)} className="form-input" />
-              </div>
+              <ImageUploadInput
+                label="Project Cover Photo"
+                value={projImage}
+                onChange={(newVal) => setProjImage(newVal)}
+                placeholder="https://images.unsplash.com/..."
+                helpText="Select an image file from your device or paste a web URL"
+              />
 
               <div className="form-group">
                 <label className="form-label">Project Description</label>
@@ -787,10 +801,13 @@ export const CMSManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Cover Image URL</label>
-                <input type="text" value={projImage} onChange={(e) => setProjImage(e.target.value)} className="form-input" />
-              </div>
+              <ImageUploadInput
+                label="Project Cover Photo"
+                value={projImage}
+                onChange={(newVal) => setProjImage(newVal)}
+                placeholder="https://images.unsplash.com/..."
+                helpText="Select an image file from your device or paste a web URL"
+              />
 
               <div className="form-group">
                 <label className="form-label">Project Description</label>
@@ -836,10 +853,13 @@ export const CMSManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Cover Image URL</label>
-                <input type="text" value={locImage} onChange={(e) => setLocImage(e.target.value)} className="form-input" />
-              </div>
+              <ImageUploadInput
+                label="Locality Cover Photo"
+                value={locImage}
+                onChange={(newVal) => setLocImage(newVal)}
+                placeholder="https://images.unsplash.com/..."
+                helpText="Select an image file from your device or paste a web URL"
+              />
 
               <div className="form-group">
                 <label className="form-label">Highlights (Comma-separated)</label>
@@ -890,10 +910,13 @@ export const CMSManager: React.FC = () => {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Cover Image URL</label>
-                <input type="text" value={locImage} onChange={(e) => setLocImage(e.target.value)} className="form-input" />
-              </div>
+              <ImageUploadInput
+                label="Locality Cover Photo"
+                value={locImage}
+                onChange={(newVal) => setLocImage(newVal)}
+                placeholder="https://images.unsplash.com/..."
+                helpText="Select an image file from your device or paste a web URL"
+              />
 
               <div className="form-group">
                 <label className="form-label">Highlights (Comma-separated)</label>

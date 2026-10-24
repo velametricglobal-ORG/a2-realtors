@@ -140,7 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onSwitchToCRM }) => {
         
         {/* Recreated Brand Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
-          <Logo size="md" />
+          <Logo size="header" />
         </Link>
 
         {/* Center Nav Links (ONLY REQUESTED 5 ITEMS, Desktop PC) */}
@@ -386,7 +386,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onSwitchToCRM }) => {
           display: block;
         }
         .navbar-container {
-          height: 74px;
+          height: 94px;
+        }
+        .header-brand-logo-img {
+          height: 78px !important;
+          max-height: 78px !important;
+          transition: transform 0.2s ease;
         }
         .desktop-nav-links {
           display: none;
@@ -432,9 +437,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onSwitchToCRM }) => {
             display: none !important;
           }
           .navbar-container {
-            height: 64px;
+            height: 76px;
             padding-left: 1rem;
             padding-right: 1rem;
+          }
+          .header-brand-logo-img {
+            height: 62px !important;
+            max-height: 62px !important;
           }
           .list-property-label {
             display: none;

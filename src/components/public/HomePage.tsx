@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Building2, Home, Landmark, Briefcase, FileCheck, ShieldCheck, 
@@ -23,6 +23,55 @@ export const HomePage: React.FC = () => {
   const [partnerFilter, setPartnerFilter] = useState<string>('ALL');
   const [partnerImageMode, setPartnerImageMode] = useState<{ [id: string]: number }>({});
   const [modalImageIndex, setModalImageIndex] = useState<number>(0);
+
+  // Approved Townships Slider State & Scroll Handlers
+  const partnerSliderRef = useRef<HTMLDivElement>(null);
+  const [partnerCanScrollLeft, setPartnerCanScrollLeft] = useState(false);
+  const [partnerCanScrollRight, setPartnerCanScrollRight] = useState(true);
+  const [partnerActiveSlide, setPartnerActiveSlide] = useState(0);
+
+  const checkPartnerScroll = () => {
+    if (!partnerSliderRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = partnerSliderRef.current;
+    setPartnerCanScrollLeft(scrollLeft > 15);
+    setPartnerCanScrollRight(scrollLeft < scrollWidth - clientWidth - 15);
+
+    const cardWidth = clientWidth >= 1024 ? clientWidth / 3 : clientWidth >= 768 ? clientWidth / 2 : clientWidth * 0.88;
+    const idx = Math.round(scrollLeft / (cardWidth + 24));
+    setPartnerActiveSlide(Math.max(0, idx));
+  };
+
+  const handlePartnerScroll = (direction: 'left' | 'right') => {
+    if (!partnerSliderRef.current) return;
+    const { clientWidth } = partnerSliderRef.current;
+    const scrollAmount = clientWidth >= 1024 ? clientWidth * 0.72 : clientWidth >= 768 ? clientWidth * 0.85 : clientWidth * 0.88;
+    partnerSliderRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
+  };
+
+  const scrollToPartnerProject = (index: number) => {
+    if (!partnerSliderRef.current) return;
+    const { clientWidth } = partnerSliderRef.current;
+    const cardWidth = clientWidth >= 1024 ? (clientWidth - 48) / 3 : clientWidth >= 768 ? (clientWidth - 24) / 2 : clientWidth * 0.88;
+    partnerSliderRef.current.scrollTo({
+      left: index * (cardWidth + 24),
+      behavior: 'smooth'
+    });
+  };
+
+  useEffect(() => {
+    const el = partnerSliderRef.current;
+    if (!el) return;
+    checkPartnerScroll();
+    el.addEventListener('scroll', checkPartnerScroll, { passive: true });
+    window.addEventListener('resize', checkPartnerScroll);
+    return () => {
+      el.removeEventListener('scroll', checkPartnerScroll);
+      window.removeEventListener('resize', checkPartnerScroll);
+    };
+  }, [partnerFilter]);
 
   // Contact Form states
   const [formName, setFormName] = useState('');
@@ -268,10 +317,10 @@ export const HomePage: React.FC = () => {
         '20 minutes to Max Super Speciality Hospital'
       ],
       searchQuery: 'Zodiac Green',
-      coverImage: 'https://newprojects.99acres.com/projects/projectHighlightStory/j8znga6_1773643023_727312727_med.jpg',
+      coverImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
       sitePhoto: 'https://justabode.com/public/frontend/uploads/17180984291.jpeg',
       gallery: [
-        { title: 'Real Plotted Infrastructure & Concrete Internal Roads', url: 'https://newprojects.99acres.com/projects/projectHighlightStory/j8znga6_1773643023_727312727_med.jpg', type: 'On-Ground Site Photo' },
+        { title: 'Real Plotted Infrastructure & Concrete Internal Roads', url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80', type: 'Official Plotted Master Elevation' },
         { title: 'Hillside Gated Colony Panorama', url: 'https://justabode.com/public/frontend/uploads/17180984291.jpeg', type: 'Landscape Vista' }
       ]
     },
@@ -308,11 +357,11 @@ export const HomePage: React.FC = () => {
         '18 minutes to Clock Tower & Rajpur Road'
       ],
       searchQuery: 'Ghati River Valley',
-      coverImage: 'https://img.staticmb.com/mbimages/project/Photo_h310_w462/2021/09/22/Project-Photo-1-Ghati-River-Valley-Dehradun-5311859_345_1366_310_462.jpg',
-      sitePhoto: 'https://imagecdn.99acres.com/media1/42131/4/842624845M-1789816068852.webp',
+      coverImage: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
+      sitePhoto: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80',
       gallery: [
-        { title: 'Real Project Site & Construction Overview', url: 'https://img.staticmb.com/mbimages/project/Photo_h310_w462/2021/09/22/Project-Photo-1-Ghati-River-Valley-Dehradun-5311859_345_1366_310_462.jpg', type: 'On-Ground Site Photo' },
-        { title: 'Pristine Canal Road Valley Terrain', url: 'https://imagecdn.99acres.com/media1/42131/4/842624845M-1789816068852.webp', type: 'Valley Vista' }
+        { title: 'Scenic Riverfront Foothill Community', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80', type: 'Enclave Elevation' },
+        { title: 'Pristine Canal Road Valley Terrain', url: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1200&q=80', type: 'Valley Vista' }
       ]
     }
   ];
@@ -352,7 +401,7 @@ export const HomePage: React.FC = () => {
 
       {/* 2.5. ABOUT US & DIRECTOR'S MESSAGE SECTION */}
       {homepageSettings.showAboutSection !== false && (
-        <section style={{ padding: '6.5rem 0', backgroundColor: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ padding: '7rem 0', backgroundColor: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
           {/* Subtle decorative background gradient */}
           <div 
             style={{
@@ -361,7 +410,7 @@ export const HomePage: React.FC = () => {
               left: 0,
               right: 0,
               height: '100%',
-              backgroundImage: 'radial-gradient(circle at 10% 20%, rgba(235, 244, 236, 0.6) 0%, transparent 45%), radial-gradient(circle at 90% 80%, rgba(253, 250, 243, 0.8) 0%, transparent 45%)',
+              backgroundImage: 'radial-gradient(circle at 10% 20%, rgba(22, 101, 52, 0.05) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(197, 160, 89, 0.06) 0%, transparent 50%)',
               pointerEvents: 'none'
             }}
           />
@@ -370,17 +419,33 @@ export const HomePage: React.FC = () => {
             
             {/* Section Tagline */}
             <div className="flex items-center justify-center gap-2" style={{ marginBottom: '1rem' }}>
-              <span className="badge badge-verified" style={{ fontSize: '0.8rem', padding: '0.35rem 0.9rem', borderRadius: 20 }}>
-                <Sparkles size={13} style={{ color: '#386635' }} /> Heritage of Trust & Excellence
+              <span 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  backgroundColor: '#EBF4EC',
+                  color: '#166534',
+                  padding: '0.38rem 1rem',
+                  borderRadius: 999,
+                  border: '1px solid rgba(22, 101, 52, 0.25)',
+                  boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)'
+                }}
+              >
+                <Sparkles size={13} style={{ color: '#166534' }} /> Heritage of Trust &amp; Local Mastery
               </span>
             </div>
 
-            <div style={{ textAlign: 'center', maxWidth: 740, margin: '0 auto 3.5rem auto' }}>
-              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
-                Rooted in Dehradun, Built on <span style={{ color: '#386635', fontFamily: 'Outfit, sans-serif' }}>Integrity & Local Mastery</span>
+            <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto 4rem auto' }}>
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.2 }}>
+                Rooted in Dehradun, Built on <span style={{ color: '#166534', fontFamily: 'Outfit, sans-serif' }}>Integrity &amp; Pure Transparency</span>
               </h2>
-              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.85rem', lineHeight: 1.7 }}>
-                Established in the heart of Dalanwala, A2 Realtors is Uttarakhand’s leading real estate advisory and development firm. We curate premier residential kothis, hill-view apartments, approved freehold plots, and turnkey architectural spaces with unmatched legal transparency.
+              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.95rem', lineHeight: 1.75 }}>
+                Established in the heart of Dalanwala, A2 Realtors is Uttarakhand’s benchmark real estate advisory and development firm. We curate premier residential kothis, hill-view penthouses, approved freehold plots, and turnkey architectural estates with unmatched legal diligence.
               </p>
             </div>
 
@@ -389,61 +454,76 @@ export const HomePage: React.FC = () => {
               
               {/* Left Column: Company Story & Highlights (7 Cols) */}
               <div className="lg:col-span-7 flex flex-col justify-between" style={{ gap: '2rem' }}>
-                <div style={{ backgroundColor: '#F8FAFC', borderRadius: 24, padding: '2.5rem', border: '1px solid #E2E8F0', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-                  <div className="flex items-center gap-3" style={{ marginBottom: '1.25rem' }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#EBF4EC', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#386635' }}>
-                      <Building2 size={24} />
+                <div 
+                  className="card-luxury hover-lift"
+                  style={{ 
+                    backgroundColor: '#F8FAFC', 
+                    borderRadius: 26, 
+                    padding: '2.75rem', 
+                    border: '1px solid #E2E8F0', 
+                    boxShadow: '0 6px 24px rgba(15, 23, 42, 0.04)' 
+                  }}
+                >
+                  <div className="flex items-center gap-3.5" style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: '#EBF4EC', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#166534', border: '1px solid rgba(22, 101, 52, 0.2)' }}>
+                      <Building2 size={26} />
                     </div>
                     <div>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Our Identity</span>
-                      <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A' }}>Who We Are at A2 Realtors</h3>
+                      <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#94A3B8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Our Identity</span>
+                      <h3 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>Who We Are at A2 Realtors</h3>
                     </div>
                   </div>
 
-                  <p style={{ fontSize: '0.96rem', color: '#334155', lineHeight: 1.75, marginBottom: '1.25rem' }}>
+                  <p style={{ fontSize: '0.98rem', color: '#334155', lineHeight: 1.8, marginBottom: '1.25rem' }}>
                     For over 15 years, A2 Realtors has championed safe, high-yield property transactions across Dehradun, Mussoorie, and the Doon Valley. In a market where title ambiguities and unapproved layouts cause investor hesitation, we pioneered a rigorous <strong>zero-compromise legal vetting process</strong> before introducing any property to our clientele.
                   </p>
 
-                  <p style={{ fontSize: '0.96rem', color: '#64748B', lineHeight: 1.75, marginBottom: '1.75rem' }}>
-                    Whether you are an NRI securing a mountain retreat, an established family seeking a legacy villa along Rajpur Road, or an astute investor acquiring prime commercial assets, our certified advisors provide end-to-end guidance from preliminary due diligence through registry and possession.
+                  <p style={{ fontSize: '0.98rem', color: '#64748B', lineHeight: 1.8, marginBottom: '2rem' }}>
+                    Whether you are an NRI securing a mountain retreat, an established family seeking a legacy villa along Rajpur Road, or an astute investor acquiring prime commercial assets, our certified advisors provide end-to-end fiduciary guidance from preliminary due diligence through registry and possession.
                   </p>
 
                   {/* 3 Core Value Stats */}
-                  <div className="grid grid-cols-3 gap-3" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.5rem' }}>
+                  <div className="grid grid-cols-3 gap-4" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.75rem' }}>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.55rem', color: '#386635' }}>15+</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Years in Valley</div>
+                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.75rem', color: '#166534' }}>15+</div>
+                      <div style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 700, marginTop: 2 }}>Years in Valley</div>
                     </div>
                     <div style={{ textAlign: 'center', borderLeft: '1px solid #E2E8F0', borderRight: '1px solid #E2E8F0' }}>
-                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.55rem', color: '#C5A059' }}>100%</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Clear Titles</div>
+                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.75rem', color: '#C5A059' }}>100%</div>
+                      <div style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 700, marginTop: 2 }}>Freehold Clear Titles</div>
                     </div>
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.55rem', color: '#0F172A' }}>₹650 Cr+</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>Delivered Value</div>
+                      <div style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.75rem', color: '#0F172A' }}>₹650 Cr+</div>
+                      <div style={{ fontSize: '0.76rem', color: '#64748B', fontWeight: 700, marginTop: 2 }}>Delivered Volume</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Company Highlights Strip */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1.25rem', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Compass size={20} />
+                  <div 
+                    className="card-luxury hover-lift"
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1.4rem', backgroundColor: '#FFFFFF', borderRadius: 18, border: '1px solid #E2E8F0', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}
+                  >
+                    <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: '#EBF4EC', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(22, 101, 52, 0.2)' }}>
+                      <Compass size={22} />
                     </div>
                     <div>
-                      <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>Hyper-Local Expertise</h4>
-                      <p style={{ fontSize: '0.82rem', color: '#64748B', lineHeight: 1.5 }}>Unmatched ground intelligence in Dalanwala, Rajpur Rd, Mussoorie & Sahastradhara corridor.</p>
+                      <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0F172A', marginBottom: 3 }}>Hyper-Local Expertise</h4>
+                      <p style={{ fontSize: '0.84rem', color: '#64748B', lineHeight: 1.55 }}>Unrivaled intelligence across Dalanwala, Rajpur Rd, Mussoorie &amp; Sahastradhara corridor.</p>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1.25rem', backgroundColor: '#FFFFFF', borderRadius: 16, border: '1px solid #E2E8F0', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
-                    <div style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <HeartHandshake size={20} />
+                  <div 
+                    className="card-luxury hover-lift"
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1.4rem', backgroundColor: '#FFFFFF', borderRadius: 18, border: '1px solid #E2E8F0', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}
+                  >
+                    <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: 'rgba(197, 160, 89, 0.18)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(197, 160, 89, 0.35)' }}>
+                      <HeartHandshake size={22} />
                     </div>
                     <div>
-                      <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>Client-First Fiduciary Care</h4>
-                      <p style={{ fontSize: '0.82rem', color: '#64748B', lineHeight: 1.5 }}>Transparent commission structures, zero hidden costs, and honest property valuations.</p>
+                      <h4 style={{ fontSize: '1rem', fontWeight: 800, color: '#0F172A', marginBottom: 3 }}>Client Fiduciary Care</h4>
+                      <p style={{ fontSize: '0.84rem', color: '#64748B', lineHeight: 1.55 }}>Transparent commission structures, zero hidden fees, and honest property valuations.</p>
                     </div>
                   </div>
                 </div>
@@ -452,19 +532,19 @@ export const HomePage: React.FC = () => {
               {/* Right Column: Director's Message (5 Cols) */}
               <div className="lg:col-span-5 flex flex-col">
                 <div 
-                  className="card-luxury"
+                  className="card-luxury hover-lift"
                   style={{ 
                     height: '100%',
-                    backgroundColor: '#0B1120', 
-                    borderRadius: 24, 
-                    padding: '2.5rem', 
+                    backgroundColor: '#070C16', 
+                    borderRadius: 26, 
+                    padding: '2.75rem', 
                     color: '#FFFFFF',
                     position: 'relative',
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    boxShadow: '0 20px 45px rgba(11, 17, 32, 0.25)',
+                    boxShadow: '0 25px 60px rgba(0, 0, 0, 0.45)',
                     border: '1px solid #1E2E4F'
                   }}
                 >
@@ -474,92 +554,92 @@ export const HomePage: React.FC = () => {
                       position: 'absolute',
                       top: '-15%',
                       right: '-15%',
-                      width: 250,
-                      height: 250,
+                      width: 260,
+                      height: 260,
                       borderRadius: '50%',
                       background: 'radial-gradient(circle, rgba(197, 160, 89, 0.22) 0%, transparent 70%)',
-                      filter: 'blur(40px)',
+                      filter: 'blur(45px)',
                       pointerEvents: 'none'
                     }}
                   />
 
                   {/* Header Badge & Quote Icon */}
                   <div>
-                    <div className="flex items-center justify-between" style={{ marginBottom: '1.5rem' }}>
+                    <div className="flex items-center justify-between" style={{ marginBottom: '1.75rem' }}>
                       <span style={{ 
                         display: 'inline-flex', 
                         alignItems: 'center', 
                         gap: 6, 
-                        fontSize: '0.72rem', 
+                        fontSize: '0.74rem', 
                         fontWeight: 800, 
                         letterSpacing: '0.1em', 
                         textTransform: 'uppercase', 
                         backgroundColor: 'rgba(197, 160, 89, 0.18)', 
                         color: '#DFB76C', 
-                        padding: '0.35rem 0.75rem', 
+                        padding: '0.4rem 0.85rem', 
                         borderRadius: 20,
-                        border: '1px solid rgba(197, 160, 89, 0.35)'
+                        border: '1px solid rgba(197, 160, 89, 0.38)'
                       }}>
-                        <Award size={13} /> Director's Vision & Note
+                        <Award size={13} /> Director's Vision &amp; Mandate
                       </span>
 
-                      <Quote size={32} style={{ color: 'rgba(197, 160, 89, 0.35)' }} />
+                      <Quote size={34} style={{ color: 'rgba(197, 160, 89, 0.35)' }} />
                     </div>
 
-                    <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.4, marginBottom: '1.25rem', fontFamily: 'Outfit, sans-serif' }}>
+                    <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.4, marginBottom: '1.35rem', fontFamily: 'Outfit, sans-serif' }}>
                       "{homepageSettings.directorQuote || 'Real estate is not merely land and brick; it is a sacred foundation for family legacies and hard-earned wealth.'}"
                     </h3>
 
-                    <p style={{ fontSize: '0.92rem', color: '#94A3B8', lineHeight: 1.75, fontStyle: 'italic', marginBottom: '1.25rem' }}>
-                      "When we founded A2 Realtors in Dalanwala, our mission was clear: eradicate the uncertainty, legal ambiguity, and stress from buying property in Uttarakhand. 
+                    <p style={{ fontSize: '0.94rem', color: '#94A3B8', lineHeight: 1.8, fontStyle: 'italic', marginBottom: '1.25rem' }}>
+                      "When we founded A2 Realtors in Dalanwala, our mission was clear: eradicate the uncertainty, legal ambiguity, and stress from buying property in Uttarakhand.
                     </p>
 
-                    <p style={{ fontSize: '0.92rem', color: '#94A3B8', lineHeight: 1.75, fontStyle: 'italic', marginBottom: '1.5rem' }}>
+                    <p style={{ fontSize: '0.94rem', color: '#94A3B8', lineHeight: 1.8, fontStyle: 'italic', marginBottom: '1.5rem' }}>
                       Every property we present has been scrutinized as if we were purchasing it for our own kin. Our relationship with our clients begins before the sale and endures for generations."
                     </p>
                   </div>
 
                   {/* Director Signature & Profile */}
-                  <div style={{ borderTop: '1px solid #1E2E4F', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
+                  <div style={{ borderTop: '1px solid #1E2E4F', paddingTop: '1.75rem', marginTop: '1.75rem' }}>
                     <div className="flex items-center gap-4">
                       <img 
                         src={homepageSettings.directorPhoto || '/director-punit-tyagi.jpg'} 
                         alt={`${homepageSettings.directorName || 'Punit Tyagi'} - ${homepageSettings.directorRole || 'Founder & Managing Director'}, A2 Realtors`} 
                         style={{ 
-                          width: 68, 
-                          height: 68, 
+                          width: 72, 
+                          height: 72, 
                           borderRadius: '50%', 
                           objectFit: 'cover', 
                           objectPosition: 'center 20%',
                           border: '2px solid #C5A059',
-                          boxShadow: '0 4px 14px rgba(0,0,0,0.4)'
+                          boxShadow: '0 6px 20px rgba(0,0,0,0.5)'
                         }} 
                       />
                       <div>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+                        <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.01em', fontFamily: 'Outfit, sans-serif' }}>
                           {homepageSettings.directorName || 'Punit Tyagi'}
                         </div>
-                        <div style={{ fontSize: '0.82rem', color: '#DFB76C', fontWeight: 700 }}>
+                        <div style={{ fontSize: '0.84rem', color: '#DFB76C', fontWeight: 700 }}>
                           {homepageSettings.directorRole || 'Founder & Managing Director'}
                         </div>
-                        <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: 2 }}>
+                        <div style={{ fontSize: '0.74rem', color: '#94A3B8', marginTop: 2 }}>
                           A2 Realtors • 25 B Inder Road, Dalanwala, Dehradun
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3" style={{ marginTop: '1.25rem' }}>
+                    <div className="flex items-center gap-3" style={{ marginTop: '1.5rem' }}>
                       <Link 
                         to="/contact" 
-                        className="btn-green"
-                        style={{ padding: '0.55rem 1.25rem', fontSize: '0.82rem', borderRadius: 10, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                        className="btn-green hover-lift"
+                        style={{ padding: '0.65rem 1.4rem', fontSize: '0.85rem', borderRadius: 12, display: 'inline-flex', alignItems: 'center', gap: 6, fontWeight: 700 }}
                       >
-                        <Mail size={14} /> Schedule Director Consultation
+                        <Mail size={14} /> Schedule Consultation
                       </Link>
                       <a 
                         href="tel:+918445190135" 
-                        className="btn-outline-gray"
-                        style={{ padding: '0.55rem 1rem', fontSize: '0.82rem', borderRadius: 10, borderColor: '#1E2E4F', color: '#E2E8F0', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                        className="btn-pill hover-lift"
+                        style={{ padding: '0.65rem 1.15rem', fontSize: '0.85rem', borderRadius: 12, border: '1px solid #1E2E4F', color: '#E2E8F0', backgroundColor: 'rgba(255,255,255,0.05)', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                       >
                         <Phone size={14} style={{ color: '#DFB76C' }} /> Call Office
                       </a>
@@ -577,202 +657,219 @@ export const HomePage: React.FC = () => {
 
       {/* 2.6. WHY CHOOSE US (KEY PILLARS OF EXCELLENCE) */}
       {homepageSettings.showWhyChooseUs !== false && (
-        <section style={{ padding: '6.5rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0', position: 'relative' }}>
+        <section style={{ padding: '7rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0', position: 'relative' }}>
           <div className="container">
             
             {/* Header */}
-            <div style={{ textAlign: 'center', maxWidth: 740, margin: '0 auto 4rem auto' }}>
-              <span className="badge badge-verified" style={{ fontSize: '0.8rem', padding: '0.35rem 0.9rem', borderRadius: 20, marginBottom: '0.85rem' }}>
-                <ShieldCheck size={13} style={{ color: '#386635' }} /> Dehradun's Benchmark Advisory
+            <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto 4.5rem auto' }}>
+              <span 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: '0.78rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  backgroundColor: '#EBF4EC',
+                  color: '#166534',
+                  padding: '0.38rem 1rem',
+                  borderRadius: 999,
+                  border: '1px solid rgba(22, 101, 52, 0.25)',
+                  boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)',
+                  marginBottom: '1rem'
+                }}
+              >
+                <ShieldCheck size={14} style={{ color: '#166534' }} /> Dehradun's Benchmark Advisory
               </span>
-              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em', lineHeight: 1.25 }}>
-                Why Discerning Buyers & Investors Choose A2 Realtors
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.25 }}>
+                Why Discerning Buyers &amp; Investors Choose A2 Realtors
               </h2>
-              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.85rem' }}>
+              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.95rem', lineHeight: 1.7 }}>
                 We combine uncompromising integrity, forensic title due diligence, and exclusive valley inventory to ensure every investment delivers absolute peace of mind.
               </p>
             </div>
 
             {/* 6 Feature Pillars Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               
               {/* Feature 1 */}
               <div 
-                className="card-luxury" 
+                className="card-luxury hover-lift" 
                 style={{ 
-                  padding: '2.25rem', 
-                  borderRadius: 20, 
+                  padding: '2.5rem', 
+                  borderRadius: 22, 
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E2E8F0',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between'
                 }}
               >
                 <div>
-                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <ShieldCheck size={28} />
+                  <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: '#EBF4EC', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.4rem', border: '1px solid rgba(22, 101, 52, 0.2)' }}>
+                    <ShieldCheck size={30} />
                   </div>
-                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
                     100% Verified Legal Due Diligence
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                  <p style={{ fontSize: '0.94rem', color: '#64748B', lineHeight: 1.75 }}>
                     Every listing undergoes a 30-year registrar title search, mutation verification, and MDDA approval confirmation before being listed. Zero legal ambiguities.
                   </p>
                 </div>
-                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#386635', fontWeight: 700 }}>
-                  <CheckCircle2 size={15} /> 100% Registry Ready Inventory
+                <div style={{ marginTop: '1.75rem', paddingTop: '1.15rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.84rem', color: '#166534', fontWeight: 800 }}>
+                  <CheckCircle2 size={16} /> 100% Registry Ready Inventory
                 </div>
               </div>
 
               {/* Feature 2 */}
               <div 
-                className="card-luxury" 
+                className="card-luxury hover-lift" 
                 style={{ 
-                  padding: '2.25rem', 
-                  borderRadius: 20, 
+                  padding: '2.5rem', 
+                  borderRadius: 22, 
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E2E8F0',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between'
                 }}
               >
                 <div>
-                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <Landmark size={28} />
+                  <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'rgba(197, 160, 89, 0.18)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.4rem', border: '1px solid rgba(197, 160, 89, 0.35)' }}>
+                    <Landmark size={30} />
                   </div>
-                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
-                    Off-Market & Exclusive Valley Inventory
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
+                    Off-Market &amp; Exclusive Valley Inventory
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                  <p style={{ fontSize: '0.94rem', color: '#64748B', lineHeight: 1.75 }}>
                     Direct access to private ancestral kothis in Dalanwala, hillside estates in Mussoorie Foothills, and prime commercial retail frontage before public release.
                   </p>
                 </div>
-                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#C5A059', fontWeight: 700 }}>
-                  <CheckCircle2 size={15} /> Exclusive Owner Direct Mandates
+                <div style={{ marginTop: '1.75rem', paddingTop: '1.15rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.84rem', color: '#C5A059', fontWeight: 800 }}>
+                  <CheckCircle2 size={16} /> Exclusive Owner Direct Mandates
                 </div>
               </div>
 
               {/* Feature 3 */}
               <div 
-                className="card-luxury" 
+                className="card-luxury hover-lift" 
                 style={{ 
-                  padding: '2.25rem', 
-                  borderRadius: 20, 
+                  padding: '2.5rem', 
+                  borderRadius: 22, 
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E2E8F0',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between'
                 }}
               >
                 <div>
-                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <TrendingUp size={28} />
+                  <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: '#EBF4EC', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.4rem', border: '1px solid rgba(22, 101, 52, 0.2)' }}>
+                    <TrendingUp size={30} />
                   </div>
-                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
                     High Capital Appreciation Analysis
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                  <p style={{ fontSize: '0.94rem', color: '#64748B', lineHeight: 1.75 }}>
                     Our research team maps infrastructural growth—including the Delhi-Dehradun Expressway, Sahastradhara smart corridor, and ring roads—for targeted ROI.
                   </p>
                 </div>
-                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#386635', fontWeight: 700 }}>
-                  <CheckCircle2 size={15} /> Verified Historical Price Benchmarks
+                <div style={{ marginTop: '1.75rem', paddingTop: '1.15rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.84rem', color: '#166534', fontWeight: 800 }}>
+                  <CheckCircle2 size={16} /> Verified Historical Price Benchmarks
                 </div>
               </div>
 
               {/* Feature 4 */}
               <div 
-                className="card-luxury" 
+                className="card-luxury hover-lift" 
                 style={{ 
-                  padding: '2.25rem', 
-                  borderRadius: 20, 
+                  padding: '2.5rem', 
+                  borderRadius: 22, 
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E2E8F0',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between'
                 }}
               >
                 <div>
-                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <Hammer size={28} />
+                  <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'rgba(197, 160, 89, 0.18)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.4rem', border: '1px solid rgba(197, 160, 89, 0.35)' }}>
+                    <Hammer size={30} />
                   </div>
-                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
-                    Turnkey Architectural & Build Services
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
+                    Turnkey Architectural &amp; Build Services
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                  <p style={{ fontSize: '0.94rem', color: '#64748B', lineHeight: 1.75 }}>
                     From raw plot acquisition to custom villa architecture, MDDA layout sanctions, structural construction, and smart interiors—executed under single point accountability.
                   </p>
                 </div>
-                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#C5A059', fontWeight: 700 }}>
-                  <CheckCircle2 size={15} /> In-House Civil Engineers & Architects
+                <div style={{ marginTop: '1.75rem', paddingTop: '1.15rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.84rem', color: '#C5A059', fontWeight: 800 }}>
+                  <CheckCircle2 size={16} /> In-House Civil Engineers &amp; Architects
                 </div>
               </div>
 
               {/* Feature 5 */}
               <div 
-                className="card-luxury" 
+                className="card-luxury hover-lift" 
                 style={{ 
-                  padding: '2.25rem', 
-                  borderRadius: 20, 
+                  padding: '2.5rem', 
+                  borderRadius: 22, 
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E2E8F0',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between'
                 }}
               >
                 <div>
-                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: '#EBF4EC', color: '#386635', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <HeartHandshake size={28} />
+                  <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: '#EBF4EC', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.4rem', border: '1px solid rgba(22, 101, 52, 0.2)' }}>
+                    <HeartHandshake size={30} />
                   </div>
-                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
-                    NRI & Outstation Concierge Support
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
+                    NRI &amp; Outstation Concierge Support
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                  <p style={{ fontSize: '0.94rem', color: '#64748B', lineHeight: 1.75 }}>
                     Remote video walkthroughs, digital documentation, Power of Attorney assistance, chauffeured valley inspection tours, and bank liaison for overseas Indians.
                   </p>
                 </div>
-                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#386635', fontWeight: 700 }}>
-                  <CheckCircle2 size={15} /> 450+ NRIs Successfully Settled
+                <div style={{ marginTop: '1.75rem', paddingTop: '1.15rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.84rem', color: '#166534', fontWeight: 800 }}>
+                  <CheckCircle2 size={16} /> 450+ NRIs Successfully Settled
                 </div>
               </div>
 
               {/* Feature 6 */}
               <div 
-                className="card-luxury" 
+                className="card-luxury hover-lift" 
                 style={{ 
-                  padding: '2.25rem', 
-                  borderRadius: 20, 
+                  padding: '2.5rem', 
+                  borderRadius: 22, 
                   backgroundColor: '#FFFFFF',
                   border: '1px solid #E2E8F0',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                  boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between'
                 }}
               >
                 <div>
-                  <div style={{ width: 54, height: 54, borderRadius: 14, backgroundColor: 'rgba(197, 160, 89, 0.15)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.25rem' }}>
-                    <Award size={28} />
+                  <div style={{ width: 56, height: 56, borderRadius: 16, backgroundColor: 'rgba(197, 160, 89, 0.18)', color: '#C5A059', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.4rem', border: '1px solid rgba(197, 160, 89, 0.35)' }}>
+                    <Award size={30} />
                   </div>
-                  <h3 style={{ fontSize: '1.22rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
-                    Zero Hidden Costs & Ethical Pricing
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
+                    Zero Hidden Costs &amp; Ethical Pricing
                   </h3>
-                  <p style={{ fontSize: '0.92rem', color: '#64748B', lineHeight: 1.7 }}>
+                  <p style={{ fontSize: '0.94rem', color: '#64748B', lineHeight: 1.75 }}>
                     Crystal clear fee structures, direct seller negotiations with no inflated middleman markups, and transparent breakdown of stamp duty and registry costs.
                   </p>
                 </div>
-                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: '#C5A059', fontWeight: 700 }}>
-                  <CheckCircle2 size={15} /> 4.9 / 5.0 Star Rated Trust Index
+                <div style={{ marginTop: '1.75rem', paddingTop: '1.15rem', borderTop: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.84rem', color: '#C5A059', fontWeight: 800 }}>
+                  <CheckCircle2 size={16} /> 4.9 / 5.0 Star Rated Trust Index
                 </div>
               </div>
 
@@ -780,35 +877,36 @@ export const HomePage: React.FC = () => {
 
             {/* Bottom Call to Action Banner inside Why Choose Us */}
             <div 
+              className="card-luxury"
               style={{ 
-                marginTop: '4rem', 
+                marginTop: '4.5rem', 
                 backgroundColor: '#FFFFFF', 
-                borderRadius: 20, 
-                padding: '2.5rem', 
+                borderRadius: 24, 
+                padding: '2.75rem 3rem', 
                 border: '1px solid #E2E8F0',
-                boxShadow: '0 8px 30px rgba(0,0,0,0.04)',
+                boxShadow: '0 10px 35px rgba(0,0,0,0.04)',
                 display: 'flex',
                 flexWrap: 'wrap',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: '1.5rem'
+                gap: '2rem'
               }}
             >
-              <div style={{ maxWidth: 600 }}>
-                <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
+              <div style={{ maxWidth: 640 }}>
+                <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.45rem', fontFamily: 'Outfit, sans-serif' }}>
                   Ready to Experience the A2 Realtors Advantage?
                 </div>
-                <p style={{ fontSize: '0.92rem', color: '#64748B' }}>
+                <p style={{ fontSize: '0.96rem', color: '#64748B', lineHeight: 1.6 }}>
                   Speak directly with our senior advisory team or visit our flagship office at Inder Road, Dalanwala.
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
-                <Link to="/contact" className="btn-green btn-pill" style={{ padding: '0.85rem 1.85rem', fontSize: '0.95rem' }}>
+              <div className="flex items-center gap-3.5 flex-wrap">
+                <Link to="/contact" className="btn-green btn-pill hover-lift" style={{ padding: '0.9rem 2.1rem', fontSize: '0.96rem', fontWeight: 700 }}>
                   <span>Book Private Consultation</span>
                   <ArrowRight size={16} />
                 </Link>
-                <a href="tel:+918445190135" className="btn-outline-green btn-pill" style={{ padding: '0.85rem 1.6rem', fontSize: '0.95rem' }}>
+                <a href="tel:+918445190135" className="btn-outline-green btn-pill hover-lift" style={{ padding: '0.9rem 1.8rem', fontSize: '0.96rem', fontWeight: 700 }}>
                   <Phone size={15} /> +91 84451 90135
                 </a>
               </div>
@@ -818,13 +916,13 @@ export const HomePage: React.FC = () => {
         </section>
       )}
 
-      {/* 3. FLAGSHIP PARTNER TOWNSHIPS & APPROVED DEVELOPMENTS */}
+      {/* 3. FLAGSHIP PARTNER TOWNSHIPS & APPROVED DEVELOPMENTS (INTERACTIVE SLIDER) */}
       {homepageSettings.showPartnerLogos && (
         <section 
           id="partner-townships"
           style={{ 
-            background: 'radial-gradient(circle at 10% 15%, rgba(56, 102, 53, 0.05) 0%, transparent 45%), radial-gradient(circle at 90% 80%, rgba(197, 160, 89, 0.06) 0%, transparent 45%), #F8FAFC', 
-            padding: '6rem 0', 
+            background: 'radial-gradient(circle at 10% 15%, rgba(22, 101, 52, 0.05) 0%, transparent 45%), radial-gradient(circle at 90% 80%, rgba(197, 160, 89, 0.07) 0%, transparent 45%), #F8FAFC', 
+            padding: '7rem 0', 
             borderTop: '1px solid #E2E8F0',
             borderBottom: '1px solid #E2E8F0',
             position: 'relative'
@@ -832,39 +930,122 @@ export const HomePage: React.FC = () => {
         >
           <div className="container">
             
-            {/* Header */}
-            <div style={{ textAlign: 'center', maxWidth: 880, margin: '0 auto 3.5rem auto' }}>
-              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '1rem' }}>
-                <span style={{ 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: 7, 
-                  fontSize: '0.78rem', 
-                  fontWeight: 800, 
-                  letterSpacing: '0.1em', 
-                  textTransform: 'uppercase', 
-                  backgroundColor: '#EBF4EC', 
-                  color: '#166534', 
-                  padding: '0.45rem 1.1rem', 
-                  borderRadius: 999,
-                  border: '1px solid rgba(22, 101, 52, 0.25)',
-                  boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)'
-                }}>
-                  <Sparkles size={14} style={{ color: '#166534' }} /> Authorized Townships & Developer Alliances
-                </span>
+            {/* Header & Controls Bar */}
+            <div style={{ marginBottom: '3.5rem' }}>
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                
+                {/* Title & Description */}
+                <div style={{ maxWidth: 740 }}>
+                  <div className="flex items-center gap-2" style={{ marginBottom: '0.85rem' }}>
+                    <span style={{ 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      gap: 7, 
+                      fontSize: '0.78rem', 
+                      fontWeight: 800, 
+                      letterSpacing: '0.1em', 
+                      textTransform: 'uppercase', 
+                      backgroundColor: '#EBF4EC', 
+                      color: '#166534', 
+                      padding: '0.42rem 1.1rem', 
+                      borderRadius: 999,
+                      border: '1px solid rgba(22, 101, 52, 0.25)',
+                      boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)'
+                    }}>
+                      <ShieldCheck size={14} style={{ color: '#166534' }} /> MDDA &amp; RERA Approved Townships
+                    </span>
+                  </div>
+
+                  <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.25, fontFamily: 'Outfit, sans-serif' }}>
+                    Dehradun’s Premier <span style={{ color: '#166534' }}>Approved Townships</span>
+                  </h2>
+                  
+                  <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.75rem', lineHeight: 1.7 }}>
+                    Official advisory partner for the Doon Valley’s most prestigious gated communities. Verified master plans, underground utilities, and direct developer pricing with zero brokerage markups.
+                  </p>
+                </div>
+
+                {/* Slider Quick Prev / Next Buttons */}
+                <div className="flex items-center gap-3">
+                  <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#64748B', backgroundColor: '#FFFFFF', padding: '0.5rem 1rem', borderRadius: 999, border: '1px solid #E2E8F0', boxShadow: '0 2px 6px rgba(0,0,0,0.03)' }}>
+                    <span style={{ color: '#166534', fontWeight: 800 }}>
+                      0{partnerActiveSlide + 1}
+                    </span>
+                    <span style={{ color: '#94A3B8', margin: '0 4px' }}>/</span>
+                    <span>
+                      0{partnerDevelopments.filter(p => partnerFilter === 'ALL' || p.belt === partnerFilter).length} Flagships
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handlePartnerScroll('left')}
+                      disabled={!partnerCanScrollLeft}
+                      aria-label="Previous Approved Property"
+                      className="hover-lift"
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: '50%',
+                        backgroundColor: partnerCanScrollLeft ? '#FFFFFF' : '#F1F5F9',
+                        color: partnerCanScrollLeft ? '#0F172A' : '#94A3B8',
+                        border: partnerCanScrollLeft ? '1px solid #CBD5E1' : '1px solid #E2E8F0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: partnerCanScrollLeft ? 'pointer' : 'not-allowed',
+                        boxShadow: partnerCanScrollLeft ? '0 4px 12px rgba(0,0,0,0.06)' : 'none',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handlePartnerScroll('right')}
+                      disabled={!partnerCanScrollRight}
+                      aria-label="Next Approved Property"
+                      className="hover-lift"
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: '50%',
+                        backgroundColor: partnerCanScrollRight ? '#166534' : '#F1F5F9',
+                        color: partnerCanScrollRight ? '#FFFFFF' : '#94A3B8',
+                        border: partnerCanScrollRight ? '1px solid #166534' : '1px solid #E2E8F0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: partnerCanScrollRight ? 'pointer' : 'not-allowed',
+                        boxShadow: partnerCanScrollRight ? '0 4px 14px rgba(22, 101, 52, 0.3)' : 'none',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+                </div>
+
               </div>
 
-              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 2.9rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.25 }}>
-                Authorized Advisory Partner For Dehradun’s <span style={{ color: '#166534', fontFamily: 'Outfit, sans-serif' }}>Premier Townships</span>
-              </h2>
-              
-              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.95rem', lineHeight: 1.75 }}>
-                A2 Realtors is the authorized advisory partner for the Doon Valley’s most prestigious gated developments. 
-                Benefit from direct developer pricing, forensic title verification, priority plot allotment, and seamless conveyance.
-              </p>
-
-              {/* Belt Filter Navigation Pills */}
-              <div className="flex items-center justify-center gap-2" style={{ marginTop: '2.25rem', flexWrap: 'wrap' }}>
+              {/* Belt Filter Navigation Pills (Single Line + Mobile Horizontal Scroll) */}
+              <div 
+                className="flex items-center no-scrollbar" 
+                style={{ 
+                  marginTop: '2.25rem', 
+                  gap: '0.45rem',
+                  overflowX: 'auto',
+                  flexWrap: 'nowrap',
+                  whiteSpace: 'nowrap',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch',
+                  paddingBottom: '0.35rem',
+                  maxWidth: '100%'
+                }}
+              >
                 {[
                   { key: 'ALL', label: 'All 6 Flagships', count: 6 },
                   { key: 'SAHASTRADHARA', label: 'Sahastradhara Belt (ATS, Panache, Zodiac)', count: 3 },
@@ -875,9 +1056,17 @@ export const HomePage: React.FC = () => {
                   <button
                     key={filter.key}
                     type="button"
-                    onClick={() => setPartnerFilter(filter.key)}
+                    onClick={() => {
+                      setPartnerFilter(filter.key);
+                      if (partnerSliderRef.current) {
+                        partnerSliderRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                      }
+                    }}
+                    className="hover-lift flex-shrink-0"
                     style={{
-                      padding: '0.55rem 1.2rem',
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                      padding: '0.55rem 1.15rem',
                       borderRadius: 999,
                       fontSize: '0.84rem',
                       fontWeight: 700,
@@ -889,16 +1078,16 @@ export const HomePage: React.FC = () => {
                       boxShadow: partnerFilter === filter.key ? '0 6px 18px rgba(22, 101, 52, 0.25)' : '0 1px 4px rgba(0,0,0,0.03)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: 6
+                      gap: '0.35rem'
                     }}
                   >
                     <span>{filter.label}</span>
                     <span style={{
-                      backgroundColor: partnerFilter === filter.key ? 'rgba(255,255,255,0.2)' : '#F1F5F9',
+                      backgroundColor: partnerFilter === filter.key ? 'rgba(255,255,255,0.22)' : '#F1F5F9',
                       color: partnerFilter === filter.key ? '#FFFFFF' : '#64748B',
                       fontSize: '0.72rem',
                       fontWeight: 800,
-                      padding: '0.1rem 0.45rem',
+                      padding: '0.12rem 0.5rem',
                       borderRadius: 12
                     }}>
                       {filter.count}
@@ -908,261 +1097,428 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* 6-Township Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {partnerDevelopments
-                .filter(p => partnerFilter === 'ALL' || p.belt === partnerFilter)
-                .map((project) => {
-                  const isLivePhoto = partnerImageMode[project.id] === 1;
-                  const currentImg = isLivePhoto ? project.sitePhoto : project.coverImage;
+            {/* INTERACTIVE SLIDER VIEWPORT WITH FLOATING ARROWS */}
+            <div style={{ position: 'relative' }}>
+              
+              {/* Floating Left Arrow */}
+              {partnerCanScrollLeft && (
+                <button
+                  type="button"
+                  onClick={() => handlePartnerScroll('left')}
+                  aria-label="Scroll left"
+                  className="hover-lift hidden md:flex"
+                  style={{
+                    position: 'absolute',
+                    left: -20,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 10,
+                    width: 46,
+                    height: 46,
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(8px)',
+                    color: '#0F172A',
+                    border: '1px solid #CBD5E1',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ChevronLeft size={22} />
+                </button>
+              )}
 
-                  return (
-                    <div
-                      key={project.id}
-                      className="card-luxury flex flex-col group"
-                      style={{
-                        backgroundColor: '#FFFFFF',
-                        borderRadius: 24,
-                        border: '1px solid #E2E8F0',
-                        overflow: 'hidden',
-                        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-                        boxShadow: '0 8px 26px rgba(15, 23, 42, 0.05)',
-                        position: 'relative'
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-6px)';
-                        e.currentTarget.style.boxShadow = '0 24px 50px -10px rgba(15, 23, 42, 0.14)';
-                        e.currentTarget.style.borderColor = '#C5A059';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 8px 26px rgba(15, 23, 42, 0.05)';
-                        e.currentTarget.style.borderColor = '#E2E8F0';
-                      }}
-                    >
-                      {/* Visual Cover Header */}
-                      <div style={{ position: 'relative', height: 245, overflow: 'hidden', backgroundColor: '#0B1120' }}>
-                        <img 
-                          src={currentImg} 
-                          alt={project.name} 
-                          style={{ 
-                            width: '100%', 
-                            height: '100%', 
-                            objectFit: 'cover',
-                            transition: 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)'
-                          }}
-                          className="group-hover:scale-105"
-                        />
-                        
-                        {/* Gradient Overlay */}
-                        <div style={{
-                          position: 'absolute',
-                          inset: 0,
-                          background: 'linear-gradient(to top, rgba(11,17,32,0.96) 0%, rgba(11,17,32,0.45) 55%, rgba(11,17,32,0.1) 80%, rgba(0,0,0,0.4) 100%)'
-                        }} />
+              {/* Floating Right Arrow */}
+              {partnerCanScrollRight && (
+                <button
+                  type="button"
+                  onClick={() => handlePartnerScroll('right')}
+                  aria-label="Scroll right"
+                  className="hover-lift hidden md:flex"
+                  style={{
+                    position: 'absolute',
+                    right: -20,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    zIndex: 10,
+                    width: 46,
+                    height: 46,
+                    borderRadius: '50%',
+                    backgroundColor: '#166534',
+                    color: '#FFFFFF',
+                    border: '1px solid rgba(255, 255, 255, 0.4)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 8px 24px rgba(22, 101, 52, 0.35)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <ChevronRight size={22} />
+                </button>
+              )}
 
-                        {/* Top Badges */}
-                        <div className="flex items-center justify-between" style={{ position: 'absolute', top: 14, left: 14, right: 14, zIndex: 2 }}>
-                          <span style={{
-                            backgroundColor: 'rgba(22, 101, 52, 0.92)',
-                            color: '#FFFFFF',
-                            padding: '0.32rem 0.75rem',
-                            borderRadius: 999,
-                            fontSize: '0.72rem',
-                            fontWeight: 800,
-                            letterSpacing: '0.04em',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 5,
-                            backdropFilter: 'blur(8px)',
-                            border: '1px solid rgba(74, 222, 128, 0.35)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.25)'
-                          }}>
-                            <ShieldCheck size={13} style={{ color: '#4ADE80' }} /> {project.approval}
-                          </span>
+              {/* The Horizontal Slider Track */}
+              <div
+                ref={partnerSliderRef}
+                style={{
+                  display: 'flex',
+                  gap: '1.75rem',
+                  overflowX: 'auto',
+                  scrollSnapType: 'x mandatory',
+                  scrollBehavior: 'smooth',
+                  padding: '0.75rem 0.25rem 2rem 0.25rem',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none'
+                }}
+                className="no-scrollbar"
+              >
+                {partnerDevelopments
+                  .filter(p => partnerFilter === 'ALL' || p.belt === partnerFilter)
+                  .map((project, pIndex) => {
+                    const isLivePhoto = partnerImageMode[project.id] === 1;
+                    const currentImg = isLivePhoto ? project.sitePhoto : project.coverImage;
 
-                          <span style={{
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            color: '#DFB76C',
-                            padding: '0.32rem 0.8rem',
-                            borderRadius: 999,
-                            fontSize: '0.75rem',
-                            fontWeight: 800,
-                            border: '1px solid rgba(223, 183, 108, 0.5)',
-                            backdropFilter: 'blur(8px)',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.25)'
-                          }}>
-                            {project.priceGuide}
-                          </span>
-                        </div>
-
-                        {/* Quick Real Site Image Switcher Pill */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setPartnerImageMode(prev => ({ ...prev, [project.id]: prev[project.id] === 1 ? 0 : 1 }));
-                          }}
-                          style={{
+                    return (
+                      <div
+                        key={project.id}
+                        className="card-luxury hover-lift group flex flex-col"
+                        style={{
+                          flex: '0 0 auto',
+                          width: 'calc((100% - 3.5rem) / 3)',
+                          minWidth: '350px',
+                          maxWidth: '430px',
+                          scrollSnapAlign: 'start',
+                          backgroundColor: '#FFFFFF',
+                          borderRadius: 24,
+                          border: '1px solid #E2E8F0',
+                          overflow: 'hidden',
+                          boxShadow: '0 10px 30px rgba(15, 23, 42, 0.06)',
+                          transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                          position: 'relative'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = '#C5A059';
+                          e.currentTarget.style.boxShadow = '0 24px 50px -10px rgba(15, 23, 42, 0.16)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = '#E2E8F0';
+                          e.currentTarget.style.boxShadow = '0 10px 30px rgba(15, 23, 42, 0.06)';
+                        }}
+                      >
+                        {/* 70% VISUAL FEATURE IMAGE HERO */}
+                        <div style={{ position: 'relative', height: 410, overflow: 'hidden', backgroundColor: '#070C16' }}>
+                          <img 
+                            src={currentImg} 
+                            alt={project.name} 
+                            style={{ 
+                              width: '100%', 
+                              height: '100%', 
+                              objectFit: 'cover',
+                              transition: 'transform 0.75s cubic-bezier(0.16, 1, 0.3, 1)'
+                            }}
+                            className="group-hover:scale-106"
+                          />
+                          
+                          {/* Multi-Layered Atmospheric Dark Obsidian Gradient for Maximum Contrast */}
+                          <div style={{
                             position: 'absolute',
-                            top: 50,
-                            right: 14,
-                            zIndex: 3,
-                            backgroundColor: 'rgba(15, 23, 42, 0.78)',
-                            backdropFilter: 'blur(8px)',
-                            color: '#FFFFFF',
-                            padding: '0.28rem 0.65rem',
-                            borderRadius: 20,
-                            fontSize: '0.68rem',
-                            fontWeight: 700,
-                            border: '1px solid rgba(255, 255, 255, 0.25)',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 5,
-                            cursor: 'pointer',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                            transition: 'all 0.2s ease'
-                          }}
-                          title="Click to toggle between Official Master Elevation and Real Site Photo"
-                        >
-                          <Camera size={12} style={{ color: '#DFB76C' }} />
-                          <span>{isLivePhoto ? 'Showing: Real Site Photo' : 'Toggle Real Site Photo'}</span>
-                        </button>
+                            inset: 0,
+                            background: 'linear-gradient(180deg, rgba(7,12,22,0.65) 0%, rgba(7,12,22,0.12) 35%, rgba(7,12,22,0.45) 60%, rgba(7,12,22,0.96) 100%)'
+                          }} />
 
-                        {/* Bottom Banner on Image */}
-                        <div style={{ position: 'absolute', bottom: 12, left: 18, right: 18, zIndex: 2 }}>
-                          <div className="flex items-center gap-1.5" style={{ fontSize: '0.7rem', color: '#DFB76C', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: 2 }}>
-                            <BadgeCheck size={13} style={{ color: '#DFB76C' }} /> by {project.developer}
+                          {/* Top Floating Glass Badges */}
+                          <div className="flex items-center justify-between" style={{ position: 'absolute', top: 14, left: 14, right: 14, zIndex: 3 }}>
+                            <span style={{
+                              backgroundColor: 'rgba(22, 101, 52, 0.92)',
+                              color: '#FFFFFF',
+                              padding: '0.35rem 0.8rem',
+                              borderRadius: 999,
+                              fontSize: '0.72rem',
+                              fontWeight: 800,
+                              letterSpacing: '0.04em',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 5,
+                              backdropFilter: 'blur(8px)',
+                              border: '1px solid rgba(74, 222, 128, 0.4)',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                            }}>
+                              <ShieldCheck size={13} style={{ color: '#4ADE80' }} /> {project.approval}
+                            </span>
+
+                            {/* Real Site Photo Switcher */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setPartnerImageMode(prev => ({ ...prev, [project.id]: prev[project.id] === 1 ? 0 : 1 }));
+                              }}
+                              style={{
+                                backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                                backdropFilter: 'blur(8px)',
+                                color: '#FFFFFF',
+                                padding: '0.32rem 0.75rem',
+                                borderRadius: 20,
+                                fontSize: '0.68rem',
+                                fontWeight: 700,
+                                border: '1px solid rgba(255, 255, 255, 0.3)',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                                transition: 'all 0.2s ease'
+                              }}
+                              title="Click to toggle between Official Master Elevation and Real Site Photo"
+                            >
+                              <Camera size={12} style={{ color: '#DFB76C' }} />
+                              <span>{isLivePhoto ? 'Live Site' : 'Elevation'}</span>
+                            </button>
                           </div>
-                          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.02em', fontFamily: 'Outfit, sans-serif', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
-                            {project.name}
+
+                          {/* Bottom Hero Overlay on Image: Developer, Price, Title, Corridor */}
+                          <div style={{ position: 'absolute', bottom: 16, left: 18, right: 18, zIndex: 3 }}>
+                            {/* Line 1: Developer Name & Price Pill */}
+                            <div className="flex items-center justify-between gap-2" style={{ marginBottom: 6 }}>
+                              <div className="flex items-center gap-1.5 min-w-0" style={{ overflow: 'hidden' }}>
+                                <BadgeCheck size={13} style={{ color: '#DFB76C', flexShrink: 0 }} />
+                                <span style={{
+                                  fontSize: '0.68rem',
+                                  color: '#DFB76C',
+                                  fontWeight: 800,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.06em',
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}>
+                                  by {project.developer}
+                                </span>
+                              </div>
+                              <span style={{
+                                backgroundColor: 'rgba(197, 160, 89, 0.25)',
+                                color: '#DFB76C',
+                                padding: '0.22rem 0.65rem',
+                                borderRadius: 999,
+                                fontSize: '0.72rem',
+                                fontWeight: 800,
+                                border: '1px solid rgba(223, 183, 108, 0.5)',
+                                backdropFilter: 'blur(8px)',
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0
+                              }}>
+                                {project.priceGuide}
+                              </span>
+                            </div>
+
+                            {/* Line 2: Project Title (Clean single-line Outfit bold) */}
+                            <div style={{
+                              fontSize: '1.4rem',
+                              fontWeight: 800,
+                              color: '#FFFFFF',
+                              letterSpacing: '-0.02em',
+                              fontFamily: 'Outfit, sans-serif',
+                              textShadow: '0 2px 10px rgba(0,0,0,0.7)',
+                              lineHeight: 1.25,
+                              marginBottom: 8,
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}>
+                              {project.name}
+                            </div>
+
+                            {/* Line 3: Corridor & Sanction Strip on Image */}
+                            <div className="flex items-center gap-2" style={{ fontSize: '0.74rem' }}>
+                              <span style={{
+                                backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                                backdropFilter: 'blur(8px)',
+                                color: '#FFFFFF',
+                                padding: '0.2rem 0.6rem',
+                                borderRadius: 6,
+                                fontWeight: 600,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                whiteSpace: 'nowrap',
+                                flexShrink: 0
+                              }}>
+                                <MapPin size={12} style={{ color: '#4ADE80' }} />
+                                {project.belt === 'SAHASTRADHARA' ? 'Sahastradhara Belt' : project.belt === 'MUSSOORIE' ? 'Mussoorie Corridor' : project.belt === 'CANAL' ? 'Canal Road' : 'Prem Nagar / IMA'}
+                              </span>
+                              <span style={{
+                                color: '#E2E8F0',
+                                fontSize: '0.72rem',
+                                fontWeight: 500,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}>
+                                {project.type.split('&')[0]}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Card Body */}
-                      <div style={{ padding: '1.65rem', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between' }}>
-                        <div>
-                          {/* Location + Proximity Chip */}
-                          <div className="flex items-center justify-between gap-2" style={{ marginBottom: '0.75rem' }}>
-                            <div className="flex items-center gap-1.5" style={{ color: '#166534', fontSize: '0.82rem', fontWeight: 700 }}>
-                              <MapPin size={14} style={{ color: '#166534', flexShrink: 0 }} />
-                              <span className="truncate">{project.location}</span>
-                            </div>
-                            <span style={{ fontSize: '0.7rem', color: '#475569', backgroundColor: '#F1F5F9', padding: '0.15rem 0.55rem', borderRadius: 6, fontWeight: 700, whiteSpace: 'nowrap' }}>
-                              {project.landmarks[0]}
-                            </span>
-                          </div>
-
-                          {/* Tagline */}
-                          <p style={{ fontSize: '0.86rem', color: '#64748B', lineHeight: 1.55, marginBottom: '1.1rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                            {project.tagline}
-                          </p>
-
-                          {/* 3-Column Luxury Spec Grid */}
-                          <div className="grid grid-cols-3 gap-2" style={{ marginBottom: '1.15rem' }}>
-                            {project.specs.map((sp, sIdx) => (
-                              <div key={sIdx} style={{ backgroundColor: '#F8FAFC', borderRadius: 10, padding: '0.5rem 0.35rem', textAlign: 'center', border: '1px solid #E2E8F0' }}>
-                                <div style={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                                  {sp.label}
-                                </div>
-                                <div style={{ fontSize: '0.78rem', color: '#0F172A', fontWeight: 800, marginTop: 1 }} className="truncate">
-                                  {sp.val}
-                                </div>
+                        {/* 30-40% COMPACT LUXURY INFORMATION BODY */}
+                        <div style={{ padding: '1.25rem 1.4rem', display: 'flex', flexDirection: 'column', flexGrow: 1, justifyContent: 'space-between', backgroundColor: '#FFFFFF' }}>
+                          <div>
+                            {/* Properly Aligned Location & Key Landmark */}
+                            <div style={{ marginBottom: '0.85rem' }}>
+                              <div className="flex items-center gap-1.5" style={{ color: '#0F172A', fontSize: '0.82rem', fontWeight: 700, marginBottom: '0.28rem' }}>
+                                <MapPin size={14} style={{ color: '#166534', flexShrink: 0 }} />
+                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                  {project.location}
+                                </span>
                               </div>
-                            ))}
-                          </div>
-
-                          {/* Highlights Box */}
-                          <div style={{ backgroundColor: '#F8FAFC', borderRadius: 12, padding: '0.9rem 1rem', border: '1px solid #E2E8F0', marginBottom: '1.4rem' }}>
-                            <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.55rem' }}>
-                              Township Highlights
+                              <div className="flex items-center gap-1.5" style={{ color: '#64748B', fontSize: '0.74rem', paddingLeft: 19 }}>
+                                <Compass size={12} style={{ color: '#C5A059', flexShrink: 0 }} />
+                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                  {project.landmarks[0]}
+                                </span>
+                              </div>
                             </div>
-                            <div className="flex flex-col gap-2">
-                              {project.highlights.slice(0, 3).map((item, hIdx) => (
-                                <div key={hIdx} className="flex items-start gap-2" style={{ fontSize: '0.8rem', color: '#334155', lineHeight: 1.4 }}>
-                                  <CheckCircle2 size={13} style={{ color: '#166534', marginTop: 2, flexShrink: 0 }} />
-                                  <span>{item}</span>
+
+                            {/* 3-Column Luxury Spec Grid */}
+                            <div className="grid grid-cols-3 gap-2" style={{ marginBottom: '0.85rem' }}>
+                              {project.specs.map((sp, sIdx) => (
+                                <div key={sIdx} style={{ backgroundColor: '#F8FAFC', borderRadius: 8, padding: '0.5rem 0.35rem', textAlign: 'center', border: '1px solid #E2E8F0' }}>
+                                  <div style={{ fontSize: '0.62rem', color: '#64748B', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                    {sp.label}
+                                  </div>
+                                  <div style={{ fontSize: '0.8rem', color: '#0F172A', fontWeight: 800, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                    {sp.val}
+                                  </div>
                                 </div>
                               ))}
                             </div>
-                          </div>
-                        </div>
 
-                        {/* Direct Action Links */}
-                        <div className="flex flex-col gap-2.5" style={{ marginTop: 'auto' }}>
-                          {/* 1. Direct Link to Live Inventory */}
-                          <Link
-                            to={`/search?q=${encodeURIComponent(project.searchQuery)}`}
-                            className="w-full flex items-center justify-center gap-2"
-                            style={{
-                              padding: '0.72rem 1.1rem',
-                              fontSize: '0.86rem',
-                              borderRadius: 12,
-                              fontWeight: 800,
-                              textDecoration: 'none',
-                              color: '#FFFFFF',
-                              background: 'linear-gradient(135deg, #15803D 0%, #166534 100%)',
-                              boxShadow: '0 4px 14px rgba(22, 101, 52, 0.25)',
-                              transition: 'all 0.2s ease'
-                            }}
-                          >
-                            <span>Explore Available Inventory</span>
-                            <ArrowRight size={14} />
-                          </Link>
-
-                          {/* 2. Interactive Dossier & Site Visit Trigger */}
-                          <div className="grid grid-cols-2 gap-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedPartnerModal(project);
-                                setModalImageIndex(0);
-                              }}
-                              className="btn-outline-gray flex items-center justify-center gap-1.5"
-                              style={{
-                                padding: '0.52rem 0.75rem',
-                                fontSize: '0.78rem',
-                                borderRadius: 10,
-                                fontWeight: 700,
-                                color: '#0F172A'
-                              }}
-                            >
-                              <Info size={13} style={{ color: '#166534' }} /> Project Dossier
-                            </button>
-
-                            <Link
-                              to={`/contact?project=${encodeURIComponent(project.name)}`}
-                              className="btn-outline-gray flex items-center justify-center gap-1.5"
-                              style={{
-                                padding: '0.52rem 0.75rem',
-                                fontSize: '0.78rem',
-                                borderRadius: 10,
-                                fontWeight: 700,
+                            {/* Verified Highlight Badge */}
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              padding: '0.45rem 0.75rem',
+                              backgroundColor: '#F0FDF4',
+                              borderRadius: 8,
+                              border: '1px solid #DCFCE7',
+                              marginBottom: '0.9rem'
+                            }}>
+                              <CheckCircle2 size={14} style={{ color: '#166534', flexShrink: 0 }} />
+                              <span style={{
+                                fontSize: '0.76rem',
                                 color: '#166534',
-                                borderColor: '#166534',
-                                textDecoration: 'none'
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}>
+                                {project.highlights[0]}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Action Links Deck with Refined Thin Gap */}
+                          <div style={{ marginTop: 'auto', paddingTop: '0.45rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                            {/* Primary Button */}
+                            <Link
+                              to={`/search?q=${encodeURIComponent(project.searchQuery)}`}
+                              className="btn-green hover-lift w-full flex items-center justify-center"
+                              style={{
+                                padding: '0.65rem 0.9rem',
+                                fontSize: '0.84rem',
+                                borderRadius: 10,
+                                fontWeight: 800,
+                                textDecoration: 'none',
+                                gap: '0.35rem'
                               }}
                             >
-                              <Calendar size={13} style={{ color: '#C5A059' }} /> Site Visit
+                              <span>Explore Available Inventory</span>
+                              <ArrowRight size={13} />
                             </Link>
-                          </div>
-                        </div>
 
+                            {/* Secondary Buttons with Thin Gap */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.35rem' }}>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSelectedPartnerModal(project);
+                                  setModalImageIndex(0);
+                                }}
+                                className="btn-outline-gray hover-lift flex items-center justify-center"
+                                style={{
+                                  padding: '0.48rem 0.55rem',
+                                  fontSize: '0.76rem',
+                                  borderRadius: 8,
+                                  fontWeight: 700,
+                                  color: '#0F172A',
+                                  gap: '0.35rem'
+                                }}
+                              >
+                                <Info size={13} style={{ color: '#166534' }} /> Dossier
+                              </button>
+
+                              <Link
+                                to={`/contact?project=${encodeURIComponent(project.name)}`}
+                                className="btn-outline-gray hover-lift flex items-center justify-center"
+                                style={{
+                                  padding: '0.48rem 0.55rem',
+                                  fontSize: '0.76rem',
+                                  borderRadius: 8,
+                                  fontWeight: 700,
+                                  color: '#166534',
+                                  borderColor: '#166534',
+                                  textDecoration: 'none',
+                                  gap: '0.35rem'
+                                }}
+                              >
+                                <Calendar size={13} style={{ color: '#C5A059' }} /> Site Visit
+                              </Link>
+                            </div>
+                          </div>
+
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+              </div>
+
+              {/* Slider Pagination Dots Indicator */}
+              <div className="flex items-center justify-center gap-2" style={{ marginTop: '1.5rem' }}>
+                {partnerDevelopments
+                  .filter(p => partnerFilter === 'ALL' || p.belt === partnerFilter)
+                  .map((_, dotIdx) => (
+                    <button
+                      key={dotIdx}
+                      type="button"
+                      onClick={() => scrollToPartnerProject(dotIdx)}
+                      aria-label={`Scroll to project ${dotIdx + 1}`}
+                      style={{
+                        width: partnerActiveSlide === dotIdx ? 24 : 8,
+                        height: 8,
+                        borderRadius: 999,
+                        backgroundColor: partnerActiveSlide === dotIdx ? '#166534' : '#CBD5E1',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                      }}
+                    />
+                  ))}
+              </div>
+
             </div>
 
             {/* Bottom Advisory Assurance Bar */}
             <div 
+              className="card-luxury hover-lift"
               style={{ 
                 marginTop: '4rem', 
                 backgroundColor: '#FFFFFF', 
-                borderRadius: 20, 
-                padding: '1.75rem 2.25rem', 
+                borderRadius: 22, 
+                padding: '2rem 2.5rem', 
                 border: '1px solid #E2E8F0',
                 display: 'flex',
                 alignItems: 'center',
@@ -1173,31 +1529,31 @@ export const HomePage: React.FC = () => {
               }}
             >
               <div className="flex items-center gap-4">
-                <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: '#EBF4EC', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Award size={26} />
+                <div style={{ width: 52, height: 52, borderRadius: 15, backgroundColor: '#EBF4EC', color: '#166534', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(22, 101, 52, 0.2)' }}>
+                  <Award size={28} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A' }}>
+                  <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
                     A2 Realtors Direct Developer Advisory Guarantee
                   </div>
-                  <div style={{ fontSize: '0.86rem', color: '#64748B', marginTop: 2 }}>
+                  <div style={{ fontSize: '0.88rem', color: '#64748B', marginTop: 2 }}>
                     Zero markup on developer pricing • 100% verified mutation records • On-site project escort by certified senior consultants
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center" style={{ gap: '0.45rem', flexWrap: 'wrap' }}>
                 <a 
                   href="tel:+918445190135" 
-                  className="btn-outline-gray flex items-center gap-1.5"
-                  style={{ padding: '0.65rem 1.3rem', borderRadius: 12, fontSize: '0.88rem' }}
+                  className="btn-outline-gray hover-lift flex items-center"
+                  style={{ padding: '0.65rem 1.25rem', borderRadius: 12, fontSize: '0.86rem', fontWeight: 700, gap: '0.35rem' }}
                 >
                   <Phone size={14} style={{ color: '#166534' }} /> +91 84451 90135
                 </a>
                 <Link
                   to="/contact"
-                  className="btn-green flex items-center gap-1.5"
-                  style={{ padding: '0.65rem 1.3rem', borderRadius: 12, fontSize: '0.88rem', textDecoration: 'none' }}
+                  className="btn-green hover-lift flex items-center"
+                  style={{ padding: '0.65rem 1.25rem', borderRadius: 12, fontSize: '0.86rem', fontWeight: 700, textDecoration: 'none', gap: '0.35rem' }}
                 >
                   <Mail size={14} /> Schedule Advisory Meeting
                 </Link>
@@ -1212,8 +1568,8 @@ export const HomePage: React.FC = () => {
               style={{
                 position: 'fixed',
                 inset: 0,
-                backgroundColor: 'rgba(15, 23, 42, 0.82)',
-                backdropFilter: 'blur(8px)',
+                backgroundColor: 'rgba(7, 12, 22, 0.85)',
+                backdropFilter: 'blur(10px)',
                 zIndex: 9999,
                 display: 'flex',
                 alignItems: 'center',
@@ -1225,19 +1581,19 @@ export const HomePage: React.FC = () => {
               <div 
                 style={{
                   backgroundColor: '#FFFFFF',
-                  borderRadius: 24,
-                  maxWidth: 860,
+                  borderRadius: 26,
+                  maxWidth: 880,
                   width: '100%',
                   maxHeight: '92vh',
                   overflowY: 'auto',
-                  boxShadow: '0 30px 70px rgba(0,0,0,0.35)',
-                  border: '1px solid #E2E8F0',
+                  boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
+                  border: '1px solid #1E2E4F',
                   position: 'relative'
                 }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Modal Header Cover with Multi-Image Tab Selector */}
-                <div style={{ position: 'relative', height: 260, backgroundColor: '#0B1120', overflow: 'hidden' }}>
+                <div style={{ position: 'relative', height: 280, backgroundColor: '#070C16', overflow: 'hidden' }}>
                   <img 
                     src={selectedPartnerModal.gallery[modalImageIndex]?.url || selectedPartnerModal.coverImage} 
                     alt={selectedPartnerModal.name} 
@@ -1246,7 +1602,7 @@ export const HomePage: React.FC = () => {
                   <div style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(to top, rgba(11,17,32,0.95) 0%, rgba(11,17,32,0.4) 60%, rgba(0,0,0,0.5) 100%)'
+                    background: 'linear-gradient(to top, rgba(7,12,22,0.98) 0%, rgba(7,12,22,0.5) 60%, rgba(0,0,0,0.6) 100%)'
                   }} />
 
                   {/* Close Button */}
@@ -1257,20 +1613,23 @@ export const HomePage: React.FC = () => {
                       position: 'absolute',
                       top: 16,
                       right: 16,
-                      width: 38,
-                      height: 38,
+                      width: 40,
+                      height: 40,
                       borderRadius: '50%',
-                      backgroundColor: 'rgba(0,0,0,0.65)',
+                      backgroundColor: 'rgba(0,0,0,0.7)',
                       color: '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       border: '1px solid rgba(255,255,255,0.3)',
                       cursor: 'pointer',
-                      zIndex: 10
+                      zIndex: 10,
+                      transition: 'transform 0.2s ease'
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.08)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1.0)')}
                   >
-                    <X size={18} />
+                    <X size={20} />
                   </button>
 
                   {/* Gallery Image Tabs on Top of Modal Header */}
@@ -1281,90 +1640,90 @@ export const HomePage: React.FC = () => {
                         type="button"
                         onClick={() => setModalImageIndex(gIdx)}
                         style={{
-                          backgroundColor: modalImageIndex === gIdx ? '#166534' : 'rgba(15, 23, 42, 0.75)',
+                          backgroundColor: modalImageIndex === gIdx ? '#166534' : 'rgba(15, 23, 42, 0.8)',
                           backdropFilter: 'blur(8px)',
                           color: '#FFFFFF',
-                          padding: '0.35rem 0.75rem',
+                          padding: '0.4rem 0.85rem',
                           borderRadius: 20,
-                          fontSize: '0.72rem',
+                          fontSize: '0.74rem',
                           fontWeight: 700,
                           border: modalImageIndex === gIdx ? '1px solid #4ADE80' : '1px solid rgba(255, 255, 255, 0.25)',
                           cursor: 'pointer',
                           display: 'inline-flex',
                           alignItems: 'center',
-                          gap: 5
+                          gap: 6
                         }}
                       >
-                        <Camera size={11} style={{ color: modalImageIndex === gIdx ? '#4ADE80' : '#DFB76C' }} />
+                        <Camera size={12} style={{ color: modalImageIndex === gIdx ? '#4ADE80' : '#DFB76C' }} />
                         <span>{gItem.type}</span>
                       </button>
                     ))}
                   </div>
 
                   {/* Bottom Header Details */}
-                  <div style={{ position: 'absolute', bottom: 18, left: 24, right: 24 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: 4, flexWrap: 'wrap' }}>
-                      <span style={{ backgroundColor: '#DFB76C', color: '#0F172A', padding: '0.2rem 0.65rem', borderRadius: 6, fontSize: '0.72rem', fontWeight: 800 }}>
+                  <div style={{ position: 'absolute', bottom: 20, left: 26, right: 26 }}>
+                    <div className="flex items-center gap-2.5" style={{ marginBottom: 6, flexWrap: 'wrap' }}>
+                      <span style={{ backgroundColor: '#DFB76C', color: '#0F172A', padding: '0.25rem 0.75rem', borderRadius: 6, fontSize: '0.74rem', fontWeight: 800 }}>
                         {selectedPartnerModal.approval}
                       </span>
-                      <span style={{ color: '#E2E8F0', fontSize: '0.8rem', fontWeight: 600 }}>
+                      <span style={{ color: '#E2E8F0', fontSize: '0.84rem', fontWeight: 600 }}>
                         by {selectedPartnerModal.developer}
                       </span>
-                      <span style={{ color: '#94A3B8', fontSize: '0.72rem' }}>
+                      <span style={{ color: '#94A3B8', fontSize: '0.74rem' }}>
                         • {selectedPartnerModal.officialSource}
                       </span>
                     </div>
-                    <h3 style={{ fontSize: '1.85rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
+                    <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>
                       {selectedPartnerModal.name}
                     </h3>
                   </div>
                 </div>
 
                 {/* Modal Body */}
-                <div style={{ padding: '2.25rem' }}>
+                <div style={{ padding: '2.5rem' }}>
                   
                   {/* Quick Stat Pill Bar */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginBottom: '1.85rem' }}>
-                    <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3" style={{ marginBottom: '2rem' }}>
+                    <div style={{ padding: '0.95rem', backgroundColor: '#F8FAFC', borderRadius: 14, border: '1px solid #E2E8F0' }}>
                       <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Pricing Guide</div>
-                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#166534', marginTop: 2 }}>{selectedPartnerModal.priceGuide}</div>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#166534', marginTop: 2, fontFamily: 'Outfit' }}>{selectedPartnerModal.priceGuide}</div>
                     </div>
-                    <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                    <div style={{ padding: '0.95rem', backgroundColor: '#F8FAFC', borderRadius: 14, border: '1px solid #E2E8F0' }}>
                       <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Project Scale</div>
-                      <div style={{ fontSize: '1rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{selectedPartnerModal.scale}</div>
+                      <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }}>{selectedPartnerModal.scale}</div>
                     </div>
-                    <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                    <div style={{ padding: '0.95rem', backgroundColor: '#F8FAFC', borderRadius: 14, border: '1px solid #E2E8F0' }}>
                       <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>Typology</div>
-                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }} className="truncate">{selectedPartnerModal.type}</div>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }} className="truncate">{selectedPartnerModal.type}</div>
                     </div>
-                    <div style={{ padding: '0.85rem', backgroundColor: '#F8FAFC', borderRadius: 12, border: '1px solid #E2E8F0' }}>
+                    <div style={{ padding: '0.95rem', backgroundColor: '#F8FAFC', borderRadius: 14, border: '1px solid #E2E8F0' }}>
                       <div style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>RERA / Sanction</div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }} className="truncate">{selectedPartnerModal.reraNumber}</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0F172A', marginTop: 2 }} className="truncate">{selectedPartnerModal.reraNumber}</div>
                     </div>
                   </div>
 
                   {/* Overview Paragraph */}
-                  <div style={{ marginBottom: '1.85rem' }}>
-                    <h4 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.65rem' }}>
-                      Township Dossier & Overview
+                  <div style={{ marginBottom: '2rem' }}>
+                    <h4 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
+                      Township Dossier &amp; Overview
                     </h4>
-                    <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.75 }}>
+                    <p style={{ color: '#475569', fontSize: '0.98rem', lineHeight: 1.8 }}>
                       {selectedPartnerModal.description}
                     </p>
                   </div>
 
                   {/* Two Columns: Highlights & Landmarks */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ marginBottom: '2rem' }}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6" style={{ marginBottom: '2.25rem' }}>
                     
                     {/* Key Master Plan Highlights */}
-                    <div style={{ padding: '1.35rem', backgroundColor: '#F0FDF4', borderRadius: 16, border: '1px solid #DCFCE7' }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#166534', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <ShieldCheck size={16} /> Key Infrastructure & Approvals
+                    <div style={{ padding: '1.5rem', backgroundColor: '#F0FDF4', borderRadius: 18, border: '1px solid #DCFCE7' }}>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#166534', marginBottom: '0.95rem', display: 'flex', alignItems: 'center', gap: 7, fontFamily: 'Outfit, sans-serif' }}>
+                        <ShieldCheck size={18} /> Key Infrastructure &amp; Approvals
                       </div>
                       <div className="flex flex-col gap-2.5">
                         {selectedPartnerModal.highlights.map((h: string, i: number) => (
-                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.85rem', color: '#14532D', lineHeight: 1.45 }}>
-                            <Check size={14} style={{ color: '#166534', marginTop: 2, flexShrink: 0 }} />
+                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.86rem', color: '#14532D', lineHeight: 1.5 }}>
+                            <Check size={14} style={{ color: '#166534', marginTop: 3, flexShrink: 0 }} />
                             <span>{h}</span>
                           </div>
                         ))}
@@ -1372,14 +1731,14 @@ export const HomePage: React.FC = () => {
                     </div>
 
                     {/* Proximity & Distances */}
-                    <div style={{ padding: '1.35rem', backgroundColor: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <Compass size={16} style={{ color: '#C5A059' }} /> Connectivity & Key Landmarks
+                    <div style={{ padding: '1.5rem', backgroundColor: '#F8FAFC', borderRadius: 18, border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.95rem', display: 'flex', alignItems: 'center', gap: 7, fontFamily: 'Outfit, sans-serif' }}>
+                        <Compass size={18} style={{ color: '#C5A059' }} /> Connectivity &amp; Key Landmarks
                       </div>
                       <div className="flex flex-col gap-2.5">
                         {selectedPartnerModal.landmarks.map((l: string, i: number) => (
-                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.85rem', color: '#475569', lineHeight: 1.45 }}>
-                            <MapPin size={14} style={{ color: '#C5A059', marginTop: 2, flexShrink: 0 }} />
+                          <div key={i} className="flex items-start gap-2" style={{ fontSize: '0.86rem', color: '#475569', lineHeight: 1.5 }}>
+                            <MapPin size={14} style={{ color: '#C5A059', marginTop: 3, flexShrink: 0 }} />
                             <span>{l}</span>
                           </div>
                         ))}
@@ -1389,21 +1748,21 @@ export const HomePage: React.FC = () => {
                   </div>
 
                   {/* Action Bar */}
-                  <div className="flex items-center justify-between gap-3 flex-wrap" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.5rem' }}>
+                  <div className="flex items-center justify-between gap-3 flex-wrap" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.75rem' }}>
                     <a
                       href="tel:+918445190135"
-                      className="btn-outline-gray flex items-center gap-2"
-                      style={{ padding: '0.7rem 1.3rem', borderRadius: 12, fontWeight: 700 }}
+                      className="btn-outline-gray hover-lift flex items-center gap-2"
+                      style={{ padding: '0.75rem 1.4rem', borderRadius: 12, fontWeight: 700 }}
                     >
                       <Phone size={15} style={{ color: '#166534' }} /> Call Senior Advisor (+91 84451 90135)
                     </a>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2.5">
                       <Link
                         to={`/contact?project=${encodeURIComponent(selectedPartnerModal.name)}`}
                         onClick={() => setSelectedPartnerModal(null)}
-                        className="btn-outline-gray flex items-center gap-2"
-                        style={{ padding: '0.7rem 1.3rem', borderRadius: 12, fontWeight: 700, color: '#166534', borderColor: '#166534', textDecoration: 'none' }}
+                        className="btn-outline-gray hover-lift flex items-center gap-2"
+                        style={{ padding: '0.75rem 1.4rem', borderRadius: 12, fontWeight: 700, color: '#166534', borderColor: '#166534', textDecoration: 'none' }}
                       >
                         <Calendar size={15} /> Book Private Tour
                       </Link>
@@ -1411,8 +1770,8 @@ export const HomePage: React.FC = () => {
                       <Link
                         to={`/search?q=${encodeURIComponent(selectedPartnerModal.searchQuery)}`}
                         onClick={() => setSelectedPartnerModal(null)}
-                        className="btn-green flex items-center gap-2"
-                        style={{ padding: '0.7rem 1.6rem', borderRadius: 12, fontWeight: 700, textDecoration: 'none' }}
+                        className="btn-green hover-lift flex items-center gap-2"
+                        style={{ padding: '0.75rem 1.75rem', borderRadius: 12, fontWeight: 700, textDecoration: 'none' }}
                       >
                         View Project Inventory <ArrowRight size={15} />
                       </Link>
@@ -1432,33 +1791,34 @@ export const HomePage: React.FC = () => {
 
       {/* 5. PROPERTY CATEGORIES GRID */}
       {homepageSettings.showCategories && (
-        <section style={{ padding: '6.5rem 0', backgroundColor: '#FFFFFF' }}>
+        <section style={{ padding: '7rem 0', backgroundColor: '#FFFFFF', position: 'relative' }}>
           <div className="container">
             
-            <div style={{ textAlign: 'center', maxWidth: 720, margin: '0 auto 3.5rem auto' }}>
-              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '0.85rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: 740, margin: '0 auto 4rem auto' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '1rem' }}>
                 <span style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 7,
                   fontSize: '0.78rem',
                   fontWeight: 800,
-                  letterSpacing: '0.08em',
+                  letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                   backgroundColor: '#EBF4EC',
                   color: '#166534',
-                  padding: '0.35rem 0.9rem',
+                  padding: '0.42rem 1.1rem',
                   borderRadius: 999,
-                  border: '1px solid rgba(22, 101, 52, 0.25)'
+                  border: '1px solid rgba(22, 101, 52, 0.25)',
+                  boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)'
                 }}>
                   <Building2 size={13} style={{ color: '#166534' }} /> Curated Valley Portfolios
                 </span>
               </div>
 
-              <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.25, fontFamily: 'Outfit, sans-serif' }}>
                 {homepageSettings.categoriesTitle || 'Explore by Property Category'}
               </h2>
-              <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.65rem', lineHeight: 1.65 }}>
+              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.85rem', lineHeight: 1.75 }}>
                 Select your preferred asset class to view verified inventory with high capital appreciation potential across Dehradun.
               </p>
             </div>
@@ -1471,10 +1831,10 @@ export const HomePage: React.FC = () => {
                     if (cat.type === 'CONSTRUCTION') navigate('/construction');
                     else navigate(`/search?category=${cat.type}`);
                   }}
-                  className="card-luxury group"
+                  className="card-luxury hover-lift group"
                   style={{
-                    padding: '2rem 1.25rem',
-                    borderRadius: 22,
+                    padding: '2.25rem 1.35rem',
+                    borderRadius: 24,
                     cursor: 'pointer',
                     textAlign: 'center',
                     backgroundColor: '#FFFFFF',
@@ -1487,44 +1847,51 @@ export const HomePage: React.FC = () => {
                     boxShadow: '0 4px 18px rgba(15, 23, 42, 0.03)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-5px)';
+                    e.currentTarget.style.borderColor = '#C5A059';
                     e.currentTarget.style.boxShadow = '0 16px 36px -8px rgba(15, 23, 42, 0.12)';
-                    e.currentTarget.style.borderColor = '#166534';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
                     e.currentTarget.style.borderColor = '#E2E8F0';
+                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
                   }}
                 >
                   <div 
                     style={{
-                      width: 58,
-                      height: 58,
-                      borderRadius: 18,
+                      width: 62,
+                      height: 62,
+                      borderRadius: 20,
                       backgroundColor: '#EBF4EC',
                       color: '#166534',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      marginBottom: '1.15rem',
-                      transition: 'transform 0.3s ease',
-                      border: '1px solid rgba(22, 101, 52, 0.2)'
+                      marginBottom: '1.25rem',
+                      transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                      border: '1px solid rgba(22, 101, 52, 0.2)',
+                      boxShadow: '0 4px 12px rgba(22, 101, 52, 0.1)'
                     }}
                     className="group-hover:scale-110"
                   >
-                    <cat.icon size={26} />
+                    <cat.icon size={28} />
                   </div>
 
-                  <h3 style={{ fontSize: '1.02rem', fontWeight: 800, color: '#0F172A', marginBottom: 4, fontFamily: 'Outfit, sans-serif' }}>
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0F172A', marginBottom: 5, fontFamily: 'Outfit, sans-serif' }}>
                     {cat.name}
                   </h3>
                   
-                  <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 800, marginBottom: 4 }}>
+                  <div style={{ 
+                    fontSize: '0.76rem', 
+                    color: '#166534', 
+                    fontWeight: 800, 
+                    marginBottom: 6,
+                    backgroundColor: '#EBF4EC',
+                    padding: '0.15rem 0.65rem',
+                    borderRadius: 999
+                  }}>
                     {cat.count}
                   </div>
 
-                  <div style={{ fontSize: '0.74rem', color: '#64748B', lineHeight: 1.4 }}>
+                  <div style={{ fontSize: '0.74rem', color: '#64748B', lineHeight: 1.45 }}>
                     {cat.desc}
                   </div>
                 </div>
@@ -1537,40 +1904,53 @@ export const HomePage: React.FC = () => {
 
       {/* 6. POPULAR & FEATURED PROPERTIES SHOWCASE */}
       {homepageSettings.showPopularProperties && (
-        <section style={{ padding: '6.5rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
+        <section style={{ padding: '7rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
           <div className="container">
             
-            <div className="flex flex-wrap items-end justify-between gap-6" style={{ marginBottom: '3.5rem' }}>
+            <div className="flex flex-wrap items-end justify-between gap-6" style={{ marginBottom: '3.75rem' }}>
               <div>
                 <div className="flex items-center gap-2" style={{ marginBottom: '0.85rem' }}>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 7,
                     fontSize: '0.78rem',
                     fontWeight: 800,
-                    letterSpacing: '0.08em',
+                    letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     backgroundColor: '#EBF4EC',
                     color: '#166534',
-                    padding: '0.35rem 0.9rem',
+                    padding: '0.42rem 1.1rem',
                     borderRadius: 999,
-                    border: '1px solid rgba(22, 101, 52, 0.25)'
+                    border: '1px solid rgba(22, 101, 52, 0.25)',
+                    boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)'
                   }}>
-                    <Sparkles size={13} style={{ color: '#166534' }} /> Verified Mandates
+                    <Sparkles size={14} style={{ color: '#166534' }} /> Verified Mandates
                   </span>
                 </div>
 
-                <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
+                <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.25, fontFamily: 'Outfit, sans-serif' }}>
                   {homepageSettings.popularPropertiesTitle || 'Best Properties For Sale in Dehradun'}
                 </h2>
-                <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.65rem' }}>
-                  Hand-picked exclusive villas, penthouses, and prime plots with clear title deeds.
+                <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.75rem', lineHeight: 1.7 }}>
+                  Hand-picked exclusive villas, penthouses, and prime plots with 100% clear title deeds.
                 </p>
               </div>
 
-              {/* Filter Tabs */}
-              <div className="flex gap-2" style={{ flexWrap: 'wrap' }}>
+              {/* Filter Tabs (Single Line + Mobile Horizontal Scroll) */}
+              <div 
+                className="flex gap-2 no-scrollbar" 
+                style={{ 
+                  overflowX: 'auto', 
+                  flexWrap: 'nowrap', 
+                  whiteSpace: 'nowrap', 
+                  scrollbarWidth: 'none', 
+                  msOverflowStyle: 'none', 
+                  WebkitOverflowScrolling: 'touch',
+                  paddingBottom: '0.25rem',
+                  maxWidth: '100%'
+                }}
+              >
                 {[
                   { id: 'ALL', label: 'All Listings' },
                   { id: 'VILLA', label: 'Luxury Villas' },
@@ -1581,8 +1961,11 @@ export const HomePage: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActivePropertyTab(tab.id)}
+                    className="hover-lift flex-shrink-0"
                     style={{
-                      padding: '0.55rem 1.3rem',
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
+                      padding: '0.55rem 1.25rem',
                       borderRadius: 999,
                       fontSize: '0.86rem',
                       fontWeight: 700,
@@ -1591,7 +1974,7 @@ export const HomePage: React.FC = () => {
                       border: activePropertyTab === tab.id ? '1px solid #166534' : '1px solid #E2E8F0',
                       backgroundColor: activePropertyTab === tab.id ? '#166534' : '#FFFFFF',
                       color: activePropertyTab === tab.id ? '#FFFFFF' : '#475569',
-                      boxShadow: activePropertyTab === tab.id ? '0 4px 14px rgba(22, 101, 52, 0.25)' : 'none'
+                      boxShadow: activePropertyTab === tab.id ? '0 6px 18px rgba(22, 101, 52, 0.25)' : '0 1px 4px rgba(0,0,0,0.03)'
                     }}
                   >
                     {tab.label}
@@ -1601,21 +1984,21 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Property Cards Grid */}
-            <div className={`grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-6`}>
+            <div className={`grid grid-cols-1 md:grid-cols-2 ${gridColsClass} gap-7`}>
               {filteredProperties.map(property => (
                 <PropertyCard key={property.id} property={property} />
               ))}
             </div>
 
             {/* View All Properties Bottom CTA */}
-            <div style={{ textAlign: 'center', marginTop: '4.5rem' }}>
+            <div style={{ textAlign: 'center', marginTop: '4.75rem' }}>
               <button
                 onClick={() => navigate('/search')}
-                className="btn-outline-green btn-pill"
-                style={{ padding: '0.9rem 2.6rem', fontSize: '1rem', fontWeight: 700 }}
+                className="btn-green btn-pill hover-lift"
+                style={{ padding: '0.95rem 2.8rem', fontSize: '1.02rem', fontWeight: 800, display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 8px 24px rgba(22, 101, 52, 0.28)' }}
               >
                 <span>View All 80+ Verified Properties</span>
-                <ArrowRight size={17} />
+                <ArrowRight size={18} style={{ color: '#DFB76C' }} />
               </button>
             </div>
 
@@ -1628,7 +2011,7 @@ export const HomePage: React.FC = () => {
 
       {/* 8. WHAT WE DO: BESPOKE REAL ESTATE & CONSTRUCTION SERVICES */}
       {homepageSettings.showWhatWeDo && (
-        <section style={{ padding: '6.5rem 0', backgroundColor: '#0B1120', color: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
+        <section style={{ padding: '7rem 0', backgroundColor: '#070C16', color: '#FFFFFF', position: 'relative', overflow: 'hidden' }}>
           
           {/* Ambient Glow */}
           <div 
@@ -1636,41 +2019,41 @@ export const HomePage: React.FC = () => {
               position: 'absolute',
               top: '20%',
               right: '-10%',
-              width: '450px',
-              height: '450px',
+              width: '500px',
+              height: '500px',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(197, 160, 89, 0.15) 0%, transparent 70%)',
-              filter: 'blur(50px)',
+              background: 'radial-gradient(circle, rgba(197, 160, 89, 0.16) 0%, transparent 70%)',
+              filter: 'blur(55px)',
               pointerEvents: 'none'
             }}
           />
 
           <div className="container" style={{ position: 'relative', zIndex: 2 }}>
             
-            <div style={{ textAlign: 'center', maxWidth: 740, margin: '0 auto 4rem auto' }}>
-              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '0.85rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto 4.5rem auto' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '1rem' }}>
                 <span style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 7,
                   fontSize: '0.78rem',
                   fontWeight: 800,
-                  letterSpacing: '0.08em',
+                  letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                   backgroundColor: 'rgba(56, 102, 53, 0.3)',
                   color: '#4ADE80',
-                  padding: '0.35rem 0.95rem',
+                  padding: '0.42rem 1.1rem',
                   borderRadius: 999,
                   border: '1px solid rgba(74, 222, 128, 0.3)'
                 }}>
-                  <Hammer size={13} style={{ color: '#DFB76C' }} /> Comprehensive Real Estate Architecture
+                  <Hammer size={14} style={{ color: '#DFB76C' }} /> Comprehensive Real Estate Architecture
                 </span>
               </div>
 
-              <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
-                End-to-End Real Estate & Architectural Solutions
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#FFFFFF', letterSpacing: '-0.025em', lineHeight: 1.25, fontFamily: 'Outfit, sans-serif' }}>
+                End-to-End Real Estate &amp; Architectural Solutions
               </h2>
-              <p style={{ color: '#94A3B8', fontSize: '1.08rem', marginTop: '0.75rem', lineHeight: 1.7 }}>
+              <p style={{ color: '#94A3B8', fontSize: '1.08rem', marginTop: '0.85rem', lineHeight: 1.75 }}>
                 From legal due diligence and land acquisition to bespoke turnkey villa construction, we handle every phase under unified accountability.
               </p>
             </div>
@@ -1679,10 +2062,10 @@ export const HomePage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               
               <div 
-                className="group" 
+                className="card-luxury hover-lift group" 
                 style={{ 
-                  padding: '2.4rem 1.85rem', 
-                  borderRadius: 22, 
+                  padding: '2.5rem 2rem', 
+                  borderRadius: 24, 
                   position: 'relative', 
                   backgroundColor: '#111A2E', 
                   border: '1px solid #1E2E4F', 
@@ -1693,35 +2076,34 @@ export const HomePage: React.FC = () => {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = '#C5A059';
-                  e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.4)';
+                  e.currentTarget.style.boxShadow = '0 20px 45px rgba(0,0,0,0.5)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = '#1E2E4F';
-                  e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div>
-                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: 'rgba(255,255,255,0.08)', fontFamily: 'Outfit' }}>01</div>
-                  <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(56,102,53,0.3)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(74,222,128,0.35)' }}>
-                    <Home size={24} />
+                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.5rem', fontWeight: 800, color: 'rgba(197, 160, 89, 0.18)', fontFamily: 'Outfit' }}>01</div>
+                  <div style={{ width: 54, height: 54, borderRadius: 16, backgroundColor: 'rgba(56,102,53,0.3)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(74,222,128,0.35)' }}>
+                    <Home size={26} />
                   </div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem', fontFamily: 'Outfit, sans-serif' }}>Residential Advisory</h3>
-                  <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>Residential Advisory</h3>
+                  <p style={{ fontSize: '0.9rem', color: '#94A3B8', lineHeight: 1.7, marginBottom: '1.5rem' }}>
                     Curated luxury bungalows, mountain-facing apartments, and independent kothis in Dehradun’s most prestigious corridors.
                   </p>
                 </div>
-                <Link to="/search" style={{ color: '#DFB76C', fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                  Browse Homes <ArrowRight size={14} />
+                <Link to="/search" style={{ color: '#DFB76C', fontSize: '0.88rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span>Browse Homes</span>
+                  <ArrowRight size={14} />
                 </Link>
               </div>
 
               <div 
-                className="group" 
+                className="card-luxury hover-lift group" 
                 style={{ 
-                  padding: '2.4rem 1.85rem', 
-                  borderRadius: 22, 
+                  padding: '2.5rem 2rem', 
+                  borderRadius: 24, 
                   position: 'relative', 
                   backgroundColor: '#111A2E', 
                   border: '1px solid #1E2E4F', 
@@ -1732,35 +2114,34 @@ export const HomePage: React.FC = () => {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = '#C5A059';
-                  e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.4)';
+                  e.currentTarget.style.boxShadow = '0 20px 45px rgba(0,0,0,0.5)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = '#1E2E4F';
-                  e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div>
-                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: 'rgba(255,255,255,0.08)', fontFamily: 'Outfit' }}>02</div>
-                  <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(197,160,89,0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(197,160,89,0.4)' }}>
-                    <Hammer size={24} />
+                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.5rem', fontWeight: 800, color: 'rgba(197, 160, 89, 0.18)', fontFamily: 'Outfit' }}>02</div>
+                  <div style={{ width: 54, height: 54, borderRadius: 16, backgroundColor: 'rgba(197,160,89,0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(197,160,89,0.4)' }}>
+                    <Hammer size={26} />
                   </div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem', fontFamily: 'Outfit, sans-serif' }}>Turnkey Construction</h3>
-                  <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>Turnkey Construction</h3>
+                  <p style={{ fontSize: '0.9rem', color: '#94A3B8', lineHeight: 1.7, marginBottom: '1.5rem' }}>
                     Architectural planning, MDDA sanction drawings, RCC construction, and luxury interior finishing under single contract.
                   </p>
                 </div>
-                <Link to="/construction" style={{ color: '#DFB76C', fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                  Build With Us <ArrowRight size={14} />
+                <Link to="/construction" style={{ color: '#DFB76C', fontSize: '0.88rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span>Build With Us</span>
+                  <ArrowRight size={14} />
                 </Link>
               </div>
 
               <div 
-                className="group" 
+                className="card-luxury hover-lift group" 
                 style={{ 
-                  padding: '2.4rem 1.85rem', 
-                  borderRadius: 22, 
+                  padding: '2.5rem 2rem', 
+                  borderRadius: 24, 
                   position: 'relative', 
                   backgroundColor: '#111A2E', 
                   border: '1px solid #1E2E4F', 
@@ -1771,35 +2152,34 @@ export const HomePage: React.FC = () => {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = '#C5A059';
-                  e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.4)';
+                  e.currentTarget.style.boxShadow = '0 20px 45px rgba(0,0,0,0.5)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = '#1E2E4F';
-                  e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div>
-                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: 'rgba(255,255,255,0.08)', fontFamily: 'Outfit' }}>03</div>
-                  <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(56,102,53,0.3)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(74,222,128,0.35)' }}>
-                    <FileCheck size={24} />
+                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.5rem', fontWeight: 800, color: 'rgba(197, 160, 89, 0.18)', fontFamily: 'Outfit' }}>03</div>
+                  <div style={{ width: 54, height: 54, borderRadius: 16, backgroundColor: 'rgba(56,102,53,0.3)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(74,222,128,0.35)' }}>
+                    <FileCheck size={26} />
                   </div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem', fontFamily: 'Outfit, sans-serif' }}>Title & Due Diligence</h3>
-                  <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>Title &amp; Due Diligence</h3>
+                  <p style={{ fontSize: '0.9rem', color: '#94A3B8', lineHeight: 1.7, marginBottom: '1.5rem' }}>
                     Comprehensive 30-year search report, mutation check, registry drafting, and hassle-free bank loan liaison.
                   </p>
                 </div>
-                <Link to="/about" style={{ color: '#DFB76C', fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                  Learn More <ArrowRight size={14} />
+                <Link to="/about" style={{ color: '#DFB76C', fontSize: '0.88rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span>Learn More</span>
+                  <ArrowRight size={14} />
                 </Link>
               </div>
 
               <div 
-                className="group" 
+                className="card-luxury hover-lift group" 
                 style={{ 
-                  padding: '2.4rem 1.85rem', 
-                  borderRadius: 22, 
+                  padding: '2.5rem 2rem', 
+                  borderRadius: 24, 
                   position: 'relative', 
                   backgroundColor: '#111A2E', 
                   border: '1px solid #1E2E4F', 
@@ -1810,27 +2190,26 @@ export const HomePage: React.FC = () => {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = '#C5A059';
-                  e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 16px 36px rgba(0,0,0,0.4)';
+                  e.currentTarget.style.boxShadow = '0 20px 45px rgba(0,0,0,0.5)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = '#1E2E4F';
-                  e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div>
-                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.4rem', fontWeight: 800, color: 'rgba(255,255,255,0.08)', fontFamily: 'Outfit' }}>04</div>
-                  <div style={{ width: 50, height: 50, borderRadius: 14, backgroundColor: 'rgba(197,160,89,0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(197,160,89,0.4)' }}>
-                    <Briefcase size={24} />
+                  <div style={{ position: 'absolute', top: 16, right: 20, fontSize: '2.5rem', fontWeight: 800, color: 'rgba(197, 160, 89, 0.18)', fontFamily: 'Outfit' }}>04</div>
+                  <div style={{ width: 54, height: 54, borderRadius: 16, backgroundColor: 'rgba(197,160,89,0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1.5rem', border: '1px solid rgba(197,160,89,0.4)' }}>
+                    <Briefcase size={26} />
                   </div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.65rem', fontFamily: 'Outfit, sans-serif' }}>NRI & Owner Management</h3>
-                  <p style={{ fontSize: '0.88rem', color: '#94A3B8', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#FFFFFF', marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>NRI &amp; Owner Management</h3>
+                  <p style={{ fontSize: '0.9rem', color: '#94A3B8', lineHeight: 1.7, marginBottom: '1.5rem' }}>
                     Dedicated property caretakers, tenant screening, lease agreements, and fast asset resale for overseas property owners.
                   </p>
                 </div>
-                <Link to="/sell" style={{ color: '#DFB76C', fontSize: '0.86rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-                  List With Us <ArrowRight size={14} />
+                <Link to="/sell" style={{ color: '#DFB76C', fontSize: '0.88rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span>List With Us</span>
+                  <ArrowRight size={14} />
                 </Link>
               </div>
 
@@ -1842,33 +2221,34 @@ export const HomePage: React.FC = () => {
 
       {/* 9. TESTIMONIALS & CLIENT REVIEWS */}
       {homepageSettings.showTestimonials && (
-        <section style={{ padding: '6.5rem 0', backgroundColor: '#FFFFFF' }}>
+        <section style={{ padding: '7rem 0', backgroundColor: '#FFFFFF' }}>
           <div className="container">
             
-            <div style={{ textAlign: 'center', maxWidth: 720, margin: '0 auto 4rem auto' }}>
-              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '0.85rem' }}>
+            <div style={{ textAlign: 'center', maxWidth: 740, margin: '0 auto 4.5rem auto' }}>
+              <div className="flex items-center justify-center gap-2" style={{ marginBottom: '1rem' }}>
                 <span style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
+                  gap: 7,
                   fontSize: '0.78rem',
                   fontWeight: 800,
-                  letterSpacing: '0.08em',
+                  letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                   backgroundColor: '#FFFBEB',
                   color: '#B45309',
-                  padding: '0.35rem 0.95rem',
+                  padding: '0.42rem 1.1rem',
                   borderRadius: 999,
-                  border: '1px solid rgba(245, 158, 11, 0.3)'
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  boxShadow: '0 2px 8px rgba(245, 158, 11, 0.08)'
                 }}>
-                  <Star size={13} fill="#F59E0B" style={{ color: '#F59E0B' }} /> Client Testimonials & Track Record
+                  <Star size={14} fill="#F59E0B" style={{ color: '#F59E0B' }} /> Client Testimonials &amp; Track Record
                 </span>
               </div>
 
-              <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
-                Trusted by 1,850+ Homeowners & Investors
+              <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.25, fontFamily: 'Outfit, sans-serif' }}>
+                Trusted by 1,850+ Homeowners &amp; Investors
               </h2>
-              <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.65rem', lineHeight: 1.65 }}>
+              <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.85rem', lineHeight: 1.75 }}>
                 Hear directly from buyers and NRI families who acquired mountain estates and prime investments through A2 Realtors.
               </p>
             </div>
@@ -1877,9 +2257,9 @@ export const HomePage: React.FC = () => {
               {testimonials.map((item, idx) => (
                 <div
                   key={idx}
-                  className="card-luxury"
+                  className="card-luxury hover-lift"
                   style={{
-                    padding: '2.5rem 2.2rem',
+                    padding: '2.75rem 2.25rem',
                     borderRadius: 24,
                     backgroundColor: '#F8FAFC',
                     border: '1px solid #E2E8F0',
@@ -1887,45 +2267,43 @@ export const HomePage: React.FC = () => {
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     position: 'relative',
-                    transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
                     boxShadow: '0 4px 18px rgba(15, 23, 42, 0.03)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
                     e.currentTarget.style.borderColor = '#166534';
                     e.currentTarget.style.boxShadow = '0 16px 36px -8px rgba(15, 23, 42, 0.1)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
                     e.currentTarget.style.borderColor = '#E2E8F0';
                     e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
                   }}
                 >
                   <div>
                     {/* 5 Stars */}
-                    <div className="flex gap-1" style={{ color: '#F59E0B', marginBottom: '1.25rem' }}>
+                    <div className="flex gap-1" style={{ color: '#F59E0B', marginBottom: '1.4rem' }}>
                       {[...Array(item.rating)].map((_, i) => (
-                        <Star key={i} size={16} fill="#F59E0B" />
+                        <Star key={i} size={17} fill="#F59E0B" />
                       ))}
                     </div>
 
-                    <p style={{ fontSize: '0.96rem', color: '#334155', lineHeight: 1.75, fontStyle: 'italic', marginBottom: '1.75rem' }}>
+                    <p style={{ fontSize: '0.98rem', color: '#334155', lineHeight: 1.8, fontStyle: 'italic', marginBottom: '2rem' }}>
                       "{item.quote}"
                     </p>
                   </div>
 
                   {/* Author Profile */}
-                  <div className="flex items-center gap-3.5" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.25rem' }}>
+                  <div className="flex items-center gap-4" style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1.5rem' }}>
                     <img
                       src={item.avatar}
                       alt={item.name}
-                      style={{ width: 50, height: 50, borderRadius: '50%', objectFit: 'cover', border: '2px solid #166534', boxShadow: '0 2px 8px rgba(22, 101, 52, 0.2)' }}
+                      style={{ width: 54, height: 54, borderRadius: '50%', objectFit: 'cover', border: '2px solid #166534', boxShadow: '0 4px 10px rgba(22, 101, 52, 0.2)' }}
                     />
                     <div>
-                      <div style={{ fontWeight: 800, fontSize: '0.98rem', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
+                      <div style={{ fontWeight: 800, fontSize: '1.02rem', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>
                         {item.name}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>
+                      <div style={{ fontSize: '0.82rem', color: '#64748B', fontWeight: 600, marginTop: 2 }}>
                         {item.role}
                       </div>
                     </div>
@@ -1940,7 +2318,7 @@ export const HomePage: React.FC = () => {
 
       {/* 10. GET IN TOUCH & SCHEDULE VIP CONSULTATION */}
       {homepageSettings.showContactForm && (
-        <section style={{ padding: '6.5rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
+        <section style={{ padding: '7rem 0', backgroundColor: '#F8FAFC', borderTop: '1px solid #E2E8F0' }}>
           <div className="container">
             
             <div 
@@ -1948,15 +2326,15 @@ export const HomePage: React.FC = () => {
                 position: 'relative',
                 borderRadius: 28,
                 overflow: 'hidden',
-                backgroundImage: 'linear-gradient(135deg, rgba(11,17,32,0.96) 0%, rgba(11,17,32,0.85) 45%, rgba(11,17,32,0.94) 100%), url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1600")',
+                backgroundImage: 'linear-gradient(135deg, rgba(7,12,22,0.96) 0%, rgba(7,12,22,0.85) 45%, rgba(7,12,22,0.95) 100%), url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1600")',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                padding: '4.5rem 3.5rem',
-                boxShadow: '0 25px 60px rgba(0,0,0,0.25)',
+                padding: '5rem 4rem',
+                boxShadow: '0 30px 70px rgba(0,0,0,0.3)',
                 border: '1px solid #1E2E4F'
               }}
             >
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                 
                 {/* Left Column: VIP Tour Value Proposition (7 Cols) */}
                 <div className="lg:col-span-7" style={{ color: '#FFFFFF' }}>
@@ -1964,68 +2342,68 @@ export const HomePage: React.FC = () => {
                     <span style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: 6,
+                      gap: 7,
                       fontSize: '0.78rem',
                       fontWeight: 800,
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.1em',
                       textTransform: 'uppercase',
-                      backgroundColor: 'rgba(197, 160, 89, 0.2)',
+                      backgroundColor: 'rgba(197, 160, 89, 0.22)',
                       color: '#DFB76C',
-                      padding: '0.35rem 0.95rem',
+                      padding: '0.42rem 1.1rem',
                       borderRadius: 999,
-                      border: '1px solid rgba(197, 160, 89, 0.4)'
+                      border: '1px solid rgba(197, 160, 89, 0.45)'
                     }}>
-                      <Award size={13} style={{ color: '#DFB76C' }} /> White-Glove VIP Service
+                      <Award size={14} style={{ color: '#DFB76C' }} /> White-Glove VIP Service
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: 'clamp(2rem, 3.4vw, 2.75rem)', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.2, marginBottom: '1.25rem', fontFamily: 'Outfit, sans-serif' }}>
+                  <h3 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.25, marginBottom: '1.35rem', fontFamily: 'Outfit, sans-serif' }}>
                     Experience Dehradun’s Premier Properties in Absolute Comfort
                   </h3>
 
-                  <p style={{ color: '#CBD5E1', fontSize: '1.05rem', lineHeight: 1.7, maxWidth: 580, marginBottom: '2.5rem' }}>
+                  <p style={{ color: '#CBD5E1', fontSize: '1.08rem', lineHeight: 1.75, maxWidth: 580, marginBottom: '2.75rem' }}>
                     Eliminate the frustration of unverified listings and difficult mountain navigation. Our senior partners curate tailored property shortlists and arrange private site inspections with forensic legal documentation.
                   </p>
 
                   {/* 4 Pillars of VIP Tour */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5" style={{ maxWidth: 620 }}>
-                    <div className="flex items-start gap-3">
-                      <div style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(56, 102, 53, 0.35)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(74, 222, 128, 0.3)' }}>
-                        <Compass size={18} />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" style={{ maxWidth: 640 }}>
+                    <div className="flex items-start gap-3.5">
+                      <div style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: 'rgba(56, 102, 53, 0.35)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(74, 222, 128, 0.3)' }}>
+                        <Compass size={20} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#FFFFFF' }}>Chauffeured Pickup</div>
-                        <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: 2 }}>Airport (Jolly Grant), hotel, or residence transport in AC comfort.</div>
+                        <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>Chauffeured Pickup</div>
+                        <div style={{ fontSize: '0.82rem', color: '#94A3B8', marginTop: 3, lineHeight: 1.5 }}>Airport (Jolly Grant), hotel, or residence transport in AC comfort.</div>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3">
-                      <div style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(197, 160, 89, 0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(197, 160, 89, 0.4)' }}>
-                        <FileCheck size={18} />
+                    <div className="flex items-start gap-3.5">
+                      <div style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: 'rgba(197, 160, 89, 0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(197, 160, 89, 0.4)' }}>
+                        <FileCheck size={20} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#FFFFFF' }}>Advance Legal Dossier</div>
-                        <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: 2 }}>30-yr title abstracts and MDDA master plan compliance provided upfront.</div>
+                        <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>Advance Legal Dossier</div>
+                        <div style={{ fontSize: '0.82rem', color: '#94A3B8', marginTop: 3, lineHeight: 1.5 }}>30-yr title abstracts and MDDA master plan compliance provided upfront.</div>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3">
-                      <div style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(56, 102, 53, 0.35)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(74, 222, 128, 0.3)' }}>
-                        <ShieldCheck size={18} />
+                    <div className="flex items-start gap-3.5">
+                      <div style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: 'rgba(56, 102, 53, 0.35)', color: '#4ADE80', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(74, 222, 128, 0.3)' }}>
+                        <ShieldCheck size={20} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#FFFFFF' }}>Direct Mandate Pricing</div>
-                        <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: 2 }}>Zero broker markups; transparent negotiations directly with owners.</div>
+                        <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>Direct Mandate Pricing</div>
+                        <div style={{ fontSize: '0.82rem', color: '#94A3B8', marginTop: 3, lineHeight: 1.5 }}>Zero broker markups; transparent negotiations directly with owners.</div>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3">
-                      <div style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: 'rgba(197, 160, 89, 0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(197, 160, 89, 0.4)' }}>
-                        <HeartHandshake size={18} />
+                    <div className="flex items-start gap-3.5">
+                      <div style={{ width: 42, height: 42, borderRadius: 13, backgroundColor: 'rgba(197, 160, 89, 0.25)', color: '#DFB76C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(197, 160, 89, 0.4)' }}>
+                        <HeartHandshake size={20} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#FFFFFF' }}>Zero-Pressure Guidance</div>
-                        <div style={{ fontSize: '0.78rem', color: '#94A3B8', marginTop: 2 }}>Fiduciary market advisory focused entirely on your lifestyle goals.</div>
+                        <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#FFFFFF', fontFamily: 'Outfit, sans-serif' }}>Zero-Pressure Guidance</div>
+                        <div style={{ fontSize: '0.82rem', color: '#94A3B8', marginTop: 3, lineHeight: 1.5 }}>Fiduciary market advisory focused entirely on your lifestyle goals.</div>
                       </div>
                     </div>
                   </div>
@@ -2034,34 +2412,35 @@ export const HomePage: React.FC = () => {
                 {/* Right Column: High-Conversion Booking Card (5 Cols) */}
                 <div className="lg:col-span-5">
                   <div 
+                    className="card-luxury"
                     style={{ 
                       backgroundColor: 'rgba(255, 255, 255, 0.98)', 
-                      padding: '2.5rem', 
-                      borderRadius: 24,
-                      boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
-                      border: '1px solid rgba(255, 255, 255, 0.8)' 
+                      padding: '2.75rem', 
+                      borderRadius: 26,
+                      boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+                      border: '1px solid rgba(255, 255, 255, 0.9)' 
                     }}
                   >
                     
-                    <h4 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.45rem', lineHeight: 1.25, fontFamily: 'Outfit, sans-serif' }}>
+                    <h4 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.5rem', lineHeight: 1.3, fontFamily: 'Outfit, sans-serif' }}>
                       {homepageSettings.contactTitle || "Book Guided Valley Property Tour"}
                     </h4>
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', marginBottom: '1.5rem', lineHeight: 1.5 }}>
+                    <p style={{ fontSize: '0.9rem', color: '#64748B', marginBottom: '1.75rem', lineHeight: 1.6 }}>
                       Shortlist properties matching your exact criteria and schedule a private escorted visit with our senior director.
                     </p>
 
                     {formSubmitted ? (
-                      <div style={{ textAlign: 'center', padding: '2.5rem 1rem', backgroundColor: '#EBF4EC', borderRadius: 16 }}>
-                        <CheckCircle2 size={48} style={{ color: '#166534', margin: '0 auto 0.75rem auto' }} />
-                        <strong style={{ display: 'block', fontSize: '1.2rem', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>Tour Confirmed!</strong>
-                        <p style={{ fontSize: '0.88rem', color: '#475569', marginTop: 6, maxWidth: 300, margin: '6px auto 0 auto' }}>
+                      <div style={{ textAlign: 'center', padding: '3rem 1.5rem', backgroundColor: '#EBF4EC', borderRadius: 18, border: '1px solid rgba(22, 101, 52, 0.25)' }}>
+                        <CheckCircle2 size={52} style={{ color: '#166534', margin: '0 auto 0.85rem auto' }} />
+                        <strong style={{ display: 'block', fontSize: '1.3rem', color: '#0F172A', fontFamily: 'Outfit, sans-serif' }}>Tour Confirmed!</strong>
+                        <p style={{ fontSize: '0.92rem', color: '#475569', marginTop: 8, maxWidth: 320, margin: '8px auto 0 auto', lineHeight: 1.6 }}>
                           Our senior consultant will contact you on <strong>{formPhone}</strong> to confirm your vehicle schedule.
                         </p>
                       </div>
                     ) : (
                       <form onSubmit={handleContactSubmit}>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                           <div className="form-group" style={{ margin: 0 }}>
                             <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Full Name *</label>
                             <input 
@@ -2071,7 +2450,7 @@ export const HomePage: React.FC = () => {
                               value={formName} 
                               onChange={(e) => setFormName(e.target.value)} 
                               className="form-input" 
-                              style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                              style={{ padding: '0.75rem 0.95rem', fontSize: '0.9rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
                             />
                           </div>
                           <div className="form-group" style={{ margin: 0 }}>
@@ -2083,12 +2462,12 @@ export const HomePage: React.FC = () => {
                               value={formPhone} 
                               onChange={(e) => setFormPhone(e.target.value)} 
                               className="form-input" 
-                              style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                              style={{ padding: '0.75rem 0.95rem', fontSize: '0.9rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
                             />
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3" style={{ marginTop: '0.85rem' }}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5" style={{ marginTop: '0.95rem' }}>
                           <div className="form-group" style={{ margin: 0 }}>
                             <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Email Address</label>
                             <input 
@@ -2097,7 +2476,7 @@ export const HomePage: React.FC = () => {
                               value={formEmail} 
                               onChange={(e) => setFormEmail(e.target.value)} 
                               className="form-input" 
-                              style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                              style={{ padding: '0.75rem 0.95rem', fontSize: '0.9rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
                             />
                           </div>
                           <div className="form-group" style={{ margin: 0 }}>
@@ -2107,18 +2486,18 @@ export const HomePage: React.FC = () => {
                               value={formDate} 
                               onChange={(e) => setFormDate(e.target.value)} 
                               className="form-input" 
-                              style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                              style={{ padding: '0.75rem 0.95rem', fontSize: '0.9rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
                             />
                           </div>
                         </div>
 
-                        <div className="form-group" style={{ marginTop: '0.85rem' }}>
+                        <div className="form-group" style={{ marginTop: '0.95rem' }}>
                           <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Property Typology</label>
                           <select
                             value={formCategory}
                             onChange={(e) => setFormCategory(e.target.value)}
                             className="form-select"
-                            style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }}
+                            style={{ padding: '0.75rem 0.95rem', fontSize: '0.9rem', borderRadius: 12, borderColor: '#CBD5E1' }}
                           >
                             <option value="Buy Luxury Villa / Kothi">Buy Luxury Villa / Kothi</option>
                             <option value="Buy Apartment / Penthouse">Buy Apartment / Penthouse</option>
@@ -2129,7 +2508,7 @@ export const HomePage: React.FC = () => {
                           </select>
                         </div>
 
-                        <div className="form-group" style={{ marginTop: '0.85rem', marginBottom: '1.35rem' }}>
+                        <div className="form-group" style={{ marginTop: '0.95rem', marginBottom: '1.5rem' }}>
                           <label className="form-label" style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569' }}>Specific Requirements / Note</label>
                           <textarea 
                             rows={2} 
@@ -2137,17 +2516,17 @@ export const HomePage: React.FC = () => {
                             value={formMessage} 
                             onChange={(e) => setFormMessage(e.target.value)} 
                             className="form-textarea" 
-                            style={{ padding: '0.7rem 0.85rem', fontSize: '0.88rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
+                            style={{ padding: '0.75rem 0.95rem', fontSize: '0.9rem', borderRadius: 12, borderColor: '#CBD5E1' }} 
                           />
                         </div>
 
                         <button 
                           type="submit" 
-                          className="btn-green w-full" 
-                          style={{ width: '100%', borderRadius: 14, padding: '0.92rem', fontSize: '0.98rem', backgroundColor: '#166534', boxShadow: '0 8px 20px rgba(22, 101, 52, 0.35)' }}
+                          className="btn-green hover-lift w-full" 
+                          style={{ width: '100%', borderRadius: 14, padding: '0.96rem', fontSize: '1rem', fontWeight: 800, backgroundColor: '#166534', boxShadow: '0 8px 24px rgba(22, 101, 52, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                         >
                           <span>Confirm Chauffeured Tour Request</span>
-                          <ArrowRight size={17} style={{ color: '#DFB76C' }} />
+                          <ArrowRight size={18} style={{ color: '#DFB76C' }} />
                         </button>
 
                       </form>
@@ -2166,39 +2545,65 @@ export const HomePage: React.FC = () => {
 
       {/* 11. HELPFUL REAL ESTATE ARTICLES & MARKET INSIGHTS */}
       {homepageSettings.showLatestArticles && (
-        <section style={{ padding: '6.5rem 0', backgroundColor: '#FFFFFF' }}>
+        <section style={{ padding: '7rem 0', backgroundColor: '#FFFFFF' }}>
           <div className="container">
             
-            <div className="flex flex-wrap items-center justify-between gap-4" style={{ marginBottom: '3.5rem' }}>
+            <div className="flex flex-wrap items-center justify-between gap-4" style={{ marginBottom: '3.75rem' }}>
               <div>
                 <div className="flex items-center gap-2" style={{ marginBottom: '0.85rem' }}>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: 6,
+                    gap: 7,
                     fontSize: '0.78rem',
                     fontWeight: 800,
-                    letterSpacing: '0.08em',
+                    letterSpacing: '0.1em',
                     textTransform: 'uppercase',
                     backgroundColor: '#EBF4EC',
                     color: '#166534',
-                    padding: '0.35rem 0.9rem',
+                    padding: '0.42rem 1.1rem',
                     borderRadius: 999,
-                    border: '1px solid rgba(22, 101, 52, 0.25)'
+                    border: '1px solid rgba(22, 101, 52, 0.25)',
+                    boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)'
                   }}>
-                    <FileText size={13} style={{ color: '#166534' }} /> Market Research & Advisory
+                    <FileText size={14} style={{ color: '#166534' }} /> Market Research &amp; Advisory
                   </span>
                 </div>
 
-                <h2 style={{ fontSize: 'clamp(2.1rem, 3.6vw, 2.85rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', fontFamily: 'Outfit, sans-serif' }}>
+                <h2 style={{ fontSize: 'clamp(2.1rem, 3.8vw, 3rem)', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.25, fontFamily: 'Outfit, sans-serif' }}>
                   {homepageSettings.articlesTitle || 'Market Reports & Buying Guides'}
                 </h2>
-                <p style={{ color: '#64748B', fontSize: '1.05rem', marginTop: '0.5rem' }}>
+                <p style={{ color: '#64748B', fontSize: '1.08rem', marginTop: '0.65rem', lineHeight: 1.7 }}>
                   Expert insights on property registry laws, locality appreciation, and investment strategies in Uttarakhand.
                 </p>
               </div>
-              <Link to="/insights" className="btn-outline-green btn-pill" style={{ padding: '0.75rem 1.6rem', fontSize: '0.92rem' }}>
-                Explore All Articles
+              <Link 
+                to="/insights" 
+                className="btn-green hover-lift group flex items-center" 
+                style={{ 
+                  padding: '0.65rem 0.75rem 0.65rem 1.4rem', 
+                  borderRadius: 999, 
+                  fontSize: '0.88rem', 
+                  fontWeight: 700, 
+                  gap: '0.65rem',
+                  textDecoration: 'none',
+                  boxShadow: '0 6px 20px rgba(22, 101, 52, 0.25)',
+                  border: 'none'
+                }}
+              >
+                <span>Explore All Articles</span>
+                <span style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.22)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'transform 0.25s ease'
+                }} className="group-hover:translate-x-0.5">
+                  <ArrowRight size={14} style={{ color: '#FFFFFF' }} />
+                </span>
               </Link>
             </div>
 
@@ -2207,54 +2612,54 @@ export const HomePage: React.FC = () => {
               {blogPosts.slice(0, 3).map((post) => (
                 <div 
                   key={post.id} 
-                  className="card-luxury group flex flex-col" 
+                  className="card-luxury hover-lift group flex flex-col" 
                   style={{ 
-                    borderRadius: 22, 
+                    borderRadius: 24, 
                     overflow: 'hidden', 
                     border: '1px solid #E2E8F0',
                     transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-                    boxShadow: '0 4px 18px rgba(15, 23, 42, 0.03)'
+                    boxShadow: '0 4px 18px rgba(15, 23, 42, 0.03)',
+                    backgroundColor: '#FFFFFF'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-5px)';
-                    e.currentTarget.style.boxShadow = '0 16px 36px -8px rgba(15, 23, 42, 0.12)';
                     e.currentTarget.style.borderColor = '#166534';
+                    e.currentTarget.style.boxShadow = '0 16px 36px -8px rgba(15, 23, 42, 0.12)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
                     e.currentTarget.style.borderColor = '#E2E8F0';
+                    e.currentTarget.style.boxShadow = '0 4px 18px rgba(15, 23, 42, 0.03)';
                   }}
                 >
-                  <div style={{ height: 230, overflow: 'hidden', position: 'relative', backgroundColor: '#0B1120' }}>
+                  <div style={{ height: 240, overflow: 'hidden', position: 'relative', backgroundColor: '#0B1120' }}>
                     <img 
                       src={post.coverImage || 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800'} 
                       alt={post.title} 
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}
-                      className="group-hover:scale-108"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)' }}
+                      className="group-hover:scale-106"
                     />
                   </div>
 
-                  <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                    <div className="flex items-center gap-2" style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 700, marginBottom: '0.65rem' }}>
+                  <div style={{ padding: '1.85rem', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                    <div className="flex items-center gap-2" style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 700, marginBottom: '0.75rem' }}>
                       <span className="badge badge-verified" style={{ fontSize: '0.72rem', padding: '0.2rem 0.65rem' }}>{post.category}</span>
                       <span>• {post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}</span>
                     </div>
 
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.35, marginBottom: '0.75rem', fontFamily: 'Outfit, sans-serif' }}>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', lineHeight: 1.4, marginBottom: '0.85rem', fontFamily: 'Outfit, sans-serif' }}>
                       <Link to="/insights" style={{ color: 'inherit' }}>
                         {post.title}
                       </Link>
                     </h3>
 
-                    <p style={{ fontSize: '0.88rem', color: '#64748B', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                    <p style={{ fontSize: '0.9rem', color: '#64748B', lineHeight: 1.7, marginBottom: '1.75rem' }}>
                       {post.excerpt}
                     </p>
 
-                    <div className="flex items-center justify-between" style={{ marginTop: 'auto', paddingTop: '1.15rem', borderTop: '1px solid #F1F5F9' }}>
+                    <div className="flex items-center justify-between" style={{ marginTop: 'auto', paddingTop: '1.25rem', borderTop: '1px solid #F1F5F9' }}>
                       <span style={{ fontSize: '0.82rem', color: '#475569', fontWeight: 600 }}>By {post.author}</span>
-                      <Link to="/insights" style={{ color: '#166534', fontWeight: 700, fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: 4 }}>
-                        Read Guide <ArrowRight size={14} />
+                      <Link to="/insights" style={{ color: '#166534', fontWeight: 700, fontSize: '0.88rem', display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <span>Read Guide</span>
+                        <ArrowRight size={14} />
                       </Link>
                     </div>
                   </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Eye, Save, Sparkles, CheckCircle2, RotateCcw, Monitor, Smartphone, Globe } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
+import { ImageUploadInput } from '../common/ImageUploadInput';
 
 export const HomepageCustomizer: React.FC = () => {
   const { homepageSettings, updateHomepageSettings } = useStore();
@@ -47,7 +48,7 @@ export const HomepageCustomizer: React.FC = () => {
       directorName: 'Punit Tyagi',
       directorRole: 'Founder & Managing Director',
       directorPhoto: '/director-punit-tyagi.jpg',
-      directorQuote: 'Real estate is not merely land and brick; it is a sacred foundation for family legacies and hard-earned wealth.',
+      directorQuote: 'Our success as a company is measured by the remarkable returns and generational trust we have consistently provided our clients across Dehradun and Uttarakhand over the past 14 years.',
 
       propertyGridCols: 4,
       maxPropertiesCount: 8,
@@ -333,22 +334,13 @@ export const HomepageCustomizer: React.FC = () => {
               </div>
 
               <div className="form-group md:col-span-2" style={{ margin: 0 }}>
-                <label className="form-label">Director Photo URL or Path</label>
-                <div className="flex items-center gap-3">
-                  <img 
-                    src={formData.directorPhoto || '/director-punit-tyagi.jpg'} 
-                    alt="Director Preview" 
-                    style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center 20%', border: '2px solid #C5A059' }}
-                    onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                  />
-                  <input 
-                    type="text" 
-                    value={formData.directorPhoto || ''} 
-                    onChange={(e) => handleChange('directorPhoto', e.target.value)} 
-                    className="form-input flex-1" 
-                    placeholder="/director-punit-tyagi.jpg"
-                  />
-                </div>
+                <ImageUploadInput
+                  label="Director Photo"
+                  value={formData.directorPhoto || ''}
+                  onChange={(newVal) => handleChange('directorPhoto', newVal)}
+                  placeholder="/director-punit-tyagi.jpg"
+                  helpText="Upload a professional portrait from your computer/device or enter a photo URL"
+                />
               </div>
 
               <div className="form-group md:col-span-2" style={{ margin: 0 }}>

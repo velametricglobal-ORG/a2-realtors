@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Building2, Phone, CheckCircle2, ShieldCheck, ArrowRight, Upload, MessageSquare, Clock, Check, Sparkles, MapPin } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
+import { ImageUploadInput } from '../common/ImageUploadInput';
 
 export const SellPage: React.FC = () => {
   const { submitOwnerPropertyListing, locations } = useStore();
@@ -257,21 +258,15 @@ export const SellPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Image URL */}
-                <div className="form-group lg:col-span-2">
-                  <label className="form-label">Property Photo URL (Optional)</label>
-                  <input
-                    type="text"
-                    placeholder="https://images.unsplash.com/..."
+                {/* Property Photo (Web Link or Local Device Upload) */}
+                <div className="lg:col-span-2">
+                  <ImageUploadInput
+                    label="Property Photo"
                     value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    className="form-input"
+                    onChange={(newVal) => setImageUrl(newVal)}
+                    placeholder="https://images.unsplash.com/..."
+                    helpText="Upload real site photos from your phone/computer or provide a web URL link"
                   />
-                  {imageUrl && (
-                    <div style={{ marginTop: 8 }}>
-                      <img src={imageUrl} alt="Property Preview" style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 10, border: '1px solid #E2E8F0' }} />
-                    </div>
-                  )}
                 </div>
 
                 {/* Description */}

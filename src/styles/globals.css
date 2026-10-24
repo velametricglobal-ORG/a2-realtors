@@ -200,9 +200,15 @@ img {
 .gap-2 { gap: 0.5rem; }
 .gap-3 { gap: 0.75rem; }
 .gap-4 { gap: 1rem; }
+.gap-5 { gap: 1.25rem; }
 .gap-6 { gap: 1.5rem; }
+.gap-7 { gap: 1.75rem; }
 .gap-8 { gap: 2rem; }
+.gap-9 { gap: 2.25rem; }
 .gap-10 { gap: 2.5rem; }
+.gap-12 { gap: 3rem; }
+.gap-14 { gap: 3.5rem; }
+.gap-16 { gap: 4rem; }
 
 .grid { display: grid; }
 .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
@@ -245,6 +251,12 @@ img {
   .lg\:col-span-9 { grid-column: span 9 / span 9; }
   .lg\:col-span-12 { grid-column: span 12 / span 12; }
   .lg\:col-span-full { grid-column: 1 / -1; }
+  .lg\:gap-6 { gap: 1.5rem; }
+  .lg\:gap-8 { gap: 2rem; }
+  .lg\:gap-10 { gap: 2.5rem; }
+  .lg\:gap-12 { gap: 3rem; }
+  .lg\:gap-14 { gap: 3.5rem; }
+  .lg\:gap-16 { gap: 4rem; }
 }
 
 /* SECTION TAG BADGE WITH GLOW */
@@ -631,4 +643,81 @@ img {
     min-width: 100% !important;
     aspect-ratio: 4 / 3 !important;
   }
+}
+
+/* =============================================================================
+   ULTRA-LUXURY GLASSMORPHISM & MICRO-INTERACTION UTILITIES
+   ============================================================================= */
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes subtleGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(197, 160, 89, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(197, 160, 89, 0.45); }
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #dfb76c 0%, #c5a059 50%, #fdf3cf 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-emerald {
+  background: linear-gradient(135deg, #22c55e 0%, #166534 50%, #14532d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 50px -10px rgba(15, 23, 42, 0.08);
+}
+
+.glass-card-dark {
+  background: rgba(11, 17, 32, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5);
+}
+
+.border-glow-gold:hover {
+  border-color: #dfb76c !important;
+  box-shadow: 0 16px 36px -8px rgba(197, 160, 89, 0.3) !important;
+}
+
+.border-glow-emerald:hover {
+  border-color: #166534 !important;
+  box-shadow: 0 16px 36px -8px rgba(22, 101, 52, 0.25) !important;
+}
+
+.hover-lift {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+/* Hide scrollbars while preserving touch/mouse scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
